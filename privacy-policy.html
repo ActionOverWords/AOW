@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Privacy Policy for ActionOverWords Index: what information we collect from visitors and account holders, how we use it, and the choices you have.">
+<title>Privacy Policy — ActionOverWords Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-alt:#F4F6F9;
+    --border:#DFE3E9; --text:#171A21; --text-muted:#5B6472; --text-faint:#8992A3;
+    --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF;
+    --radius:10px;
+    --shadow-sm:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+    --shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);
+    --todo-bg:rgba(217,119,6,.12); --todo-text:#B45309; --todo-border:#D97706;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1D222B; --bg-alt:#14171D;
+      --border:#2B313C; --text:#E8EAED; --text-muted:#9CA3AF; --text-faint:#6B7280;
+      --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);
+      --shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);
+      --todo-bg:rgba(224,153,61,.16); --todo-text:#E0993D; --todo-border:#E0993D;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg-alt); color:var(--text);
+    font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  a{color:var(--brand);}
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+
+  /* ---------- masthead (matches aow-index.html) ---------- */
+  .masthead{background:var(--bg); border-bottom:1px solid var(--border);}
+  .masthead-inner{max-width:1080px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:12px;}
+  .logo{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);}
+  .logo-mark{width:46px; height:32px; border-radius:7px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; letter-spacing:.02em; flex:none;}
+  .logo-word{font-weight:800; font-size:19px; letter-spacing:-.01em; white-space:nowrap;}
+  .logo-word .lw-short{display:none;}
+  @media (max-width:480px){.logo-word .lw-full{display:none;} .logo-word .lw-short{display:inline;}}
+  .beta-tag{font-size:11.5px; font-weight:700; color:var(--brand); background:var(--brand-tint); padding:4px 10px; border-radius:20px; letter-spacing:.02em; margin-left:2px;}
+
+  /* ---------- page content ---------- */
+  main{flex:1; padding:44px 0 32px;}
+  .page-head h1{font-size:28px; margin:0 0 8px; letter-spacing:-.01em;}
+  .page-head p{font-size:15px; color:var(--text-muted); margin:0; max-width:58ch; line-height:1.6;}
+  .updated-line{font-size:13px; color:var(--text-faint); margin:10px 0 0;}
+
+  /* ---------- short-version summary box ---------- */
+  .tldr{background:var(--brand-tint); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin:26px 0;}
+  .tldr h2{font-size:12px; margin:0 0 12px; text-transform:uppercase; letter-spacing:.05em; color:var(--brand-dark);}
+  .tldr p{font-size:14px; line-height:1.6; color:var(--text); margin:0 0 10px;}
+  .tldr p:last-child{margin-bottom:0;}
+  .tldr strong{color:var(--text);}
+
+  /* ---------- table of contents ---------- */
+  .toc{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; margin:0 0 8px; box-shadow:var(--shadow-sm);}
+  .toc h2{font-size:11.5px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint);}
+  .toc ol{margin:0; padding-left:19px; columns:2; column-gap:24px; font-size:13.5px; line-height:1.95;}
+  .toc a{color:var(--text-muted); text-decoration:none;}
+  .toc a:hover{color:var(--brand); text-decoration:underline;}
+  @media (max-width:480px){.toc ol{columns:1;}}
+
+  /* ---------- policy body ---------- */
+  .policy-page{max-width:72ch;}
+  .policy-page h2{font-size:18px; margin:34px 0 8px; scroll-margin-top:16px;}
+  .policy-page h2:first-of-type{margin-top:34px;}
+  .policy-page p{font-size:14.5px; line-height:1.65; color:var(--text-muted); margin:0 0 12px;}
+  .policy-page strong{color:var(--text);}
+  .todo{background:var(--todo-bg); color:var(--todo-text); border:1px dashed var(--todo-border); border-radius:4px; padding:1px 7px; font-weight:700; white-space:nowrap;}
+
+  .closing-cta{
+    margin-top:36px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; box-shadow:var(--shadow-sm);
+  }
+  .closing-cta h2{font-size:15.5px; margin:0 0 6px;}
+  .closing-cta p{font-size:13.5px; color:var(--text-muted); margin:0 0 16px; line-height:1.6;}
+  .btn-primary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:none; background:var(--brand); color:#fff; text-decoration:none; display:inline-block;
+  }
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-secondary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--border); background:var(--bg); color:var(--text-muted); text-decoration:none; display:inline-block;
+  }
+  .btn-secondary:hover{background:var(--bg-alt);}
+  .cta-actions{display:flex; gap:10px; flex-wrap:wrap;}
+
+  footer{background:var(--bg); border-top:1px solid var(--border); padding:22px 0;}
+  footer p{font-size:12.5px; line-height:1.6; color:var(--text-faint); max-width:70ch; margin:0;}
+
+  @media (max-width:480px){
+    .page-head h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <a class="logo" href="aow-index.html">
+      <span class="logo-mark">AOW</span>
+      <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
+    </a>
+    <span class="beta-tag">Prototype</span>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Privacy Policy</h1>
+      <p>What ActionOverWords Index collects from people who visit or use this site, why, and what choices you have about it.</p>
+      <p class="updated-line">Last updated August 21, 2026</p>
+    </div>
+
+    <div class="tldr">
+      <h2>The short version</h2>
+      <p><strong>We collect only what's needed</strong> to run your account, respond to a message you send, or process a donation or membership — nothing more.</p>
+      <p><strong>We don't sell your information</strong>, and there's no advertising or ad-tracking anywhere on this site.</p>
+      <p><strong>Payments never touch our servers.</strong> Donations and memberships are handled entirely by our payment processor.</p>
+      <p><strong>Officials aren't "users."</strong> The promises and statuses tracked about elected officials are public civic information, not personal data covered by this policy.</p>
+      <p><strong>This is a young, actively-developed project.</strong> See Security below — and don't reuse an important password here.</p>
+    </div>
+
+    <nav class="toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#information-we-collect">Information we collect</a></li>
+        <li><a href="#how-we-use-it">How we use it</a></li>
+        <li><a href="#cookies-and-storage">Cookies &amp; browser storage</a></li>
+        <li><a href="#what-we-dont-do">What we don't do</a></li>
+        <li><a href="#third-party-services">Third-party services</a></li>
+        <li><a href="#data-retention">Data retention</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#public-officials">Information about public officials</a></li>
+        <li><a href="#your-choices">Your choices</a></li>
+        <li><a href="#childrens-privacy">Children's privacy</a></li>
+        <li><a href="#international-visitors">International visitors</a></li>
+        <li><a href="#changes">Changes to this policy</a></li>
+        <li><a href="#contact">Contact us</a></li>
+      </ol>
+    </nav>
+
+    <div class="policy-page">
+      <h2 id="overview">Overview</h2>
+      <p>ActionOverWords Index ("AOW Index," "we," "us," or "our") tracks specific promises made by elected officials and what actually happened to them. This page explains what information we collect from people who visit or use this site — browsing, creating an account, sending a message, or supporting the project financially — and what choices you have over it.</p>
+      <p>That's a separate question from the promises, votes, and sourcing tracked about elected officials themselves. That's public civic information about public figures acting in their official capacity, not personal data covered by this policy — see "Information about public officials" below for how that distinction works.</p>
+
+      <h2 id="information-we-collect">Information we collect</h2>
+      <p>We collect information in a few specific ways, each tied to something you've chosen to do on the site.</p>
+      <p><strong>If you create an account,</strong> we collect the display name, email address, and password you provide, along with your membership tier, the date you joined, and any preferences you set — like dark mode or the officials you choose to follow on your watch list.</p>
+      <p><strong>If you use the Contact form</strong> to send a general message, suggest a correction, or appeal a promise's status, we collect the name, email, and message you provide, along with what you tell us about which official or promise it concerns. Appeals additionally require naming a source — the outlet and headline you're citing — which we collect as part of the appeal itself.</p>
+      <p><strong>If you donate or subscribe,</strong> the transaction happens entirely on a third-party payment page — currently whichever processor is linked at the time, such as a Stripe Payment Link, PayPal.me, Ko-fi, or GiveButter. We never see or store your card number or other payment details. We may receive limited confirmation back from the processor, such as the fact that a payment succeeded, so we can activate your membership.</p>
+      <p><strong>Automatically,</strong> the infrastructure that serves this site may log standard technical details common to any web visit — things like browser type and which pages were requested — for security and reliability. We don't combine this with your account details to build an advertising profile, because we don't have one.</p>
+
+      <h2 id="how-we-use-it">How we use it</h2>
+      <p>We use what we collect to run the parts of the site that need it: operating your account and applying your membership tier, following up on messages and status appeals, sending confirmation when a donation or subscription goes through, and keeping the site secure.</p>
+      <p>If you're granted admin access to edit the site, other admins can see your display name and email in the Team Access panel — that's the mechanism by which editing access is granted and reviewed, so it isn't private from other admins the way it is from the public.</p>
+
+      <h2 id="cookies-and-storage">Cookies &amp; browser storage</h2>
+      <p>Your browser stores one small piece of information locally, using browser storage rather than a tracking cookie: just enough to remember which account you're logged into on that device. It isn't used to track you across other websites or to serve you ads, and clearing your browser's site data will simply log you out. See our <a href="cookie-policy.html">Cookie Policy</a> for the full breakdown of what's in use (and what isn't), plus a "Manage preferences" control if you'd rather review or change your choice.</p>
+      <p>Your account details themselves — display name, email, password, membership tier, preferences — live in the site's own data store, not only on your device, so they're there the next time you log in from anywhere.</p>
+
+      <h2 id="what-we-dont-do">What we don't do</h2>
+      <p>We don't sell your personal information, to anyone, ever. We don't run third-party advertising or ad-tracking on this site. And we don't share your account information with outside companies beyond the service providers described below — the ones that actually help run a specific feature, like accepting a donation — or when we're required to by law.</p>
+
+      <h2 id="third-party-services">Third-party services</h2>
+      <p>A few outside services are involved in running this site.</p>
+      <p><strong>Google Fonts</strong> loads the site's typeface. Doing so shares your IP address and browser information with Google, the same as it would on most sites that use a hosted font rather than one bundled with the page. Google's own privacy policy governs that.</p>
+      <p><strong>Payment processors</strong> handle every donation and membership entirely off this site — whichever one is linked on the Donate page at a given time (for example Stripe, PayPal, Ko-fi, or GiveButter). Their privacy policy governs what you give them directly; we only receive back what's needed to credit your donation or activate your membership.</p>
+      <p>This site is still an early-stage, actively developed project, and the service that stores account and site data is likely to change as it grows — for example, to a dedicated database and authentication provider. We'll update this section when that happens, not just the fine print buried elsewhere.</p>
+
+      <h2 id="data-retention">Data retention</h2>
+      <p>We keep your account information for as long as your account stays active. If you ask us to delete it, we will, other than anything we need to hold onto for a legitimate reason — a record of a completed donation, for instance, or messages tied to an open correction or appeal.</p>
+      <p>Contact form submissions are kept long enough to review and act on them, and afterward as a record of what's already been resolved.</p>
+
+      <h2 id="security">Security</h2>
+      <p>We take reasonable steps to protect the information you share with us. That said, this is an actively developing project — the About page is upfront about similar in-progress caveats on the data side, and the same honesty applies here. No method of storage or transmission is ever completely secure, so please don't reuse a password here that also protects something more important to you elsewhere.</p>
+
+      <h2 id="public-officials">Information about public officials</h2>
+      <p>Everything above covers information about you. It doesn't cover the promises, sources, and status calls tracked about elected officials — that's civic and political information about public figures acting in their official or campaign capacity, compiled from public government records and published news reporting, and it isn't personal data the way your own account is.</p>
+      <p>That means the rights described in "Your choices" below don't extend to having a tracked promise removed the way you could ask to have your own account deleted. If you believe an entry about an official is inaccurate, that's a correction, not a privacy request — use the Contact form and choose "Suggested correction" or "Appeal a status," the same path described in the FAQ, and it'll be checked against the same three-source standard as everything else on the site.</p>
+
+      <h2 id="your-choices">Your choices</h2>
+      <p>You can update your display name anytime from your Account panel. For anything else — correcting your email on file, deleting your account, or asking what we have on you — use the Contact form, or write to us directly (see Contact, below), and we'll take care of it.</p>
+      <p>We don't currently send marketing email apart from messages tied to your account or a donation. If that ever changes, any promotional message will include a way to opt out.</p>
+      <p>If you're in California, or anywhere else with its own privacy law, you get the same choices as everyone else here — to know what we have, correct it, or delete it — regardless of whether that law technically applies to a project this size. Just reach out.</p>
+
+      <h2 id="childrens-privacy">Children's privacy</h2>
+      <p>This site isn't directed at children, and we don't knowingly collect information from anyone under 13. If you believe a child has given us information, contact us and we'll remove it.</p>
+
+      <h2 id="international-visitors">International visitors</h2>
+      <p>This site tracks U.S. federal and state officials and is operated from the United States. If you're visiting from elsewhere, your information will be processed here, under U.S. law.</p>
+
+      <h2 id="changes">Changes to this policy</h2>
+      <p>We'll update this page as the site changes, especially as it grows past its current prototype stage. The date at the top will change whenever we do, and anything that meaningfully affects what we collect or how we use it will be called out here, not just quietly edited in.</p>
+
+      <h2 id="contact">Contact us</h2>
+      <p>The fastest way to reach us — about this policy, a correction, or anything else — is the Contact form on the Index (About → Contact). You can also reach us directly at <span class="todo">[add your contact email]</span>.</p>
+    </div>
+
+    <div class="closing-cta">
+      <h2>Questions about this policy?</h2>
+      <p>General questions, corrections, and status appeals all go through the same Contact form, on the About tab back on the Index.</p>
+      <div class="cta-actions">
+        <a class="btn-primary" href="aow-index.html">Go to the Index</a>
+        <a class="btn-secondary" href="cookie-policy.html">Read the Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>ActionOverWords Index — an independent tracker of specific promises made by elected officials, and what actually happened to them.</p>
+  </div>
+</footer>
+
+<script src="cookie-consent.js"></script>
+</body>
+</html>

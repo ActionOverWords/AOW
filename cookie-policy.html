@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cookie Policy for ActionOverWords Index: what cookies and browser storage this site actually uses, what it doesn't, and how to control it.">
+<title>Cookie Policy — ActionOverWords Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-alt:#F4F6F9;
+    --border:#DFE3E9; --text:#171A21; --text-muted:#5B6472; --text-faint:#8992A3;
+    --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF;
+    --radius:10px;
+    --shadow-sm:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+    --shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);
+    --todo-bg:rgba(217,119,6,.12); --todo-text:#B45309; --todo-border:#D97706;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1D222B; --bg-alt:#14171D;
+      --border:#2B313C; --text:#E8EAED; --text-muted:#9CA3AF; --text-faint:#6B7280;
+      --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);
+      --shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);
+      --todo-bg:rgba(224,153,61,.16); --todo-text:#E0993D; --todo-border:#E0993D;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg-alt); color:var(--text);
+    font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  a{color:var(--brand);}
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+
+  /* ---------- masthead (matches aow-index.html) ---------- */
+  .masthead{background:var(--bg); border-bottom:1px solid var(--border);}
+  .masthead-inner{max-width:1080px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:12px;}
+  .logo{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);}
+  .logo-mark{width:46px; height:32px; border-radius:7px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; letter-spacing:.02em; flex:none;}
+  .logo-word{font-weight:800; font-size:19px; letter-spacing:-.01em; white-space:nowrap;}
+  .logo-word .lw-short{display:none;}
+  @media (max-width:480px){.logo-word .lw-full{display:none;} .logo-word .lw-short{display:inline;}}
+  .beta-tag{font-size:11.5px; font-weight:700; color:var(--brand); background:var(--brand-tint); padding:4px 10px; border-radius:20px; letter-spacing:.02em; margin-left:2px;}
+
+  /* ---------- page content ---------- */
+  main{flex:1; padding:44px 0 32px;}
+  .page-head h1{font-size:28px; margin:0 0 8px; letter-spacing:-.01em;}
+  .page-head p{font-size:15px; color:var(--text-muted); margin:0; max-width:58ch; line-height:1.6;}
+  .updated-line{font-size:13px; color:var(--text-faint); margin:10px 0 0;}
+
+  /* ---------- short-version summary box ---------- */
+  .tldr{background:var(--brand-tint); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin:26px 0;}
+  .tldr h2{font-size:12px; margin:0 0 12px; text-transform:uppercase; letter-spacing:.05em; color:var(--brand-dark);}
+  .tldr p{font-size:14px; line-height:1.6; color:var(--text); margin:0 0 10px;}
+  .tldr p:last-child{margin-bottom:0;}
+  .tldr strong{color:var(--text);}
+
+  /* ---------- table of contents ---------- */
+  .toc{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; margin:0 0 8px; box-shadow:var(--shadow-sm);}
+  .toc h2{font-size:11.5px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint);}
+  .toc ol{margin:0; padding-left:19px; columns:2; column-gap:24px; font-size:13.5px; line-height:1.95;}
+  .toc a{color:var(--text-muted); text-decoration:none;}
+  .toc a:hover{color:var(--brand); text-decoration:underline;}
+  @media (max-width:480px){.toc ol{columns:1;}}
+
+  /* ---------- policy body ---------- */
+  .policy-page{max-width:72ch;}
+  .policy-page h2{font-size:18px; margin:34px 0 8px; scroll-margin-top:16px;}
+  .policy-page h2:first-of-type{margin-top:34px;}
+  .policy-page p{font-size:14.5px; line-height:1.65; color:var(--text-muted); margin:0 0 12px;}
+  .policy-page strong{color:var(--text);}
+  .todo{background:var(--todo-bg); color:var(--todo-text); border:1px dashed var(--todo-border); border-radius:4px; padding:1px 7px; font-weight:700; white-space:nowrap;}
+
+  /* ---------- cookie category table ---------- */
+  .cookie-table-wrap{overflow-x:auto; margin:14px 0 20px;}
+  .cookie-table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:480px;}
+  .cookie-table th{text-align:left; padding:8px 10px; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-faint); border-bottom:1px solid var(--border); white-space:nowrap;}
+  .cookie-table td{padding:11px 10px; border-bottom:1px solid var(--border); vertical-align:top; color:var(--text-muted); line-height:1.55;}
+  .cookie-table tr:last-child td{border-bottom:none;}
+  .cookie-table td:first-child{color:var(--text); font-weight:700; white-space:nowrap;}
+  .status-chip{display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap;}
+  .status-chip::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex:none;}
+  .status-active{background:var(--brand-tint); color:var(--brand-dark);}
+  .status-inactive{background:var(--bg-alt); color:var(--text-faint); border:1px solid var(--border);}
+
+  .manage-box{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin:14px 0 22px; box-shadow:var(--shadow-sm); display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .manage-box p{margin:0; font-size:13.5px; color:var(--text-muted); flex:1 1 260px; line-height:1.55;}
+
+  .closing-cta{
+    margin-top:36px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; box-shadow:var(--shadow-sm);
+  }
+  .closing-cta h2{font-size:15.5px; margin:0 0 6px;}
+  .closing-cta p{font-size:13.5px; color:var(--text-muted); margin:0 0 16px; line-height:1.6;}
+  .btn-primary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:none; background:var(--brand); color:#fff; text-decoration:none; display:inline-block;
+  }
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-secondary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--border); background:var(--bg); color:var(--text-muted); text-decoration:none; display:inline-block; font-family:inherit;
+  }
+  .btn-secondary:hover{background:var(--bg-alt);}
+  .cta-actions{display:flex; gap:10px; flex-wrap:wrap;}
+
+  footer{background:var(--bg); border-top:1px solid var(--border); padding:22px 0;}
+  footer p{font-size:12.5px; line-height:1.6; color:var(--text-faint); max-width:70ch; margin:0;}
+
+  @media (max-width:480px){
+    .page-head h1{font-size:24px;}
+    .manage-box{flex-direction:column; align-items:stretch;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <a class="logo" href="aow-index.html">
+      <span class="logo-mark">AOW</span>
+      <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
+    </a>
+    <span class="beta-tag">Prototype</span>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Cookie Policy</h1>
+      <p>What this site actually stores in your browser, what it doesn't, and how to control it — in plain terms, not boilerplate copied from a template.</p>
+      <p class="updated-line">Last updated August 21, 2026</p>
+    </div>
+
+    <div class="tldr">
+      <h2>The short version</h2>
+      <p><strong>No advertising or ad-tracking cookies, anywhere on this site. Full stop.</strong> There's no ad network here to feed.</p>
+      <p><strong>No analytics are active today.</strong> The one-click banner has a slot reserved in case that ever changes — see "What's actually in use" below.</p>
+      <p><strong>The only thing keeping you signed in</strong> is one small piece of browser storage on your own device — not a server-set tracking cookie.</p>
+      <p><strong>You're in control.</strong> Use the "Manage preferences" button below (or in the banner) anytime to change your choice.</p>
+    </div>
+
+    <nav class="toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#what-we-mean">What we mean by "cookies" here</a></li>
+        <li><a href="#in-use">What's actually in use</a></li>
+        <li><a href="#third-party">Third-party services</a></li>
+        <li><a href="#control">How to control this</a></li>
+        <li><a href="#changes">Changes to this policy</a></li>
+        <li><a href="#contact">Contact us</a></li>
+      </ol>
+    </nav>
+
+    <div class="policy-page">
+      <h2 id="overview">Overview</h2>
+      <p>This Cookie Policy explains how ActionOverWords Index ("AOW Index," "we," "us," or "our") uses cookies, browser storage, and similar technologies when you visit this site — and, just as importantly, what we don't use them for. It works alongside our <a href="privacy-policy.html">Privacy Policy</a>, which covers the account and message information we collect more broadly; this page goes deeper on the storage-and-tracking side specifically.</p>
+
+      <h2 id="what-we-mean">What we mean by "cookies" here</h2>
+      <p>Strictly speaking, this site doesn't set traditional server-side cookies at all today — there's no <code>Set-Cookie</code> header involved anywhere. What it uses instead is <strong>browser storage</strong>: small pieces of data that JavaScript running on the page reads and writes directly to your own browser, on your own device. Privacy law (and most people's expectations) treat these the same way, so this policy covers both under the umbrella term "cookies," the way most cookie policies do — and we're specific about which is actually in play where it matters.</p>
+      <p>This is also a young, actively developed project (our <a href="privacy-policy.html#third-party-services">Privacy Policy</a> and <a href="terms-of-service.html#actively-developing">Terms</a> say the same thing about other parts of the site). If the storage mechanism behind the scenes changes as the site grows, what's described below is what governs — this page gets updated the day that happens, not quietly after the fact.</p>
+
+      <h2 id="in-use">What's actually in use</h2>
+      <p>Here's the complete list. If a category isn't below, it isn't happening.</p>
+      <div class="cookie-table-wrap">
+        <table class="cookie-table">
+          <tr><th>Category</th><th>Status</th><th>What it's for</th></tr>
+          <tr>
+            <td>Strictly necessary</td>
+            <td><span class="status-chip status-active">Active</span></td>
+            <td>One item, referenced in the code as <code>aow_session</code>, remembers which account is logged in on <em>this specific browser</em>. It isn't shared with other visitors, isn't used to track you across other sites, and isn't linked to any advertising profile — because there isn't one. Clearing your browser's site data simply logs you out; nothing else on the site breaks. This can't be turned off, because there's no way to keep you signed in without it — the same way there's no version of "stay logged in" that doesn't remember who you are somehow.</td>
+          </tr>
+          <tr>
+            <td>Preferences</td>
+            <td><span class="status-chip status-inactive">Not separate</span></td>
+            <td>Things like your display name and dark-mode setting are account preferences stored in the site's own data store once you're signed in — not a separate browser cookie. They travel with your account, not with your browser, so switching devices doesn't lose them.</td>
+          </tr>
+          <tr>
+            <td>Analytics</td>
+            <td><span class="status-chip status-inactive">Not in use</span></td>
+            <td>We don't run Google Analytics, Plausible, or any other analytics service. The consent banner's "Analytics" toggle is there so a future, privacy-friendly option can be added without redesigning the banner — but right now, whether you switch it on or off, nothing loads. We'll update this page and the banner the same day that changes.</td>
+          </tr>
+          <tr>
+            <td>Advertising</td>
+            <td><span class="status-chip status-inactive">Never</span></td>
+            <td>No ad network, no ad-tracking pixel, no cross-site identifier. This isn't a setting we've turned off — there's no advertising infrastructure on this site to turn on in the first place.</td>
+          </tr>
+        </table>
+      </div>
+
+      <h2 id="third-party">Third-party services</h2>
+      <p><strong>Google Fonts</strong> loads the typeface used across this site. Doing so shares your IP address and browser information with Google, the same as it would on most sites that use a hosted font rather than one bundled with the page — Google's own privacy policy governs that exchange, not ours. It loads on every page, including this one.</p>
+      <p><strong>Payment processor pages</strong> — currently whichever is linked from the Donate tab, such as Stripe, PayPal, Ko-fi, or GiveButter — are outside sites we don't control. Whatever cookies or storage they use happen entirely on their own pages, under their own cookie and privacy policies, once you click through to donate or subscribe. We never see those cookies, and nothing from those pages is set on this site.</p>
+      <p>Any official's photo shown on the site is loaded from wherever that image is hosted; we haven't audited every possible photo host's own tracking practices the way we have our own code, though none is used specifically to track visitors of this site.</p>
+
+      <h2 id="control">How to control this</h2>
+      <div class="manage-box">
+        <p>Change your Analytics preference anytime — right now this only records a choice, since nothing is currently gated behind it, but it's the same control that'll take effect if that ever changes.</p>
+        <button type="button" class="btn-primary" onclick="window.AOWConsent && window.AOWConsent.openPreferences()">Manage cookie preferences</button>
+      </div>
+      <p>Because the "strictly necessary" item can't be disabled without logging you out, there's no toggle for it — that's true of virtually every site that lets you have an account. If you'd rather not have even that, the fix is the same as with any cookie: don't create an account, or clear your browser's site data for this domain, which logs you out immediately.</p>
+      <p>Your browser also has its own controls — most let you block or delete site storage globally or per-site, and browser extensions can block third-party requests like the one to Google Fonts. Blocking Google Fonts specifically will make the site fall back to your device's default font; it won't break anything else.</p>
+
+      <h2 id="changes">Changes to this policy</h2>
+      <p>We'll update this page as the site's storage and tracking actually change — not on a schedule, but the moment something listed above stops being accurate. The date at the top will change whenever we do. Given how actively this project is still being built (see the caveats in our <a href="privacy-policy.html">Privacy Policy</a> and <a href="terms-of-service.html">Terms of Service</a>), that's more likely to mean a real backend replacing today's prototype storage than it is to mean new tracking — but either way, this is where it gets disclosed.</p>
+
+      <h2 id="contact">Contact us</h2>
+      <p>Questions about this policy, or about what's actually running in your browser when you visit, go through the same Contact form as everything else — on the About tab back on the Index. You can also reach us directly at <span class="todo">[add your contact email]</span>.</p>
+    </div>
+
+    <div class="closing-cta">
+      <h2>Questions about your data?</h2>
+      <p>This page covers cookies and browser storage specifically. For the fuller picture — accounts, messages, donations — see the Privacy Policy.</p>
+      <div class="cta-actions">
+        <a class="btn-primary" href="aow-index.html">Go to the Index</a>
+        <a class="btn-secondary" href="privacy-policy.html">Read the Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>ActionOverWords Index — an independent tracker of specific promises made by elected officials, and what actually happened to them.</p>
+  </div>
+</footer>
+
+<script src="cookie-consent.js"></script>
+</body>
+</html>
