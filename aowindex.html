@@ -1,0 +1,2561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActionOverWords Index — Federal & State Promise Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-alt:#F4F6F9; --bg-brand:#0D4A43;
+    --border:#DFE3E9; --text:#171A21; --text-muted:#5B6472; --text-faint:#8992A3;
+    --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF; --brand-tint-hover:#D2ECE6;
+    --not_started:#8A93A3; --in_progress:#C2790F; --stalled:#5D7599;
+    --compromise:#8A5CA8; --completed:#1E8E5A; --broken:#C0392B;
+    --not_started-bg:#EEF0F3; --in_progress-bg:#FBF0DF; --stalled-bg:#E9EDF4;
+    --compromise-bg:#F3E9F6; --completed-bg:#E4F5EC; --broken-bg:#FBE7E4; --broken-border:#F0D3CE;
+    --party-d:#2058B0; --party-d-bg:#E7EFFC; --party-r:#B23A2F; --party-r-bg:#FBEAE7;
+    --party-i:#8B5E00; --party-i-bg:#F7EEDA; --party-np:#6B7280; --party-np-bg:#EEF0F2;
+    --watch-on:#D97706; --watch-on-bg:#FEF3E2;
+    --radius:10px; --radius-sm:6px;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+    --shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);
+  }
+  html[data-theme="dark"]{
+    --bg:#1D222B; --bg-alt:#14171D; --bg-brand:#0A332E;
+    --border:#2B313C; --text:#E8EAED; --text-muted:#9CA3AF; --text-faint:#6B7280;
+    --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E; --brand-tint-hover:#1E4038;
+    --not_started:#9AA3B2; --in_progress:#E0993D; --stalled:#7C93C4;
+    --compromise:#B084D1; --completed:#3DBE82; --broken:#E0685A;
+    --not_started-bg:#262B33; --in_progress-bg:#3A2E1B; --stalled-bg:#212A38;
+    --compromise-bg:#2E2438; --completed-bg:#1A3327; --broken-bg:#3A2220; --broken-border:#4D2B27;
+    --party-d:#5B9BF0; --party-d-bg:#1B2A42; --party-r:#F0776A; --party-r-bg:#3A2220;
+    --party-i:#D9A93F; --party-i-bg:#332A16; --party-np:#9AA3B2; --party-np-bg:#262B33;
+    --watch-on:#E0993D; --watch-on-bg:#3A2E1B;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);
+    --shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg-alt); color:var(--text); font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
+  a{color:var(--brand);}
+  button{font-family:inherit;}
+
+  /* ---------- masthead ---------- */
+  .masthead{background:var(--bg); border-bottom:1px solid var(--border);}
+  .masthead-inner{max-width:1080px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:12px;}
+  .logo{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); background:none; border:none; cursor:pointer; padding:0;}
+  .logo-mark{width:46px; height:32px; border-radius:7px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; letter-spacing:.02em; flex:none;}
+  .logo-word{font-weight:800; font-size:19px; letter-spacing:-.01em;}
+  .logo-word .lw-short{display:none;}
+  @media (max-width:480px){.logo-word .lw-full{display:none;} .logo-word .lw-short{display:inline;}}
+  .beta-tag{font-size:11.5px; font-weight:700; color:var(--brand); background:var(--brand-tint); padding:4px 10px; border-radius:20px; letter-spacing:.02em;}
+  .account-zone{margin-left:auto; display:flex; align-items:center; gap:6px;}
+  .account-btn{font-size:12px; font-weight:700; padding:6px 12px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer;}
+  .account-btn:hover{background:var(--bg-alt);}
+  .account-btn.primary{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .account-name{font-size:12.5px; font-weight:700; color:var(--text); cursor:pointer;}
+  .tier-table{width:100%; border-collapse:collapse; margin:14px 0; font-size:13px;}
+  .example-table{width:100%; border-collapse:collapse; margin:14px 0 18px; font-size:13.5px;}
+  .example-table th{text-align:left; padding:8px 10px; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); border-bottom:1px solid var(--border);}
+  .example-table td{padding:10px; border-bottom:1px solid var(--border); vertical-align:top;}
+  .example-table td:last-child{font-weight:800; text-align:center; white-space:nowrap;}
+  .example-table code{font-size:12.5px; color:var(--text-muted); white-space:nowrap;}
+  .cal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .cal-header h3{margin:0; font-size:16px;}
+  .cal-nav-btn{width:32px; height:32px; border-radius:50%; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .cal-nav-btn:disabled{opacity:.3; cursor:default;}
+  .cal-nav-btn:not(:disabled):hover{border-color:var(--brand);}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px;}
+  .cal-dow{text-align:center; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-faint); padding-bottom:6px;}
+  .cal-day{aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-sm); font-size:13px; color:var(--text-muted);}
+  .cal-day.cal-empty{visibility:hidden;}
+  .cal-day.cal-election{background:var(--brand); color:#fff; font-weight:800; cursor:pointer; position:relative;}
+  .cal-day.cal-holiday{position:relative; font-weight:700; color:var(--text);}
+  .cal-holiday-dot{position:absolute; bottom:3px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:var(--in_progress);}
+  .cal-day.cal-election:hover{background:var(--brand-dark);}
+  .cal-legend{display:flex; align-items:center; gap:8px; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); font-size:12.5px; color:var(--text-muted);}
+  .cal-holiday-list{margin-top:16px; padding-top:14px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:6px; font-size:13px; color:var(--text);}
+  .cal-holiday-list > div{display:flex; align-items:center; gap:8px;}
+  .cal-legend-dot{width:12px; height:12px; border-radius:3px; background:var(--brand); flex-shrink:0;}
+  .race-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-bottom:1px solid var(--border); cursor:pointer;}
+  .race-row:hover{background:var(--bg-alt);}
+  .race-row:last-child{border-bottom:none;}
+  .race-row .rr-name{font-weight:700; color:var(--text);}
+  .race-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:12px;}
+  .race-nav .btn-sm{white-space:nowrap;}
+  .race-nav .rn-position{font-size:12.5px; color:var(--text-faint); text-align:center; flex:1;}
+  .tier-table th, .tier-table td{padding:9px 10px; border-bottom:1px solid var(--border); text-align:center;}
+  .tier-table th{text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted);}
+  .tier-table td:first-child, .tier-table th:first-child{text-align:left; color:var(--text);}
+  .tier-table .tier-current{background:var(--brand-tint);}
+  .tier-pick-row td{padding-top:12px; border-bottom:none;}
+  .tier-pick-btn{font-size:12.5px; font-weight:700; padding:7px 10px; border-radius:7px; border:1px solid var(--border); background:var(--bg); cursor:pointer; width:100%;}
+  .tier-pick-btn.current{background:var(--brand); border-color:var(--brand); color:#fff; cursor:default;}
+  .admin-btn{font-size:12px; font-weight:700; padding:6px 12px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer;}
+  .admin-btn:hover{background:var(--bg-alt);}
+  .admin-on{font-size:12px; font-weight:700; color:var(--completed); display:flex; align-items:center; gap:5px;}
+
+  /* ---------- hero ---------- */
+  .hero{background:linear-gradient(180deg,var(--bg-brand),#12594F); color:#fff; padding:38px 0 30px;}
+  .hero h1{font-size:clamp(26px,4vw,34px); font-weight:800; margin:0 0 8px; letter-spacing:-.01em;}
+  .hero p{margin:0; color:#C9E8E1; font-size:15.5px; max-width:60ch;}
+  .stat-row{display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:rgba(255,255,255,.18); border-radius:var(--radius); overflow:hidden; margin-top:22px; box-shadow:var(--shadow-md);}
+  .stat-row div{background:#135951; padding:14px 12px;}
+  .stat-row .n{display:block; font-size:24px; font-weight:800;}
+  .stat-row .l{font-size:11px; color:#B7E0D8; text-transform:uppercase; letter-spacing:.05em;}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex; gap:3px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); margin-top:-20px; position:relative; z-index:2; padding:5px; overflow-x:auto;}
+  .tab-btn{flex:1 1 auto; padding:10px 12px; border:none; background:none; border-radius:7px; font-weight:700; font-size:13px; color:var(--text-muted); cursor:pointer; white-space:nowrap;}
+  .tab-btn.active{background:var(--brand); color:#fff;}
+  .tab-btn:hover:not(.active){background:var(--bg-alt);}
+
+  .term-selector{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:16px; margin-bottom:16px; border-bottom:1px solid var(--border);}
+  .orgchart-wrap{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:20px; overflow-x:auto;}
+  .orgchart-svg{width:100%; min-width:900px; height:auto; display:block;}
+  .orgchart-svg text{font-family:inherit;}
+  .oc-link{fill:none; stroke:var(--border); stroke-width:1.5;}
+  .oc-root rect{fill:var(--brand); stroke:none;}
+  .oc-root text{fill:#fff;}
+  .oc-l1 rect{fill:var(--brand-dark); stroke:none;}
+  .oc-l1 text{fill:#fff;}
+  .oc-l2 rect{fill:var(--brand-tint); stroke:var(--brand); stroke-width:1.2;}
+  .oc-l2 text{fill:var(--brand-dark);}
+  .oc-l3-tracked rect{fill:var(--bg); stroke:var(--brand); stroke-width:1.5;}
+  .oc-l3-tracked .oc-title{fill:var(--text); font-weight:800;}
+  .oc-l3-tracked .oc-detail{fill:var(--text-muted);}
+  .oc-l3-untracked rect{fill:var(--bg-alt); stroke:var(--border); stroke-width:1.2; stroke-dasharray:4 3;}
+  .oc-l3-untracked .oc-title{fill:var(--text-faint); font-weight:800;}
+  .oc-l3-untracked .oc-detail{fill:var(--text-faint);}
+  .oc-title{font-size:12.5px; font-weight:800;}
+  .oc-detail{font-size:11px;}
+  .oc-legend{display:flex; gap:20px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); font-size:12px; color:var(--text-muted);}
+  .oc-legend-item{display:flex; align-items:center; gap:6px;}
+  .oc-swatch{width:14px; height:14px; border-radius:3px; display:inline-block; flex-shrink:0;}
+
+  .compare-pickers{display:grid; gap:12px; align-items:center; grid-template-columns:var(--picker-cols, 1fr 1fr auto);}
+  .compare-add-btn{font-size:12.5px; font-weight:700; padding:10px 14px; border-radius:var(--radius-sm); border:1.5px dashed var(--border); background:transparent; color:var(--text-muted); cursor:pointer; white-space:nowrap;}
+  .compare-add-btn:hover{border-color:var(--brand); color:var(--brand);}
+  .compare-remove-empty{font-size:12px; color:var(--text-faint); text-decoration:underline; cursor:pointer; background:none; border:none; padding:0; margin-top:8px;}
+  .compare-pickers input{padding:10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13.5px; background:var(--bg-alt); color:var(--text); width:100%;}
+  .compare-results{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:12px; overflow:hidden;}
+  .compare-result-row{padding:9px 12px; cursor:pointer; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:1px;}
+  .compare-result-row:last-child{border-bottom:none;}
+  .compare-result-row:hover{background:var(--brand-tint);}
+  .cr-name{font-size:13px; font-weight:700;}
+  .cr-sub{font-size:11px; color:var(--text-faint);}
+  .compare-result-empty{padding:12px; font-size:12.5px; color:var(--text-faint);}
+  .compare-grid{display:grid; gap:16px; align-items:start; grid-template-columns:var(--compare-cols, 1fr auto 1fr);}
+  .compare-side{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:22px; text-align:center; box-shadow:var(--shadow); position:relative;}
+  .compare-side.empty-side{color:var(--text-faint); font-size:13.5px; padding:40px 20px; box-shadow:none;}
+  .compare-side h3{font-size:16px; margin:0;}
+  .compare-clear{position:absolute; top:10px; right:10px; width:24px; height:24px; border-radius:50%; border:1px solid var(--border); background:var(--bg-alt); color:var(--text-faint); font-size:14px; line-height:1; cursor:pointer;}
+  .compare-clear:hover{background:var(--broken); color:#fff; border-color:var(--broken);}
+  .compare-delta{font-weight:800; font-size:15px; color:var(--text-faint); text-align:center; white-space:nowrap; padding-top:60px;}
+  @media (max-width:640px){
+    .compare-pickers{grid-template-columns:1fr;}
+    .compare-grid{grid-template-columns:1fr; }
+    .compare-delta{padding:4px 0;}
+  }
+  .term-btn{padding:7px 14px; border-radius:20px; border:1.5px solid var(--border); background:var(--bg); font-weight:700; font-size:12.5px; color:var(--text-muted); cursor:pointer;}
+  .term-btn.active{border-color:var(--brand); color:var(--brand); background:var(--brand-tint);}
+  .term-btn:hover:not(.active){background:var(--bg-alt);}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); margin-top:14px; padding:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;}
+  .toolbar input[type=search]{flex:1 1 220px; padding:10px 12px 10px 34px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; background:var(--bg-alt) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="%235B6472" stroke-width="2"><circle cx="7" cy="7" r="5.5"/><line x1="11" y1="11" x2="15" y2="15"/></svg>') no-repeat 10px center;}
+  .toolbar select{padding:10px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:13.5px; background:var(--bg-alt); color:var(--text);}
+  .toolbar .count{font-size:12.5px; color:var(--text-faint); margin-left:auto; white-space:nowrap;}
+
+  .content{padding:22px 0 60px;}
+
+  /* ---------- featured / empty states ---------- */
+  .section-intro{margin:0 0 14px;}
+  .section-intro h2{font-size:17px; margin:0 0 4px;}
+  .section-intro p{font-size:13.5px; color:var(--text-muted); margin:0; max-width:65ch;}
+
+  /* ---------- grid ---------- */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px;}
+  .mcard{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px; cursor:pointer; transition:box-shadow .15s ease, transform .15s ease; position:relative;}
+  .watch-star{position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:var(--bg); color:var(--text-faint); font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .watch-star:hover{border-color:var(--brand);}
+  .watch-star.on{color:var(--watch-on); border-color:var(--watch-on); background:var(--watch-on-bg);}
+  .mcard:hover{box-shadow:var(--shadow-md); transform:translateY(-2px);}
+  .mcard-top{display:flex; align-items:center; gap:12px;}
+  .avatar{width:52px; height:52px; border-radius:50%; position:relative; flex:none; overflow:hidden; background:var(--brand-tint);}
+  .avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+  .avatar-fallback{position:absolute; inset:0; display:none; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:var(--brand);}
+  .mcard h3{margin:0; font-size:16px; font-weight:700;}
+  .mcard .seat{margin:2px 0 0; font-size:12.5px; color:var(--text-muted);}
+  .party-chip{display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 5px; border-radius:10px; border:1.5px solid var(--text-faint); font-size:10.5px; font-weight:700; color:var(--text-muted); margin-top:6px;}
+  .party-chip.party-D{border-color:var(--party-d); color:var(--party-d); background:var(--party-d-bg);}
+  .party-chip.party-R{border-color:var(--party-r); color:var(--party-r); background:var(--party-r-bg);}
+  .party-chip.party-I{border-color:var(--party-i); color:var(--party-i); background:var(--party-i-bg);}
+  .party-chip.party-NP{border-color:var(--party-np); color:var(--party-np); background:var(--party-np-bg);}
+  .leg-party.party-D{border-color:var(--party-d); color:var(--party-d); background:var(--party-d-bg);}
+  .leg-party.party-R{border-color:var(--party-r); color:var(--party-r); background:var(--party-r-bg);}
+  .leg-party.party-I{border-color:var(--party-i); color:var(--party-i); background:var(--party-i-bg);}
+  .leg-party.party-NP{border-color:var(--party-np); color:var(--party-np); background:var(--party-np-bg);}
+  .appointed-tag{display:inline-block; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--in_progress); background:var(--in_progress-bg); border-radius:4px; padding:2px 6px; margin-left:6px; vertical-align:middle;}
+  h2 .appointed-tag{font-size:11px; vertical-align:middle; margin-left:10px;}
+
+  /* ---------- AOW score badge ---------- */
+  .aow-score{display:inline-flex; flex-direction:column; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; border:2.5px solid; flex:none; line-height:1;}
+  .aow-score .num{font-weight:800; font-size:13px;}
+  .aow-score .lbl{font-size:6px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; margin-top:1px;}
+  .aow-score.tier-high{border-color:var(--completed); color:var(--completed);}
+  .aow-score.tier-mid{border-color:var(--in_progress); color:var(--in_progress);}
+  .aow-score.tier-low{border-color:var(--broken); color:var(--broken);}
+  .aow-score.tier-na{border-color:var(--border); color:var(--text-faint);}
+  .aow-score-lg{width:64px; height:64px;}
+  .aow-score-lg .num{font-size:22px;}
+  .aow-score-lg .lbl{font-size:8px;}
+  .score-note{font-size:11px; color:var(--text-faint); margin-top:4px;}
+  .detail-score-block{display:flex; align-items:center; gap:10px; margin-left:auto; text-align:left;}
+  .mini-bar{display:flex; height:6px; border-radius:3px; overflow:hidden; background:var(--bg-alt); margin-top:14px;}
+  .mini-bar span{display:block; height:100%;}
+  .mcard-foot{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
+  .mcard-foot .ct{font-size:12px; color:var(--text-faint);}
+  .mcard-foot .view{font-size:12.5px; font-weight:600; color:var(--brand);}
+  .add-tile{display:flex; align-items:center; justify-content:center; min-height:120px; border:1.5px dashed var(--border); color:var(--brand); font-weight:700; font-size:13.5px; background:var(--bg-alt);}
+  .add-tile:hover{background:var(--brand-tint);}
+
+  .empty{grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--text-faint);}
+
+  /* ---------- detail ---------- */
+  .back-btn{display:inline-flex; align-items:center; gap:6px; background:none; border:none; color:var(--brand); font-weight:600; font-size:14px; cursor:pointer; padding:0 0 16px;}
+  .detail-head{display:flex; align-items:center; gap:16px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); flex-wrap:wrap;}
+  .detail-head .avatar{width:72px; height:72px;}
+  .detail-head .avatar-fallback{font-size:22px;}
+  .detail-head h2{margin:0 0 4px; font-size:22px;}
+  .detail-head .seat{margin:0; color:var(--text-muted); font-size:14px;}
+  .detail-head-actions{margin-left:auto; display:flex; gap:8px;}
+
+  .pcard{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-top:12px; box-shadow:var(--shadow);}
+  .score-history{background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-top:16px;}
+  .role-block{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-top:16px; box-shadow:var(--shadow);}
+  .role-block-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px;}
+  .role-block-head h3{font-size:16px; margin:0;}
+  .role-block .pcard{box-shadow:none; border-color:var(--border);}
+  .score-history h3{font-size:14px; margin:0 0 10px; display:flex; align-items:center; gap:8px;}
+  .history-list{display:flex; flex-direction:column; gap:8px;}
+  .history-row{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--text-muted);}
+  .history-date{color:var(--text-faint); min-width:90px;}
+  .pcard-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; cursor:pointer;}
+  .pcard-top-right{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+  .pcard-chevron{font-size:12px; line-height:1; color:var(--text-faint); transition:transform .15s ease, color .15s ease;}
+  .pcard-top:hover .pcard-chevron{color:var(--brand);}
+  .pcard-top:focus-visible{outline:2px solid var(--brand); outline-offset:3px; border-radius:var(--radius-sm);}
+  .pcard-body{display:none;}
+  .pcard.expanded .pcard-chevron{transform:rotate(180deg);}
+  .pcard.expanded .pcard-body{display:block;}
+  .pcard .ptext{font-size:16px; font-weight:600; margin:0; max-width:60ch; line-height:1.4;}
+  .pill{display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px; font-size:11.5px; font-weight:700; letter-spacing:.02em; white-space:nowrap;}
+  .pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .p-not_started{background:var(--not_started-bg); color:var(--not_started);}
+  .p-in_progress{background:var(--in_progress-bg); color:var(--in_progress);}
+  .p-stalled{background:var(--stalled-bg); color:var(--stalled);}
+  .p-compromise{background:var(--compromise-bg); color:var(--compromise);}
+  .p-completed{background:var(--completed-bg); color:var(--completed);}
+  .p-broken{background:var(--broken-bg); color:var(--broken);}
+  .cat-tag{font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.04em; font-weight:600; margin-top:6px;}
+  .pnote{font-size:13.5px; color:var(--text-muted); margin:10px 0 0; line-height:1.55;}
+  .psource{display:flex; align-items:center; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); font-size:12.5px; color:var(--text-faint); flex-wrap:wrap;}
+  .src-type{border:1px solid var(--border); border-radius:5px; padding:2px 7px; font-weight:600;}
+  .psource a{color:var(--brand); text-decoration:none; font-weight:600;}
+  .psource a:hover{text-decoration:underline;}
+  .padmin-row{display:flex; gap:8px; margin-top:12px;}
+  .add-promise-btn{margin-top:14px;}
+
+  /* ---------- state tiles ---------- */
+  .state-tile{text-align:center; padding:22px 16px;}
+  .state-tile-name{font-size:19px; font-weight:800; margin:2px 0 4px;}
+
+  /* ---------- state org chart ---------- */
+  .orgchart{padding:8px 0 4px;}
+  .orgchart-top{display:flex; justify-content:center; position:relative; padding-bottom:26px;}
+  .orgchart-top.has-branches::after{content:''; position:absolute; bottom:0; left:50%; width:1.5px; height:26px; background:var(--border);}
+  .orgchart-branches{display:flex; gap:18px; flex-wrap:wrap; justify-content:center; position:relative; padding-top:26px; align-items:flex-start;}
+  .orgchart-branches.has-top::before{content:''; position:absolute; top:0; left:12%; right:12%; height:1.5px; background:var(--border);}
+  .orgchart-branch{flex:1 1 260px; max-width:380px; position:relative; padding-top:26px;}
+  .orgchart-branch.has-top::before{content:''; position:absolute; top:0; left:50%; width:1.5px; height:26px; background:var(--border);}
+  .orgchart-branch .leg-section{margin-top:0;}
+  .orgchart-branch .leg-heading{margin:16px 0 8px; font-size:12.5px;}
+  .orgchart-branch .leg-heading:first-child{margin-top:0;}
+  .branch-body{background:var(--bg); border:1px solid var(--border); border-top:none; border-radius:0 0 var(--radius-sm) var(--radius-sm); padding:12px;}
+  .branch-body .oc-person{border-radius:var(--radius-sm); margin-bottom:8px;}
+  .branch-body .oc-person:last-child{margin-bottom:0;}
+  .orgchart-dept-label{background:var(--bg-brand); color:#fff; text-align:center; font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:8px 10px; border-radius:var(--radius-sm) var(--radius-sm) 0 0;}
+  .oc-person{display:flex; align-items:center; gap:10px; background:var(--brand-tint); border-radius:0 0 var(--radius-sm) var(--radius-sm); padding:10px 12px; cursor:pointer; transition:background .15s ease;}
+  .orgchart-top .oc-person{border-radius:var(--radius-sm); min-width:220px;}
+  .oc-person:hover{background:var(--brand-tint-hover);}
+  .oc-person .avatar{width:40px; height:40px; flex:none;}
+  .oc-person .avatar-fallback{font-size:12.5px;}
+  .oc-name{margin:0; font-size:14px; font-weight:700;}
+  .oc-title{margin:1px 0 0; font-size:11.5px; color:var(--text-muted);}
+  .add-inline{margin-top:18px;}
+
+  /* ---------- legislature chips ---------- */
+  .leg-section{margin-top:8px;}
+  .leg-heading{font-size:14px; font-weight:800; margin:22px 0 10px; display:flex; align-items:center; gap:8px;}
+  .leg-count{font-size:11px; font-weight:700; color:var(--text-faint); background:var(--bg-alt); border:1px solid var(--border); padding:2px 8px; border-radius:10px;}
+  .leg-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .leg-chip{display:flex; align-items:center; gap:6px; background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:4px 10px 4px 4px; cursor:pointer; font-size:12.5px;}
+  .leg-chip:hover{background:var(--bg-alt); border-color:var(--brand);}
+  .leg-party{display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; border:1.3px solid var(--text-faint); font-size:9.5px; font-weight:800; color:var(--text-muted); background:var(--bg-alt); flex:none;}
+  .leg-name{font-weight:600;}
+  .leg-district{color:var(--text-faint); font-size:11px;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:14px; margin:24px 0 0; padding:14px 16px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);}
+  .legend .item{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-muted);}
+  .legend .dot{width:9px; height:9px; border-radius:50%;}
+  .party-dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle;}
+  .party-dot.party-D{background:var(--party-d);}
+  .party-dot.party-R{background:var(--party-r);}
+  .party-dot.party-I{background:var(--party-i);}
+  .party-dot.party-NP{background:var(--party-np);}
+
+  footer{background:var(--bg); border-top:1px solid var(--border); padding:28px 0 40px;}
+  footer h2{font-size:15.5px; margin:0 0 8px;}
+  footer p{font-size:13.5px; line-height:1.6; color:var(--text-muted); max-width:70ch; margin:0 0 10px;}
+  footer .foot-links{display:flex; gap:16px; margin-top:14px;}
+  footer .foot-links a{font-size:13px; font-weight:600; color:var(--brand); text-decoration:none;}
+  footer .foot-links-legal{margin-top:8px; flex-wrap:wrap;}
+  footer .foot-links-legal a{color:var(--text-faint); font-weight:500;}
+  footer .foot-links-legal a:hover{color:var(--text-muted);}
+
+  .about-page{max-width:72ch;}
+  .about-page h2{font-size:18px; margin:26px 0 8px;}
+  .about-page h2:first-child{margin-top:0;}
+  .about-page p{font-size:14.5px; line-height:1.65; color:var(--text-muted); margin:0 0 4px;}
+  .about-page strong{color:var(--text);}
+
+  /* ---------- small buttons ---------- */
+  .btn-sm{font-size:12px; font-weight:700; padding:6px 12px; border-radius:7px; cursor:pointer; border:1px solid var(--border); background:var(--bg); color:var(--text-muted);}
+  .btn-sm:hover{background:var(--bg-alt);}
+  .btn-sm.danger{color:var(--broken); border-color:var(--broken-border);}
+  .btn-sm.danger.confirming{background:var(--broken); color:#fff;}
+  .btn-primary{font-size:13.5px; font-weight:700; padding:9px 16px; border-radius:8px; cursor:pointer; border:none; background:var(--brand); color:#fff;}
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-secondary{font-size:13.5px; font-weight:700; padding:9px 16px; border-radius:8px; cursor:pointer; border:1px solid var(--border); background:var(--bg); color:var(--text-muted);}
+
+  /* ---------- modal ---------- */
+  .modal-backdrop{display:none; position:fixed; inset:0; background:rgba(15,20,28,.55); z-index:50; align-items:flex-start; justify-content:center; overflow-y:auto; padding:40px 16px;}
+  .modal-card{background:var(--bg); border-radius:var(--radius); padding:24px; width:100%; max-width:480px; box-shadow:var(--shadow-md);}
+  .modal-card h3{margin:0 0 16px; font-size:18px;}
+  .modal-card label{display:block; font-size:12.5px; font-weight:700; color:var(--text-muted); margin:0 0 14px;}
+  .modal-card input, .modal-card select, .modal-card textarea{
+    display:block; width:100%; margin-top:6px; padding:9px 11px; border:1px solid var(--border); border-radius:var(--radius-sm);
+    font-size:14px; font-family:inherit; color:var(--text); background:var(--bg-alt);
+  }
+  .modal-card textarea{resize:vertical;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:8px;}
+  .page-form{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:24px;}
+  .page-form label{display:block; font-size:12.5px; font-weight:700; color:var(--text-muted); margin:0 0 14px;}
+  .page-form input, .page-form select, .page-form textarea{
+    display:block; width:100%; margin-top:6px; padding:9px 11px; border:1px solid var(--border); border-radius:var(--radius-sm);
+    font-size:14px; font-family:inherit; color:var(--text); background:var(--bg-alt);
+  }
+  .page-form textarea{resize:vertical;}
+
+  /* ---------- toast ---------- */
+  .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(120px); background:var(--text); color:#fff; padding:11px 20px; border-radius:8px; font-size:13.5px; font-weight:600; box-shadow:var(--shadow-md); transition:transform .25s ease; z-index:100;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast.error{background:var(--broken);}
+
+  @media (max-width:560px){
+    .stat-row{grid-template-columns:repeat(2,1fr);}
+    .toolbar .count{order:10; margin-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <button class="logo" onclick="selectTab('featured')">
+      <span class="logo-mark">AOW</span>
+      <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
+    </button>
+    <span class="beta-tag">Prototype</span>
+    <div class="account-zone" id="accountZone"></div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>What they said. What happened.</h1>
+    <p>Every promise tracked here links back to its source, labeled by how independent that source actually is — a campaign line and a verified vote don't get treated the same.</p>
+    <div class="stat-row" id="tally"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <button class="tab-btn" data-tab="featured" onclick="selectTab('featured')">Featured</button>
+    <button class="tab-btn" data-tab="administration" onclick="selectTab('administration')">Administration</button>
+    <button class="tab-btn" data-tab="congress" onclick="selectTab('congress')">Congress</button>
+    <button class="tab-btn" data-tab="states" onclick="selectTab('states')">States</button>
+    <button class="tab-btn" data-tab="tools" onclick="selectTab('tools')">Tools</button>
+    <button class="tab-btn" data-tab="archive" onclick="selectTab('archive')">Archive</button>
+    <button class="tab-btn" data-tab="about" onclick="selectTab('about')">About</button>
+  </div>
+
+  <div class="toolbar" id="searchBar" style="display:flex;">
+    <input type="search" id="search-q" placeholder="Search officials by name or state…" style="flex:1; min-width:240px;">
+  </div>
+
+  <div class="toolbar compare-pickers" id="comparePickerBar" style="display:none;">
+    <input type="search" id="compare-q-0" placeholder="Search for the first…">
+    <input type="search" id="compare-q-1" placeholder="Search for the second…">
+    <input type="search" id="compare-q-2" placeholder="Search for the third…" style="display:none;">
+    <input type="search" id="compare-q-3" placeholder="Search for the fourth…" style="display:none;">
+    <div id="compareAddSlot"></div>
+  </div>
+
+  <div class="toolbar" id="toolbar">
+    <select id="party">
+      <option value="">All parties</option>
+      <option value="D">Democrat</option>
+      <option value="R">Republican</option>
+      <option value="I">Independent</option>
+      <option value="NP">Nonpartisan</option>
+    </select>
+    <select id="status">
+      <option value="">All statuses</option>
+      <option value="not_started">Not started</option>
+      <option value="in_progress">In progress</option>
+      <option value="stalled">Stalled</option>
+      <option value="compromise">Compromise</option>
+      <option value="completed">Completed</option>
+      <option value="broken">Broken</option>
+    </select>
+    <select id="sort">
+      <option value="name-asc">Name (A–Z)</option>
+      <option value="name-desc">Name (Z–A)</option>
+      <option value="state-asc" selected>State (A–Z)</option>
+      <option value="score-desc">AOW Score (High–Low)</option>
+      <option value="score-asc">AOW Score (Low–High)</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="content" id="content"><div class="empty">Loading…</div></div>
+
+  <div class="legend" id="legend"></div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <h2>ActionOverWords Index</h2>
+    <p>An independent tracker of specific promises made by elected officials, and what actually happened to them — kept, broken, or somewhere in between. 736 officials tracked so far, federal and state.</p>
+    <div class="foot-links">
+      <a href="#" onclick="selectTab('about'); return false;">About &amp; methodology</a>
+      <a href="#" onclick="selectTab('about'); selectedAboutSection='donate'; render(); return false;">Donate</a>
+    </div>
+    <div class="foot-links foot-links-legal">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-of-service.html">Terms of Service</a>
+      <a href="cookie-policy.html">Cookie Policy</a>
+      <a href="dmca-policy.html">Copyright / DMCA</a>
+      <a href="faq.html">FAQ</a>
+      <a href="#" onclick="if(window.AOWConsent) window.AOWConsent.openPreferences(); return false;">Cookie Preferences</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this) closeModal()">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<!-- Civic dataset, split into small files — see data/README.md for the full map.
+     Order among these doesn't matter to each other, only that data.js (above) loads first. -->
+<script src="data/members/administration-1.js"></script>
+<script src="data/members/administration-2.js"></script>
+<script src="data/members/ak.js"></script>
+<script src="data/members/al.js"></script>
+<script src="data/members/ar.js"></script>
+<script src="data/members/as.js"></script>
+<script src="data/members/az.js"></script>
+<script src="data/members/ca-1.js"></script>
+<script src="data/members/ca-2.js"></script>
+<script src="data/members/ca-3.js"></script>
+<script src="data/members/ca-4.js"></script>
+<script src="data/members/co.js"></script>
+<script src="data/members/ct.js"></script>
+<script src="data/members/dc.js"></script>
+<script src="data/members/de.js"></script>
+<script src="data/members/fl-1.js"></script>
+<script src="data/members/fl-2.js"></script>
+<script src="data/members/ga.js"></script>
+<script src="data/members/gu.js"></script>
+<script src="data/members/hi.js"></script>
+<script src="data/members/ia.js"></script>
+<script src="data/members/id.js"></script>
+<script src="data/members/il-1.js"></script>
+<script src="data/members/il-2.js"></script>
+<script src="data/members/in.js"></script>
+<script src="data/members/ks.js"></script>
+<script src="data/members/ky.js"></script>
+<script src="data/members/la.js"></script>
+<script src="data/members/ma.js"></script>
+<script src="data/members/md.js"></script>
+<script src="data/members/me.js"></script>
+<script src="data/members/mi.js"></script>
+<script src="data/members/mn.js"></script>
+<script src="data/members/mo.js"></script>
+<script src="data/members/mp.js"></script>
+<script src="data/members/ms.js"></script>
+<script src="data/members/mt.js"></script>
+<script src="data/members/nc.js"></script>
+<script src="data/members/nd.js"></script>
+<script src="data/members/ne.js"></script>
+<script src="data/members/nh.js"></script>
+<script src="data/members/nj.js"></script>
+<script src="data/members/nm.js"></script>
+<script src="data/members/nv.js"></script>
+<script src="data/members/ny-1.js"></script>
+<script src="data/members/ny-2.js"></script>
+<script src="data/members/oh.js"></script>
+<script src="data/members/ok.js"></script>
+<script src="data/members/or.js"></script>
+<script src="data/members/pa-1.js"></script>
+<script src="data/members/pa-2.js"></script>
+<script src="data/members/pr.js"></script>
+<script src="data/members/ri.js"></script>
+<script src="data/members/sc.js"></script>
+<script src="data/members/sd.js"></script>
+<script src="data/members/tn.js"></script>
+<script src="data/members/tx-1.js"></script>
+<script src="data/members/tx-2.js"></script>
+<script src="data/members/tx-3.js"></script>
+<script src="data/members/ut.js"></script>
+<script src="data/members/va.js"></script>
+<script src="data/members/vi.js"></script>
+<script src="data/members/vt.js"></script>
+<script src="data/members/wa.js"></script>
+<script src="data/members/wi.js"></script>
+<script src="data/members/wv.js"></script>
+<script src="data/members/wy.js"></script>
+<script src="data/past-administrations/biden-46.js"></script>
+<script src="data/past-administrations/trump-45.js"></script>
+<script src="data/archive.js"></script>
+<script src="data/person-links.js"></script>
+<script src="data/confirmed-no-prior-role.js"></script>
+<script src="data/prior-roles/part-1.js"></script>
+<script src="data/prior-roles/part-2.js"></script>
+<script src="data/prior-roles/part-3.js"></script>
+<script>
+const STATUS_META = {
+  not_started:{label:'Not started', color:'var(--not_started)'},
+  in_progress:{label:'In progress', color:'var(--in_progress)'},
+  stalled:{label:'Stalled', color:'var(--stalled)'},
+  compromise:{label:'Compromise', color:'var(--compromise)'},
+  completed:{label:'Completed', color:'var(--completed)'},
+  broken:{label:'Broken', color:'var(--broken)'}
+};
+// AOW Score: 0-100, the average of these weights across a person's tracked promises.
+// Not Started and Broken both score 0 for different reasons — one hasn't happened yet,
+// the other happened and failed — but a low score reads the same either way today.
+// Documented here and in the footer so the formula is never a mystery.
+const AOW_WEIGHTS = { completed:100, compromise:60, in_progress:40, stalled:15, not_started:0, broken:0 };
+const SRC_TYPE_LABEL = {
+  campaign_statement:'Campaign statement', interview:'Interview',
+  voting_record:'Voting record', official_record:'Official record',
+  self_published_report:"Official's own office", news_report:'News report'
+};
+const TAB_LABELS = {featured:'Featured', search:'Search', administration:'Administration', congress:'Congress', states:'States', tools:'Tools', archive:'Archive', about:'About', contact:'Contact', donate:'Donate'};
+const STATE_NAMES = {
+  AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California', CO:'Colorado', CT:'Connecticut',
+  DE:'Delaware', DC:'District of Columbia', FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
+  IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana', ME:'Maine', MD:'Maryland',
+  MA:'Massachusetts', MI:'Michigan', MN:'Minnesota', MS:'Mississippi', MO:'Missouri', MT:'Montana',
+  NE:'Nebraska', NV:'Nevada', NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York',
+  NC:'North Carolina', ND:'North Dakota', OH:'Ohio', OK:'Oklahoma', OR:'Oregon', PA:'Pennsylvania',
+  RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota', TN:'Tennessee', TX:'Texas', UT:'Utah',
+  VT:'Vermont', VA:'Virginia', WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming',
+  PR:'Puerto Rico', GU:'Guam', AS:'American Samoa', VI:'U.S. Virgin Islands', MP:'Northern Mariana Islands'
+};
+
+// Admin access is now tied to accounts, not a shared passcode (see the account system
+// below). This is the ONE bootstrap point: whichever account signs up or logs in with
+// this email automatically becomes an admin, so there's a first admin to grant everyone
+// else access from. Set this to your real email before anyone else creates an account.
+// Like the old passcode, this is visible to anyone who views the page source — it only
+// controls who gets flagged admin on THIS specific email, not a secret in itself.
+const BOOTSTRAP_ADMIN_EMAIL = 'you@example.com';
+
+function getLinkedRoleIds(id){
+  const group = PERSON_LINKS.find(g=>g.ids.includes(id));
+  return group ? group.ids : [id];
+}
+function resolveRole(id){
+  if(id.startsWith('prior-')){
+    const p = PRIOR_ROLES.find(x=>x.id===id);
+    if(!p) return null;
+    return {id, name:p.name, initials:p.initials, seat:p.seat, party:p.party, years:p.years, sortKey:parseInt(p.years)||0, score:null, n:0, dist:{}, total:0, promisesArr:[], isPast:true};
+  }
+  if(id.startsWith('past-')){
+    for(const admin of PAST_ADMINISTRATIONS){
+      const p = admin.people.find(x=>x.id===id);
+      if(p){
+        const {score,n} = computeAOWScore(p.id, PAST_PROMISES);
+        const {dist,total} = computeDist(p.id, PAST_PROMISES);
+        return {id, name:p.name, initials:p.initials, seat:p.seat, party:p.party, years:admin.years, sortKey:parseInt(admin.years)||0, score, n, dist, total, promisesArr:PAST_PROMISES, isPast:true};
+      }
+    }
+    return null;
+  }
+  if(id.startsWith('arch-')){
+    const p = ARCHIVE.find(x=>x.id===id);
+    if(!p) return null;
+    const {score,n} = computeAOWScore(p.id, ARCHIVE_PROMISES);
+    const {dist,total} = computeDist(p.id, ARCHIVE_PROMISES);
+    return {id, name:p.name, initials:p.initials, seat:p.seat, party:p.party, years:p.years||'', sortKey:parseInt(p.years)||0, score, n, dist, total, promisesArr:ARCHIVE_PROMISES, isPast:true, source:p};
+  }
+  const m = MEMBERS.find(x=>x.id===id);
+  if(!m) return null;
+  const {score,n} = computeAOWScore(m.id);
+  const {dist,total} = computeDist(m.id);
+  return {id, name:m.name, initials:m.initials, seat:m.seat, party:m.party, years:'Serving since '+m.termStart, sortKey:9999, score, n, dist, total, promisesArr:PROMISES, isPast:false, source:m};
+}
+function resolveAllRoles(id){
+  return getLinkedRoleIds(id).map(resolveRole).filter(Boolean).sort((a,b)=>b.sortKey-a.sortKey);
+}
+
+let MEMBERS = [];
+let PROMISES = [];
+let DONATE_URL = '';
+let SCORE_LOG = [];
+let activeTab = 'featured';
+let selectedId = null;
+let selectedState = null;
+let selectedAdminTerm = 'current';
+let compareIds = ['', ''];
+let selectedPastPersonId = null;
+let selectedCongressChamber = 'senate';
+let selectedTool = 'compare';
+let selectedOrgChartLevel = 'federal';
+let calendarMonth = null; // {year, month} 0-indexed, lazily set to today's month on first render
+let selectedElectionDate = null; // 'YYYY-MM-DD' once a marked date is clicked
+let selectedRaceIndex = null; // index into that date's race list, once a specific race is picked
+let selectedAboutSection = 'about';
+let selectedArchiveCategory = 'all';
+let selectedArchivePersonId = null;
+let isAdmin = false;
+let officialFormMode = null, officialFormId = null;
+let promiseFormMode = null, promiseFormId = null, promiseFormMemberId = null;
+// Phase 1 accounts — NOT real security. Passwords here are stored and compared in
+// plain text in shared storage, visible to anyone who inspects it. This exists to
+// build and test the account/tier UI before the real auth swap (Supabase Auth),
+// which will replace this whole block without changing the sign-up/login forms.
+let USERS = [];          // shared — every registered account: {id, email, displayName, password, tier, joinedAt}
+let CURRENT_USER = null; // this browser's logged-in user (personal, not shared), or null if logged out
+let SUBMISSIONS = [];    // shared — every message/suggestion/appeal: {id, type, name, email, context, body, submittedAt, status, userId, userTier}
+let pendingAppealContext = null; // set by "Appeal this status" links, consumed once by the Contact form
+
+function escAttr(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+// For dynamic text embedded inside an inline onclick="fn('...')" attribute.
+// Order matters: HTML-escape first (browsers decode the attribute value before
+// handing it to the JS parser), THEN escape the single quote that would otherwise
+// break out of the JS string literal the decoded value lands inside.
+function escJsAttr(s){
+  return escAttr(s).replace(/'/g, "\\'");
+}
+function genId(prefix){ return prefix + Date.now().toString(36) + Math.floor(Math.random()*1000); }
+function partyLabel(p){ return p==='D' ? 'Democrat' : p==='R' ? 'Republican' : p==='NP' ? 'Nonpartisan' : 'Independent'; }
+
+function showStatus(msg, isError){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('error', !!isError);
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------- storage backend ----------
+   Everything the app persists goes through Backend.get/Backend.set.
+   This is the ONLY place that needs to change to swap storage providers
+   (e.g. window.storage -> Supabase). Nothing else in the file talks to
+   a storage API directly.
+   Current provider: window.storage (Claude artifact storage — per-session,
+   not a real shared backend). Swap the two methods below to point at
+   Supabase (or any other backend) once credentials are available. */
+const Backend = {
+  async get(key, shared=true){
+    const res = await window.storage.get(key, shared);
+    return (res && res.value) ? JSON.parse(res.value) : null;
+  },
+  async set(key, value, shared=true){
+    await window.storage.set(key, JSON.stringify(value), shared);
+  }
+};
+
+/* ---------- persistence ---------- */
+async function loadOrSeed(key, defaults, shared=true){
+  try {
+    const val = await Backend.get(key, shared);
+    if(val !== null) return val;
+  } catch(e) { /* key not seeded yet */ }
+  try { await Backend.set(key, defaults, shared); } catch(e){ /* ignore, will retry on next save */ }
+  return defaults;
+}
+async function persistOfficials(){
+  try { await Backend.set('aow_officials', MEMBERS); }
+  catch(e){ showStatus('Could not save officials — try again.', true); }
+}
+async function persistPromises(){
+  try { await Backend.set('aow_promises', PROMISES); }
+  catch(e){ showStatus('Could not save promises — try again.', true); }
+}
+async function persistDonateUrl(){
+  try { await Backend.set('aow_donate_url', DONATE_URL); }
+  catch(e){ showStatus('Could not save donation link — try again.', true); }
+}
+async function persistScoreLog(){
+  try { await Backend.set('aow_score_log', SCORE_LOG); }
+  catch(e){ /* non-critical — don't block the save on this */ }
+}
+async function persistUsers(){
+  try { await Backend.set('aow_users', USERS); }
+  catch(e){ showStatus('Could not save account — try again.', true); }
+}
+async function persistSubmissions(){
+  try { await Backend.set('aow_submissions', SUBMISSIONS); }
+  catch(e){ showStatus('Could not save that — try again.', true); }
+}
+async function persistSession(){
+  // Personal (shared:false) — each visitor's browser remembers only their own login,
+  // never anyone else's, even though the USERS directory itself is shared.
+  try { await Backend.set('aow_session', CURRENT_USER ? CURRENT_USER.id : null, false); }
+  catch(e){ /* non-critical — worst case they just have to log in again next visit */ }
+}
+async function resetToLatestData(){
+  if(!isAdmin) return;
+  if(!confirm('This discards any saved admin edits on this device and reloads the current built-in roster and promises. This cannot be undone. Continue?')) return;
+  MEMBERS = DEFAULT_MEMBERS.slice();
+  PROMISES = DEFAULT_PROMISES.slice();
+  await persistOfficials();
+  await persistPromises();
+  renderTally();
+  renderLegend();
+  render();
+  showStatus('Reset to the latest built-in data.');
+}
+async function initData(){
+  MEMBERS = await loadOrSeed('aow_officials', DEFAULT_MEMBERS);
+  PROMISES = await loadOrSeed('aow_promises', DEFAULT_PROMISES);
+  DONATE_URL = await loadOrSeed('aow_donate_url', '');
+  SCORE_LOG = await loadOrSeed('aow_score_log', []);
+  USERS = await loadOrSeed('aow_users', []);
+  SUBMISSIONS = await loadOrSeed('aow_submissions', []);
+  const sessionUserId = await loadOrSeed('aow_session', null, false);
+  CURRENT_USER = sessionUserId ? (USERS.find(u=>u.id===sessionUserId) || null) : null;
+  syncAdminState();
+  applyTheme(!!(CURRENT_USER && CURRENT_USER.darkMode));
+  renderTally();
+  renderLegend();
+  renderAccountZone();
+  render();
+}
+
+/* ---------- admin state (derived from the logged-in account, see user accounts below) ---------- */
+function syncAdminState(){
+  isAdmin = !!(CURRENT_USER && CURRENT_USER.isAdminAccount);
+}
+
+/* ---------- user accounts (Phase 1 — see security note on USERS/CURRENT_USER above) ---------- */
+const TIERS = [
+  {id:'free', label:'Free', price:'$0'},
+  {id:'supporter', label:'Plus', price:'$5–8/mo'},
+  {id:'sustainer', label:'Premium', price:'$15–20/mo'},
+  {id:'patron', label:'Supporter', price:'$40+/mo'}
+];
+function tierLabel(id){ return (TIERS.find(t=>t.id===id) || {}).label || id; }
+const TIER_FEATURES = [
+  {label:'Follow officials + basic alerts', free:'Browse only', supporter:'✓', sustainer:'✓', patron:'✓'},
+  {label:'Ad-free', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
+  {label:'Dark mode', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
+  {label:'Saved lists + private notes', free:'–', supporter:'Limited', sustainer:'✓', patron:'✓'},
+  {label:'Advanced filters + saved views', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
+  {label:'Comparison tools', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
+  {label:'CSV export', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
+  {label:'Personalized digests', free:'–', supporter:'Basic', sustainer:'Full', patron:'Full + early'},
+  {label:'Priority suggestion review', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
+  {label:'Early features', free:'–', supporter:'–', sustainer:'–', patron:'✓'}
+];
+function userTierRank(user){
+  const idx = TIERS.findIndex(t=>t.id===(user ? user.tier : 'free'));
+  return idx<0 ? 0 : idx;
+}
+function userHasTier(minTierId){
+  // Gating helper for future features — e.g. if(!userHasTier('sustainer')) return lockedMessage();
+  const need = TIERS.findIndex(t=>t.id===minTierId);
+  return userTierRank(CURRENT_USER) >= (need<0?0:need);
+}
+function applyTheme(dark){
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+}
+async function toggleDarkMode(){
+  if(!CURRENT_USER){ showAuthModal('signup'); showStatus(`Create a free account, then upgrade to ${tierLabel('supporter')} to unlock dark mode.`); return; }
+  if(!userHasTier('supporter')){ showStatus(`Dark mode is a ${tierLabel('supporter')}-tier feature — see the Donate tab to upgrade.`, true); return; }
+  CURRENT_USER.darkMode = !CURRENT_USER.darkMode;
+  const userIdx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(userIdx>=0) USERS[userIdx] = CURRENT_USER;
+  await persistUsers();
+  applyTheme(CURRENT_USER.darkMode);
+  showAccountSettings(); // re-render the modal in place so the toggle reflects the new state
+}
+const WATCHLIST_SUPPORTER_CAP = 5;
+function isWatching(officialId){
+  return !!(CURRENT_USER && (CURRENT_USER.watchlist||[]).includes(officialId));
+}
+async function toggleWatch(officialId, event){
+  if(event) event.stopPropagation(); // don't also trigger the card's own click-to-detail
+  if(!CURRENT_USER){ showAuthModal('signup'); showStatus('Create a free account, then upgrade to follow officials.'); return; }
+  if(!userHasTier('supporter')){ showStatus(`Following officials is a ${tierLabel('supporter')}-tier feature — see the Donate tab to upgrade.`, true); return; }
+  const list = CURRENT_USER.watchlist || (CURRENT_USER.watchlist = []);
+  const idx = list.indexOf(officialId);
+  if(idx >= 0){
+    list.splice(idx, 1);
+  } else {
+    if(!userHasTier('sustainer') && list.length >= WATCHLIST_SUPPORTER_CAP){
+      showStatus(`${tierLabel('supporter')} plans can follow up to ${WATCHLIST_SUPPORTER_CAP} officials — upgrade to ${tierLabel('sustainer')} for unlimited.`, true);
+      return;
+    }
+    list.push(officialId);
+  }
+  const userIdx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(userIdx>=0) USERS[userIdx] = CURRENT_USER;
+  await persistUsers();
+  render();
+}
+function watchStarHTML(officialId){
+  const on = isWatching(officialId);
+  return `<button class="watch-star ${on?'on':''}" onclick="toggleWatch('${officialId}', event)" title="${on?'Unfollow':'Follow'} this official" aria-label="${on?'Unfollow':'Follow'}">${on?'★':'☆'}</button>`;
+}
+function renderAccountZone(){
+  const zone = document.getElementById('accountZone');
+  if(!zone) return;
+  const adminTag = (CURRENT_USER && CURRENT_USER.isAdminAccount) ? `<span class="admin-on">● Admin</span>` : '';
+  zone.innerHTML = CURRENT_USER
+    ? `${adminTag}<span class="account-name" onclick="showAccountSettings()">Hi, ${escAttr(CURRENT_USER.displayName)}</span><button class="account-btn" onclick="showAccountSettings()">Account</button>`
+    : `<button class="account-btn" onclick="showAuthModal('login')">Log In</button><button class="account-btn primary" onclick="showAuthModal('signup')">Sign Up</button>`;
+}
+function showAuthModal(mode){
+  const isSignup = mode==='signup';
+  openModal(`
+    <h3>${isSignup?'Create your account':'Log in'}</h3>
+    ${isSignup?'<label>Display name<input id="auth-name" placeholder="How you\'ll appear on the site" required></label>':''}
+    <label>Email<input id="auth-email" type="email" placeholder="you@example.com" required></label>
+    <label>Password<input id="auth-password" type="password" placeholder="${isSignup?'Choose a password':'Your password'}" required></label>
+    <p class="score-note" style="margin:-6px 0 14px;">${isSignup?'Free to join — you can pick a paid tier anytime from your account.':''}</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="${isSignup?'trySignUp()':'tryLogIn()'}">${isSignup?'Create account':'Log in'}</button>
+    </div>
+    <p class="score-note" style="margin-top:14px;">${isSignup?'Already have an account?':"Don't have an account yet?"} <a href="#" onclick="showAuthModal('${isSignup?'login':'signup'}'); return false;">${isSignup?'Log in':'Sign up'}</a></p>
+  `);
+  document.getElementById('auth-email').focus();
+  document.getElementById('auth-password').addEventListener('keydown', e=>{ if(e.key==='Enter') (isSignup?trySignUp:tryLogIn)(); });
+}
+function applyBootstrapAdmin(user){
+  // Runs on both signup and login so the flag stays correct even if BOOTSTRAP_ADMIN_EMAIL
+  // is set after this account already existed.
+  if(user.email === BOOTSTRAP_ADMIN_EMAIL.toLowerCase()) user.isAdminAccount = true;
+  return user;
+}
+async function trySignUp(){
+  const name = document.getElementById('auth-name').value.trim();
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
+  const password = document.getElementById('auth-password').value;
+  if(!name || !email || !password){ showStatus('Fill in all fields.', true); return; }
+  if(USERS.some(u=>u.email===email)){ showStatus('An account with that email already exists.', true); return; }
+  const user = applyBootstrapAdmin({id:genId('user_'), email, displayName:name, password, tier:'free', isAdminAccount:false, watchlist:[], darkMode:false, joinedAt:new Date().toISOString().slice(0,10)});
+  USERS.push(user);
+  await persistUsers();
+  CURRENT_USER = user;
+  await persistSession();
+  syncAdminState();
+  closeModal();
+  renderAccountZone();
+  render();
+  showStatus('Account created — welcome!');
+}
+async function tryLogIn(){
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
+  const password = document.getElementById('auth-password').value;
+  const user = USERS.find(u=>u.email===email && u.password===password);
+  if(!user){ showStatus('Email or password not recognized.', true); return; }
+  applyBootstrapAdmin(user);
+  CURRENT_USER = user;
+  await persistUsers(); // in case applyBootstrapAdmin just changed something
+  await persistSession();
+  syncAdminState();
+  applyTheme(!!CURRENT_USER.darkMode);
+  closeModal();
+  renderAccountZone();
+  render();
+  showStatus('Logged in.');
+}
+async function logOut(){
+  CURRENT_USER = null;
+  await persistSession();
+  syncAdminState();
+  applyTheme(false);
+  closeModal();
+  renderAccountZone();
+  render();
+}
+function renderTierTableHTML(){
+  const currentTierId = CURRENT_USER ? CURRENT_USER.tier : null;
+  const rows = TIER_FEATURES.map(f => `
+    <tr><td>${escAttr(f.label)}</td><td${currentTierId==='free'?' class="tier-current"':''}>${escAttr(f.free)}</td><td${currentTierId==='supporter'?' class="tier-current"':''}>${escAttr(f.supporter)}</td><td${currentTierId==='sustainer'?' class="tier-current"':''}>${escAttr(f.sustainer)}</td><td${currentTierId==='patron'?' class="tier-current"':''}>${escAttr(f.patron)}</td></tr>
+  `).join('');
+  const pickCells = TIERS.map(t => {
+    const isCurrent = t.id===currentTierId;
+    const label = isCurrent ? 'Current plan' : (CURRENT_USER ? 'Switch' : 'Sign up');
+    const action = isCurrent ? '' : (CURRENT_USER ? `onclick="setTier('${t.id}')"` : `onclick="showAuthModal('signup')"`);
+    return `<td><button class="tier-pick-btn${isCurrent?' current':''}" ${isCurrent?'disabled':''} ${action}>${label}</button></td>`;
+  }).join('');
+  return `
+    <table class="tier-table">
+      <tr><th></th>${TIERS.map(t=>`<th${t.id===currentTierId?' class="tier-current"':''}>${escAttr(t.label)}<br><span style="font-weight:400; text-transform:none; letter-spacing:0;">${escAttr(t.price)}</span></th>`).join('')}</tr>
+      ${rows}
+      <tr class="tier-pick-row"><td></td>${pickCells}</tr>
+    </table>
+    <p class="score-note">Billing isn't connected yet — switching tiers here is free during this preview and won't charge you.</p>
+  `;
+}
+function showAccountSettings(){
+  if(!CURRENT_USER) return;
+  const teamPanel = CURRENT_USER.isAdminAccount ? `
+    <h3 style="margin-top:22px;">Team access</h3>
+    <p class="score-note" style="margin:-6px 0 10px;">Anyone with a checked box below can edit officials and promises on the live site.</p>
+    <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
+      ${USERS.map(u => `
+        <label style="display:flex; align-items:center; gap:8px; padding:8px 10px; margin:0; border-bottom:1px solid var(--border); font-weight:400;">
+          <input type="checkbox" style="width:auto; margin:0;" ${u.isAdminAccount?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked)">
+          <span style="flex:1; color:var(--text);">${escAttr(u.displayName)} <span class="score-note">(${escAttr(u.email)})</span></span>
+        </label>
+      `).join('')}
+    </div>
+  ` : '';
+  const darkModeRow = userHasTier('supporter') ? `
+    <label style="display:flex; align-items:center; gap:10px; font-weight:400; cursor:pointer;">
+      <input type="checkbox" style="width:auto; margin:0;" ${CURRENT_USER.darkMode?'checked':''} onchange="toggleDarkMode()">
+      <span style="color:var(--text);">Dark mode</span>
+    </label>
+  ` : `<p class="score-note" style="margin:0;">Dark mode is a ${tierLabel('supporter')}-tier feature and above.</p>`;
+  openModal(`
+    <h3>Your account</h3>
+    <label>Display name<input id="acct-name" value="${escAttr(CURRENT_USER.displayName)}"></label>
+    <p class="score-note" style="margin:-6px 0 14px;">${escAttr(CURRENT_USER.email)} · Joined ${escAttr(CURRENT_USER.joinedAt)}</p>
+    <div class="modal-actions" style="margin-bottom:18px;">
+      <button class="btn-secondary" onclick="logOut()">Log out</button>
+      <button class="btn-primary" onclick="saveAccountName()">Save name</button>
+    </div>
+    <h3>Preferences</h3>
+    <div style="margin-bottom:18px;">${darkModeRow}</div>
+    <h3>Your plan</h3>
+    ${renderTierTableHTML()}
+    ${teamPanel}
+    <div class="modal-actions" style="margin-top:18px;"><button class="btn-secondary" onclick="closeModal()">Close</button></div>
+  `);
+}
+async function toggleUserAdmin(userId, checked){
+  const u = USERS.find(x=>x.id===userId);
+  if(!u) return;
+  u.isAdminAccount = checked;
+  await persistUsers();
+  if(CURRENT_USER && CURRENT_USER.id===userId){ CURRENT_USER = u; syncAdminState(); renderAccountZone(); render(); }
+  showStatus(checked ? `${u.displayName} can now edit the site.` : `${u.displayName}'s edit access was removed.`);
+}
+async function saveAccountName(){
+  const name = document.getElementById('acct-name').value.trim();
+  if(!name){ showStatus('Name can\'t be empty.', true); return; }
+  CURRENT_USER.displayName = name;
+  const idx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(idx>=0) USERS[idx] = CURRENT_USER;
+  await persistUsers();
+  renderAccountZone();
+  showStatus('Saved.');
+}
+async function setTier(tierId){
+  if(!CURRENT_USER) return;
+  CURRENT_USER.tier = tierId;
+  const idx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(idx>=0) USERS[idx] = CURRENT_USER;
+  await persistUsers();
+  showAccountSettings();
+  showStatus('Plan updated.');
+}
+
+
+/* ---------- modal ---------- */
+function closeModal(){ document.getElementById('modalBackdrop').style.display = 'none'; }
+function openModal(html){
+  document.getElementById('modalCard').innerHTML = html;
+  document.getElementById('modalBackdrop').style.display = 'flex';
+}
+
+/* ---------- officials CRUD ---------- */
+function addOfficialForSenate(){ openOfficialForm('add', null, {level:'federal', chamber:'Senate', state:'', seat:''}); }
+function addOfficialForHouse(){ openOfficialForm('add', null, {level:'federal', chamber:'House', state:'', seat:''}); }
+function addOfficialForAdministration(){ openOfficialForm('add', null, {level:'federal', chamber:'', state:'US', seat:'', appointed:true}); }
+function addOfficialForStates(){ openOfficialForm('add', null, {level:'state', chamber:'Governor', state:'', seat:''}); }
+function addOfficialForState(code){ openOfficialForm('add', null, {level:'state', chamber:'Governor', state:code, seat:''}); }
+
+function openOfficialForm(mode, official, defaults){
+  officialFormMode = mode;
+  officialFormId = official ? official.id : null;
+  const o = official || defaults || {};
+  openModal(`
+    <h3>${mode==='add' ? 'Add official' : 'Edit official'}</h3>
+    <label>Name<input id="f-name" value="${escAttr(o.name)}" required></label>
+    <label>Initials (for the avatar, 2–3 letters)<input id="f-initials" value="${escAttr(o.initials)}" maxlength="3" required></label>
+    <label>Level
+      <select id="f-level">
+        <option value="federal" ${o.level==='federal'?'selected':''}>Federal</option>
+        <option value="state" ${o.level==='state'?'selected':''}>State</option>
+      </select>
+    </label>
+    <label>Chamber / office<input id="f-chamber" value="${escAttr(o.chamber)}" placeholder="Senate, House, Executive, Governor, Attorney General…" required></label>
+    <label>Party
+      <select id="f-party">
+        <option value="D" ${o.party==='D'?'selected':''}>Democrat</option>
+        <option value="R" ${o.party==='R'?'selected':''}>Republican</option>
+        <option value="I" ${o.party==='I'?'selected':''}>Independent</option>
+        <option value="NP" ${o.party==='NP'?'selected':''}>Nonpartisan</option>
+      </select>
+    </label>
+    <label>State (2-letter code, or US for federal)<input id="f-state" value="${escAttr(o.state)}" maxlength="2" required></label>
+    <label>Seat / description (shown on the card)<input id="f-seat" value="${escAttr(o.seat)}" placeholder="e.g. Senate · Michigan" required></label>
+    <label>Serving since<input id="f-termStart" value="${escAttr(o.termStart)}" placeholder="e.g. 2025" required></label>
+    <label>Photo URL (optional — falls back to initials if it fails to load)<input id="f-photo" value="${escAttr(o.photo)}" placeholder="https://…"></label>
+    <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="f-appointed" style="width:auto; margin:0;" ${o.appointed?'checked':''}> Appointed, not elected (e.g. Cabinet secretary)</label>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveOfficial()">Save</button>
+    </div>
+  `);
+}
+function editOfficial(id){ openOfficialForm('edit', MEMBERS.find(m=>m.id===id)); }
+
+function saveOfficial(){
+  const data = {
+    name: document.getElementById('f-name').value.trim(),
+    initials: document.getElementById('f-initials').value.trim().toUpperCase(),
+    level: document.getElementById('f-level').value,
+    chamber: document.getElementById('f-chamber').value.trim(),
+    party: document.getElementById('f-party').value,
+    state: document.getElementById('f-state').value.trim().toUpperCase(),
+    seat: document.getElementById('f-seat').value.trim(),
+    termStart: document.getElementById('f-termStart').value.trim(),
+    photo: document.getElementById('f-photo').value.trim(),
+    appointed: document.getElementById('f-appointed').checked
+  };
+  if(!data.name || !data.initials || !data.chamber || !data.state || !data.seat || !data.termStart){
+    showStatus('Please fill in all required fields.', true); return;
+  }
+  if(officialFormMode==='add'){
+    data.id = genId('m');
+    MEMBERS.push(data);
+  } else {
+    const idx = MEMBERS.findIndex(m=>m.id===officialFormId);
+    data.id = officialFormId;
+    MEMBERS[idx] = data;
+  }
+  persistOfficials();
+  closeModal();
+  renderTally();
+  render();
+  showStatus('Official saved.');
+}
+
+function handleDeleteOfficialClick(btn, id){
+  if(btn.dataset.confirm==='1'){ deleteOfficial(id); return; }
+  btn.dataset.confirm='1'; btn.textContent='Confirm delete?'; btn.classList.add('confirming');
+  setTimeout(()=>{ if(btn.isConnected){ btn.dataset.confirm='0'; btn.textContent='Delete official'; btn.classList.remove('confirming'); } }, 3000);
+}
+function deleteOfficial(id){
+  MEMBERS = MEMBERS.filter(m=>m.id!==id);
+  PROMISES = PROMISES.filter(p=>p.memberId!==id);
+  persistOfficials();
+  persistPromises();
+  selectedId = null;
+  renderTally();
+  render();
+  showStatus('Official and their promises deleted.');
+}
+
+/* ---------- promises CRUD ---------- */
+function openPromiseForm(mode, memberId, promise){
+  promiseFormMode = mode;
+  promiseFormId = promise ? promise.id : null;
+  promiseFormMemberId = memberId;
+  const p = promise || {};
+  const src = p.source || {};
+  openModal(`
+    <h3>${mode==='add' ? 'Add promise' : 'Edit promise'}</h3>
+    <label>Promise text<textarea id="f-ptext" rows="2" required>${escAttr(p.text)}</textarea></label>
+    <label>Category<input id="f-pcategory" value="${escAttr(p.category)}" placeholder="e.g. Health care"></label>
+    <label>Status
+      <select id="f-pstatus">
+        ${Object.entries(STATUS_META).map(([k,m])=>`<option value="${k}" ${p.status===k?'selected':''}>${m.label}</option>`).join('')}
+      </select>
+    </label>
+    <label>Note / context<textarea id="f-pnote" rows="3">${escAttr(p.note)}</textarea></label>
+    <label>Source publisher<input id="f-psrcpub" value="${escAttr(src.publisher)}" placeholder="e.g. NPR"></label>
+    <label>Source type
+      <select id="f-psrctype">
+        ${Object.entries(SRC_TYPE_LABEL).map(([k,l])=>`<option value="${k}" ${src.type===k?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </label>
+    <label>Source URL<input id="f-psrcurl" value="${escAttr(src.url)}" placeholder="https://…"></label>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="savePromise()">Save</button>
+    </div>
+  `);
+}
+function editPromise(id){ openPromiseForm('edit', null, PROMISES.find(p=>p.id===id)); }
+
+function savePromise(){
+  const text = document.getElementById('f-ptext').value.trim();
+  if(!text){ showStatus('Promise text is required.', true); return; }
+  const newStatus = document.getElementById('f-pstatus').value;
+  const data = {
+    memberId: promiseFormMemberId,
+    text,
+    category: document.getElementById('f-pcategory').value.trim() || 'Uncategorized',
+    status: newStatus,
+    note: document.getElementById('f-pnote').value.trim(),
+    source: {
+      publisher: document.getElementById('f-psrcpub').value.trim(),
+      type: document.getElementById('f-psrctype').value,
+      url: document.getElementById('f-psrcurl').value.trim()
+    }
+  };
+  let oldStatus = null;
+  if(promiseFormMode==='add'){
+    data.id = genId('p');
+    PROMISES.push(data);
+  } else {
+    const idx = PROMISES.findIndex(p=>p.id===promiseFormId);
+    oldStatus = PROMISES[idx].status;
+    data.id = promiseFormId;
+    data.memberId = PROMISES[idx].memberId;
+    PROMISES[idx] = data;
+  }
+  if(oldStatus !== newStatus){
+    SCORE_LOG.push({id:genId('log'), memberId:data.memberId, promiseId:data.id, oldStatus, newStatus, timestamp:new Date().toISOString()});
+    persistScoreLog();
+  }
+  persistPromises();
+  closeModal();
+  renderTally();
+  render();
+  showStatus('Promise saved.');
+}
+
+function handleDeletePromiseClick(btn, id){
+  if(btn.dataset.confirm==='1'){ deletePromise(id); return; }
+  btn.dataset.confirm='1'; btn.textContent='Confirm delete?'; btn.classList.add('confirming');
+  setTimeout(()=>{ if(btn.isConnected){ btn.dataset.confirm='0'; btn.textContent='Delete'; btn.classList.remove('confirming'); } }, 3000);
+}
+function deletePromise(id){
+  PROMISES = PROMISES.filter(p=>p.id!==id);
+  persistPromises();
+  renderTally();
+  render();
+  showStatus('Promise deleted.');
+}
+
+/* ---------- rendering ---------- */
+function avatarHTML(m, size){
+  const sizeStyle = size ? `width:${size}px;height:${size}px;` : '';
+  if(!m.photo) return `<div class="avatar" style="${sizeStyle}"><div class="avatar-fallback" style="display:flex;">${escAttr(m.initials)}</div></div>`;
+  return `<div class="avatar" style="${sizeStyle}">
+    <img src="${escAttr(m.photo)}" alt="${escAttr(m.name)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <div class="avatar-fallback">${escAttr(m.initials)}</div>
+  </div>`;
+}
+function computeDist(memberId, promisesArr){
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId);
+  const dist = {}; Object.keys(STATUS_META).forEach(k=>dist[k]=0);
+  ps.forEach(p=>dist[p.status]++);
+  return {dist, total: ps.length};
+}
+function computeAOWScore(memberId, promisesArr){
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId);
+  if(!ps.length) return {score:null, n:0};
+  const sum = ps.reduce((t,p)=>t+(AOW_WEIGHTS[p.status]??0), 0);
+  return {score: Math.round(sum/ps.length), n: ps.length};
+}
+function scoreTier(score){
+  if(score===null) return 'na';
+  if(score>=70) return 'high';
+  if(score>=40) return 'mid';
+  return 'low';
+}
+function scoreBadgeHTML(memberId, large, promisesArr){
+  const {score,n} = computeAOWScore(memberId, promisesArr);
+  const tier = scoreTier(score);
+  return `<div class="aow-score ${large?'aow-score-lg':''} tier-${tier}" title="${n ? 'AOW Score, based on '+n+' tracked promise'+(n===1?'':'s') : 'No promises tracked yet'}">
+    <span class="num">${score===null?'—':score}</span>
+    <span class="lbl">Score</span>
+  </div>`;
+}
+function scoreHistoryHTML(memberId){
+  const entries = SCORE_LOG.filter(l=>l.memberId===memberId).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  if(!entries.length){
+    return `<div class="score-history">
+      <h3>Score history</h3>
+      <p class="score-note" style="margin:0;">No status changes logged yet for this official. This tracks forward from today — it isn't a retroactive record, since no change history was kept before this feature existed.</p>
+    </div>`;
+  }
+  return `<div class="score-history">
+    <h3>Score history <span class="term-btn" style="cursor:default; padding:2px 8px; font-size:10px;">${entries.length} change${entries.length===1?'':'s'} logged</span></h3>
+    <div class="history-list">
+      ${entries.map(e=>`
+        <div class="history-row">
+          <span class="history-date">${new Date(e.timestamp).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}</span>
+          <span class="pill p-${e.oldStatus||'not_started'}" style="opacity:.6;">${e.oldStatus?STATUS_META[e.oldStatus].label:'New'}</span>
+          <span>→</span>
+          <span class="pill p-${e.newStatus}">${STATUS_META[e.newStatus].label}</span>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+function renderTally(){
+  const total = PROMISES.length, members = MEMBERS.length;
+  const byStatus = {}; Object.keys(STATUS_META).forEach(k=>byStatus[k]=0);
+  PROMISES.forEach(p=>byStatus[p.status]++);
+  const cells = [[total,'Tracked'],[members,'Officials'],[byStatus.completed,'Completed'],[byStatus.in_progress,'In progress'],[byStatus.not_started,'Not started']];
+  document.getElementById('tally').innerHTML = cells.map(([n,l])=>`<div><span class="n">${n}</span><span class="l">${l}</span></div>`).join('');
+}
+function renderLegend(){
+  document.getElementById('legend').innerHTML = Object.entries(STATUS_META)
+    .map(([k,m])=>`<span class="item"><span class="dot" style="background:${m.color}"></span>${m.label}</span>`).join('');
+}
+function matchesFilters(m){
+  const qEl = document.getElementById('q');
+  const q = qEl ? qEl.value.trim().toLowerCase() : '';
+  const party = document.getElementById('party').value;
+  const status = document.getElementById('status').value;
+  if(party && m.party!==party) return false;
+  if(q && !(m.name.toLowerCase().includes(q) || m.state.toLowerCase().includes(q))) return false;
+  if(status){
+    const ps = PROMISES.filter(p=>p.memberId===m.id);
+    if(!ps.some(p=>p.status===status)) return false;
+  }
+  return true;
+}
+function selectTab(tab){
+  activeTab = tab;
+  selectedId = null;
+  selectedState = null;
+  selectedAdminTerm = 'current';
+  selectedPastPersonId = null;
+  selectedArchiveCategory = 'all';
+  selectedArchivePersonId = null;
+  selectedCongressChamber = 'senate';
+  selectedTool = 'compare';
+  selectedOrgChartLevel = 'federal';
+  selectedAboutSection = 'about';
+  contactSelectedType = 'message';
+  selectedElectionDate = null;
+  selectedRaceIndex = null;
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function showDetail(id){ selectedId = id; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function backFromDetail(){
+  selectedId = null;
+  render();
+}
+function memberCardHTML(m, noBar, promisesArr){
+  const {dist,total} = computeDist(m.id, promisesArr);
+  const barHTML = noBar ? '' : `<div class="mini-bar">${Object.entries(dist).filter(([,c])=>c>0)
+    .map(([k,c])=>`<span style="width:${(c/total*100)||0}%;background:${STATUS_META[k].color}"></span>`).join('')}</div>`;
+  return `
+  <div class="mcard" onclick="showDetail('${m.id}')">
+    ${watchStarHTML(m.id)}
+    <div class="mcard-top">
+      ${avatarHTML(m)}
+      <div>
+        <h3>${escAttr(m.name)}</h3>
+        <p class="seat">${escAttr(m.seat)}</p>
+        <span class="party-chip party-${escAttr(m.party)}">${escAttr(m.party)}</span>
+        ${m.appointed ? `<span class="appointed-tag">Appointed</span>` : ''}
+        ${m.nonVoting ? `<span class="appointed-tag">Non-voting</span>` : ''}
+      </div>
+      <div style="margin-left:auto;">${scoreBadgeHTML(m.id, false, promisesArr)}</div>
+    </div>
+    ${barHTML}
+    <div class="mcard-foot">
+      <span class="ct">${total} promise${total===1?'':'s'} tracked</span>
+      <span class="view">View →</span>
+    </div>
+  </div>`;
+}
+function pastPersonCardHTML(p){
+  const {dist,total} = computeDist(p.id, PAST_PROMISES);
+  return `
+  <div class="mcard" onclick="showPastPerson('${p.id}')">
+    <div class="mcard-top">
+      <div class="avatar"><div class="avatar-fallback" style="display:flex;">${escAttr(p.initials)}</div></div>
+      <div>
+        <h3>${escAttr(p.name)}</h3>
+        <p class="seat">${escAttr(p.seat)}</p>
+        <span class="party-chip party-${escAttr(p.party)}">${escAttr(p.party)}</span>
+      </div>
+      <div style="margin-left:auto;">${scoreBadgeHTML(p.id, false, PAST_PROMISES)}</div>
+    </div>
+    <div class="mcard-foot">
+      <span class="ct">${total} promise${total===1?'':'s'} tracked</span>
+      <span class="view">View →</span>
+    </div>
+  </div>`;
+}
+const ARCHIVE_CATEGORY_LABEL = {former:'Former officeholder', candidate:'Ran, did not win', historical:'Historical figure'};
+function archiveCardHTML(p){
+  const {total} = computeDist(p.id, ARCHIVE_PROMISES);
+  return `
+  <div class="mcard" onclick="showArchivePerson('${p.id}')">
+    <div class="mcard-top">
+      <div class="avatar"><div class="avatar-fallback" style="display:flex;">${escAttr(p.initials)}</div></div>
+      <div>
+        <h3>${escAttr(p.name)}</h3>
+        <p class="seat">${escAttr(p.seat)}</p>
+        <span class="party-chip party-${escAttr(p.party)}">${escAttr(p.party)}</span>
+        <span class="appointed-tag">${escAttr(ARCHIVE_CATEGORY_LABEL[p.category]||p.category)}</span>
+      </div>
+      <div style="margin-left:auto;">${scoreBadgeHTML(p.id, false, ARCHIVE_PROMISES)}</div>
+    </div>
+    <div class="mcard-foot">
+      <span class="ct">${total} promise${total===1?'':'s'} tracked</span>
+      <span class="view">View →</span>
+    </div>
+  </div>`;
+}
+function sortMembers(list){
+  const key = document.getElementById('sort').value;
+  const sorted = [...list];
+  const byScoreThenName = (a,b,dir)=>{
+    const sa = computeAOWScore(a.id).score, sb = computeAOWScore(b.id).score;
+    if(sa===null && sb===null) return a.name.localeCompare(b.name);
+    if(sa===null) return 1;
+    if(sb===null) return -1;
+    return dir * (sa - sb);
+  };
+  if(key==='name-desc') sorted.sort((a,b)=>b.name.localeCompare(a.name));
+  else if(key==='state-asc') sorted.sort((a,b)=>(STATE_NAMES[a.state]||a.state).localeCompare(STATE_NAMES[b.state]||b.state) || a.name.localeCompare(b.name));
+  else if(key==='score-desc') sorted.sort((a,b)=>byScoreThenName(a,b,-1));
+  else if(key==='score-asc') sorted.sort((a,b)=>byScoreThenName(a,b,1));
+  else sorted.sort((a,b)=>a.name.localeCompare(b.name)); // name-asc, and fallback for any unrecognized value
+  return sorted;
+}
+function renderGrid(predicate, addFnName){
+  const inScope = MEMBERS.filter(predicate);
+  const filtered = sortMembers(inScope.filter(matchesFilters));
+  document.getElementById('count').textContent = `${filtered.length} of ${inScope.length} shown`;
+  const addTile = (isAdmin && addFnName) ? `<div class="mcard add-tile" onclick="${addFnName}()">+ Add official</div>` : '';
+  if(!filtered.length && !addTile){
+    return `<div class="grid"><div class="empty">No members match those filters.</div></div>`;
+  }
+  return `<div class="grid">${filtered.map(m=>memberCardHTML(m)).join('')}${addTile}</div>`;
+}
+function selectCongressChamber(chamber){ selectedCongressChamber = chamber; render(); }
+function renderCongress(){
+  const chambers = [{id:'senate', label:'Senate'}, {id:'house', label:'House'}];
+  const selectorHTML = `<div class="term-selector">${chambers.map(c=>`<button class="term-btn ${selectedCongressChamber===c.id?'active':''}" onclick="selectCongressChamber('${c.id}')">${escAttr(c.label)}</button>`).join('')}</div>`;
+  const gridHTML = selectedCongressChamber==='house'
+    ? renderGrid(m=>m.chamber==='House', 'addOfficialForHouse')
+    : renderGrid(m=>m.chamber==='Senate', 'addOfficialForSenate');
+  return `${selectorHTML}${gridHTML}`;
+}
+function selectAdminTerm(termId){ selectedAdminTerm = termId; selectedPastPersonId = null; render(); }
+function showPastPerson(personId){ selectedPastPersonId = personId; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function backToPastAdminRoster(){ selectedPastPersonId = null; render(); }
+
+function termSelectorHTML(){
+  const terms = [{id:'current', label:'Current', years:'2025–present'}].concat(
+    PAST_ADMINISTRATIONS.map(a=>({id:a.id, label:a.label, years:a.years})));
+  return `<div class="term-selector">${terms.map(t=>`
+    <button class="term-btn ${selectedAdminTerm===t.id?'active':''}" onclick="selectAdminTerm('${t.id}')">${escAttr(t.label)} · ${escAttr(t.years)}</button>
+  `).join('')}</div>`;
+}
+function renderPastAdminRoster(){
+  const admin = PAST_ADMINISTRATIONS.find(a=>a.id===selectedAdminTerm);
+  if(!admin){ selectedAdminTerm = 'current'; return renderAdministration(); }
+  const topPeople = admin.people.slice(0,2);
+  const cabinet = admin.people.slice(2);
+  const topHTML = topPeople.length ? `<div class="grid">${topPeople.map(pastPersonCardHTML).join('')}</div>` : '';
+  const cabinetHTML = cabinet.length ? `
+    <div class="section-intro" style="margin-top:22px;">
+      <h2>Cabinet &amp; senior officials</h2>
+      <p>Nominated by the President and confirmed by the Senate. Where a position changed hands mid-term, the person shown served longest in a confirmed capacity, not necessarily whoever held the office on the administration's final day.</p>
+    </div>
+    <div class="grid">${cabinet.map(pastPersonCardHTML).join('')}</div>
+  ` : '';
+  return `
+    ${termSelectorHTML()}
+    <div class="section-intro" style="margin-top:18px;"><h2>${escAttr(admin.label)}</h2><p>${escAttr(admin.years)} — using the same six-status system and AOW Score formula as the current roster, so the comparison is apples to apples. Both terms are complete, closed records.</p></div>
+    ${topHTML}
+    ${cabinetHTML}
+  `;
+}
+function togglePromiseCard(header){
+  const card = header.closest('.pcard');
+  if(!card) return;
+  const expanded = card.classList.toggle('expanded');
+  header.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+}
+function promiseEmptyCardHTML(msg){
+  return `<div class="pcard"><p class="pnote" style="margin:0;">${msg}</p></div>`;
+}
+// Supports both the original single-source shape ({source:{...}}) and the newer
+// multi-source shape ({sources:[...]}) used once a promise has been verified
+// against a government source, a mainstream/left source, and a right-leaning
+// source, per this project's sourcing rule. Promises not yet migrated to the
+// newer shape still have just one source, and render exactly as before.
+function promiseSources(p){
+  if(Array.isArray(p.sources) && p.sources.length) return p.sources;
+  if(p.source) return [p.source];
+  return [];
+}
+function promiseCardHTML(p, personName, canEdit){
+  return `
+    <div class="pcard">
+      <div class="pcard-top" role="button" tabindex="0" aria-expanded="false" aria-controls="pcard-body-${p.id}" onclick="togglePromiseCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); togglePromiseCard(this);}">
+        <p class="ptext">${escAttr(p.text)}</p>
+        <span class="pcard-top-right">
+          <span class="pill p-${p.status}">${STATUS_META[p.status].label}</span>
+          <span class="pcard-chevron" aria-hidden="true">&#9662;</span>
+        </span>
+      </div>
+      <div class="pcard-body" id="pcard-body-${p.id}">
+        <div class="cat-tag">${escAttr(p.category)}</div>
+        <p class="pnote">${escAttr(p.note)}</p>
+        <div class="psource">
+          ${promiseSources(p).map(src => `<span class="src-type">${SRC_TYPE_LABEL[src.type]||'Source'}</span> <span>${escAttr(src.publisher)}</span>${src.url ? ` <a href="${escAttr(src.url)}" target="_blank" rel="noopener">View source ↗</a>` : ''}`).join(' <span style="color:var(--text-faint);">·</span> ')}
+          <a href="#" onclick="appealPromise('${escJsAttr(p.text)}','${escJsAttr(personName)}'); return false;" style="margin-left:auto; font-size:11.5px;">Appeal this status</a>
+        </div>
+        ${canEdit ? `<div class="padmin-row">
+          <button class="btn-sm" onclick="editPromise('${p.id}')">Edit</button>
+          <button class="btn-sm danger" onclick="handleDeletePromiseClick(this,'${p.id}')">Delete</button>
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+function roleBlockHTML(role){
+  const ps = role.promisesArr.filter(p=>p.memberId===role.id);
+  const tier = scoreTier(role.score);
+  return `
+    <div class="role-block">
+      <div class="role-block-head">
+        <div>
+          <h3>${escAttr(role.seat)}</h3>
+          <p class="score-note" style="margin:2px 0 0;">${escAttr(role.years)} · ${role.total} promise${role.total===1?'':'s'} tracked</p>
+        </div>
+        <div class="aow-score tier-${tier}"><span class="num">${role.score===null?'—':role.score}</span><span class="lbl">Score</span></div>
+      </div>
+      ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, false)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
+    </div>
+  `;
+}
+function renderMultiRoleDetail(clickedId, backLabel, backOnclick){
+  const roles = resolveAllRoles(clickedId);
+  const primary = roles.find(r=>r.id===clickedId) || roles[0];
+  return `
+    <button class="back-btn" onclick="${backOnclick}">&larr; Back to ${escAttr(backLabel)}</button>
+    <div class="detail-head">
+      ${avatarHTML(primary.source || {initials:primary.initials, name:primary.name}, 64)}
+      <div>
+        <h2>${escAttr(primary.name)}</h2>
+        <p class="seat"><span class="party-dot party-${escAttr(primary.party)}"></span>${partyLabel(primary.party)} · ${roles.length} roles tracked on this site, one profile</p>
+      </div>
+    </div>
+    ${roles.map(roleBlockHTML).join('')}
+  `;
+}
+function renderPastPersonDetail(){
+  const admin = PAST_ADMINISTRATIONS.find(a=>a.id===selectedAdminTerm);
+  const m = admin && admin.people.find(p=>p.id===selectedPastPersonId);
+  if(!m){ selectedPastPersonId = null; return renderPastAdminRoster(); }
+  if(getLinkedRoleIds(m.id).length > 1) return renderMultiRoleDetail(m.id, admin.label, 'backToPastAdminRoster()');
+  const ps = PAST_PROMISES.filter(p=>p.memberId===m.id);
+  return `
+    <button class="back-btn" onclick="backToPastAdminRoster()">&larr; Back to ${escAttr(admin.label)}</button>
+    <div class="detail-head">
+      ${avatarHTML(m, 64)}
+      <div>
+        <h2>${escAttr(m.name)}</h2>
+        <p class="seat">${escAttr(m.seat)} · <span class="party-dot party-${escAttr(m.party)}"></span>${partyLabel(m.party)} · ${escAttr(admin.years)}</p>
+      </div>
+      ${scoreBadgeHTML(m.id, true, PAST_PROMISES)}
+    </div>
+    ${ps.length ? ps.map(p=>promiseCardHTML(p, m.name, false)).join('') : promiseEmptyCardHTML('No promises logged for this person yet.')}
+  `;
+}
+function selectArchiveCategory(cat){ selectedArchiveCategory = cat; selectedArchivePersonId = null; render(); }
+function showArchivePerson(personId){ selectedArchivePersonId = personId; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function backToArchive(){ selectedArchivePersonId = null; render(); }
+function renderArchive(){
+  if(selectedArchivePersonId) return renderArchiveDetail();
+  const cats = [{id:'all', label:'All'}, {id:'former', label:'Former officeholders'}, {id:'candidate', label:'Ran, did not win'}, {id:'historical', label:'Historical figures'}];
+  const selectorHTML = `<div class="term-selector">${cats.map(c=>`<button class="term-btn ${selectedArchiveCategory===c.id?'active':''}" onclick="selectArchiveCategory('${c.id}')">${escAttr(c.label)}</button>`).join('')}</div>`;
+  const list = ARCHIVE.filter(p=>selectedArchiveCategory==='all' || p.category===selectedArchiveCategory);
+  const gridHTML = list.length
+    ? `<div class="grid">${list.map(archiveCardHTML).join('')}</div>`
+    : `<p class="score-note">Nothing in this category yet.</p>`;
+  return `
+    ${selectorHTML}
+    <div class="section-intro" style="margin-top:18px;">
+      <h2>Archive</h2>
+      <p>People who don't currently hold a tracked office — former officeholders, candidates who ran and lost, and other historical figures. Same status system and sourcing standard as the current roster; a promise doesn't stop being checkable just because someone left office or never won it.</p>
+    </div>
+    ${gridHTML}
+  `;
+}
+function renderArchiveDetail(){
+  const p = ARCHIVE.find(x=>x.id===selectedArchivePersonId);
+  if(!p){ selectedArchivePersonId = null; return renderArchive(); }
+  if(getLinkedRoleIds(p.id).length > 1) return renderMultiRoleDetail(p.id, 'Archive', 'backToArchive()');
+  const ps = ARCHIVE_PROMISES.filter(x=>x.memberId===p.id);
+  return `
+    <button class="back-btn" onclick="backToArchive()">&larr; Back to Archive</button>
+    <div class="detail-head">
+      ${avatarHTML(p, 64)}
+      <div>
+        <h2>${escAttr(p.name)}</h2>
+        <p class="seat">${escAttr(p.seat)} · <span class="party-dot party-${escAttr(p.party)}"></span>${partyLabel(p.party)} · ${escAttr(ARCHIVE_CATEGORY_LABEL[p.category]||p.category)}</p>
+      </div>
+      ${scoreBadgeHTML(p.id, true, ARCHIVE_PROMISES)}
+    </div>
+    ${ps.length ? ps.map(x=>promiseCardHTML(x, p.name, false)).join('') : promiseEmptyCardHTML('No promises logged for this person yet.')}
+  `;
+}
+function selectAboutSection(section){ selectedAboutSection = section; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function renderAboutSection(){
+  const sections = [{id:'about', label:'About'}, {id:'contact', label:'Contact'}, {id:'donate', label:'Donate'}];
+  const selectorHTML = `<div class="term-selector">${sections.map(s=>`<button class="term-btn ${selectedAboutSection===s.id?'active':''}" onclick="selectAboutSection('${s.id}')">${escAttr(s.label)}</button>`).join('')}</div>`;
+  let sectionHTML;
+  if(selectedAboutSection==='contact') sectionHTML = renderContact();
+  else if(selectedAboutSection==='donate') sectionHTML = renderDonate();
+  else sectionHTML = renderAbout();
+  return `${selectorHTML}${sectionHTML}`;
+}
+function renderAbout(){
+  return `
+    <div class="about-page">
+      <h2>Our Mission</h2>
+      <p>Every election produces thousands of specific promises, and almost no permanent record of which ones were kept. ActionOverWords Index exists to be that record — tracking what officials at every level of government actually said, sourcing it honestly, and following through long after the campaign ends. The same standard applies whether the promise came from a Democrat or a Republican, because accountability that only works for one side isn't accountability.</p>
+
+      <h2>What this is</h2>
+      <p>ActionOverWords Index tracks specific promises made by elected officials — federal and state — and shows whether each one has been kept, broken, or something in between. Most political coverage tracks what officials say. This tracks what actually happened to what they said.</p>
+
+      <h2>How we try to stay unbiased</h2>
+      <p>Most political trackers eventually reveal a lean — in which promises get picked, which words describe a broken one versus a complicated one, whose excuses get more room. A few specific choices here are aimed directly at that, not just claimed:</p>
+      <p><strong>Party is a fact, not a verdict.</strong> A party badge is colored the same way any election map colors it — that's the only role color plays. Status colors are earned by outcome, not by party: the same six categories, checked against the same standard, whether the promise belongs to a Democrat or a Republican.</p>
+      <p><strong>Party isn't assumed from context.</strong> Serving under a Republican administration doesn't automatically get someone tagged Republican — RFK Jr.'s entry reflects his own stated break from party affiliation, not an assumption based on who appointed him. Where a source itself looked wrong, like a stray mislabel on a House member's party, it got corrected rather than repeated.</p>
+      <p><strong>Sourcing is shown, not summarized into a conclusion.</strong> Every promise links to where it came from and is labeled by source type — a campaign statement and an independently reported outcome aren't presented as equally strong evidence. The reader weighs it, rather than being told what to think.</p>
+      <p><strong>The AOW Score is a fixed, published formula</strong> (below), not an editorial judgment made case by case — anyone can recompute it from a person's promises and get the same number.</p>
+      <p>None of this makes the current dataset a finished, audited record — see the caveats further down. What it's meant to do is make any bias that does creep in visible and checkable, instead of buried behind a "trust the editors" black box.</p>
+
+      <h2>How to read a promise's status</h2>
+      <p>Every promise gets one of six statuses: <strong>Not started</strong> (nothing has happened yet), <strong>In progress</strong> (active movement, not yet resolved), <strong>Stalled</strong> (attempted, but momentum has died), <strong>Compromise</strong> (something was delivered, narrower than promised), <strong>Completed</strong> (kept as stated), or <strong>Broken</strong> (not kept). Every sourced entry links back to where it came from and is labeled by source type — a campaign statement and an independently reported outcome don't carry the same weight, and this site doesn't pretend otherwise.</p>
+
+      <h2>What the tags mean</h2>
+      <p><strong>Appointed</strong> — nominated and confirmed by the Senate, or serving in an acting capacity, rather than elected by voters. Applies to Cabinet secretaries and senior agency heads. <strong>Non-voting</strong> — genuinely elected, but without a vote on final House passage: the District of Columbia, Puerto Rico, and four Pacific and Caribbean territories each send a delegate (Puerto Rico's is called the Resident Commissioner). <strong>Nonpartisan</strong> — elected on a ballot with no party label, by law — Oregon's judiciary and a couple of statewide offices work this way.</p>
+
+      <h2>The Archive</h2>
+      <p>Not everyone worth tracking currently holds office. The Archive covers three kinds of people: <strong>former officeholders</strong> who left a tracked seat (resignation, retirement, defeat, or death), <strong>candidates who ran and lost</strong>, and other <strong>historical figures</strong> whose promises are still worth having on record. A promise doesn't stop being checkable just because someone left office or never won — the same six statuses and the same sourcing standard apply. For someone who never held office, most promises will simply sit at Not Started indefinitely, since there was never any power to act on them; some, particularly promises about a candidate's own conduct rather than governing, can still resolve either way even without a win.</p>
+
+      <h2>The AOW Score</h2>
+      <p>Each person's score is the average of their tracked promises, weighted by status: Completed = 100, Compromise = 60, In Progress = 40, Stalled = 15, Not Started = 0, Broken = 0 — rounded to the nearest whole number. A person with no promises tracked yet shows "—," not a 0 — no data isn't the same as a bad record, and that's most of the roster right now.</p>
+      <p>The badge's color follows the same six-status vocabulary used everywhere else on the site, not a separate scale: 70 and above reads green, the "Completed" color; 40–69 reads amber, "In progress"; below 40 reads red, "Broken." There's no minimum number of promises required to produce a score — it's just an average of whatever's tracked, so a single promise generates one. That's exactly why the "N promises tracked" count sits next to every badge: a score built on one promise and a score built on twenty look identical in color if they land in the same range, and the count is what tells them apart.</p>
+      <p>The formula runs identically everywhere a score appears — current officials, Past Administrations, and the Archive all use the same weights and the same rounding, with no softer standard for someone no longer in office or who never won. Scores can also be sorted high-to-low or low-to-high wherever a roster grid appears. The score is a summary, not a replacement for the underlying breakdown; both are always shown together on a profile.</p>
+      <table class="example-table">
+        <tr><th>Promises tracked</th><th>Calculation</th><th>Score</th></tr>
+        <tr><td>2 Completed, 2 In Progress, 1 Stalled</td><td><code>(100+100+40+40+15) ÷ 5 = 59.0</code></td><td>59</td></tr>
+        <tr><td>1 Completed, 1 In Progress, 2 Not Started</td><td><code>(100+40+0+0) ÷ 4 = 35.0</code></td><td>35</td></tr>
+        <tr><td>5 Completed, 3 In Progress</td><td><code>(500+120) ÷ 8 = 77.5, rounds up</code></td><td>78</td></tr>
+      </table>
+
+      <h2>What's covered so far</h2>
+      <p>736 officials are seeded here. <strong>Federal:</strong> the complete Congress — 100 senators, all 431 currently-filled voting House seats (4 are vacant), and the 6 non-voting House seats — plus the President, Vice President, the 21-member Cabinet and senior White House officials, and 7 sub-Cabinet law-enforcement and agency heads (FBI, DEA, ATF, U.S. Marshals, CBP, ICE, Secret Service), verified against senate.gov, house.gov, whitehouse.gov, and each agency's own leadership page. Two comparable posts — TSA Administrator and IRS Commissioner — are currently vacant or in genuine legal limbo rather than simply unresearched, so both are omitted rather than assigned a name that wouldn't be accurate.</p>
+      <p><strong>State:</strong> every state has its Governor, Lieutenant Governor (or whichever office is actually first in succession — Secretary of State in a few states, Senate President in others), and Attorney General, verified against the National Lieutenant Governors Association and National Association of Attorneys General's own current rosters. Six major states (California, Texas, Florida, New York, Pennsylvania, Illinois) go deeper with their remaining executive offices. Oregon alone has its full state government — the complete 90-member Legislature and all 20 appellate judges, on top of its five executives.</p>
+
+      <h2>A few honest caveats</h2>
+      <p>Most non-legislature, non-judicial entries have 1–3 sourced promises; Oregon's 90 legislators and 20 judges, and every governor added after the first batch, don't have promises logged yet — this phase was about getting names, parties, and offices right and correctly organized before layering in promise research. A couple of secondary fields are lower-confidence than the roster itself: judges' and governors' exact term-start years are approximate pending a closer pass; the names, offices, and parties are what's verified against official sources. Status calls throughout are a single research pass for demonstration, not a verified editorial record — a production version needs a written, consistent standard applied by more than one reviewer. Data lives in persistent storage attached to this page; admin edits are saved and will still be here next time it loads.</p>
+
+      <h2>What isn't covered yet</h2>
+      <p>County and city government, school boards, and special districts aren't in scope yet — that tier is thousands of people with no single clean national source, unlike Congress or the executive branch. Most states' legislatures and judiciaries beyond Oregon aren't built out. Federal judges (lifetime-appointed, not elected) and independent regulatory boards like the Federal Reserve are a different category — appointed and often deliberately apolitical, with less to track in the same way.</p>
+
+      ${isAdmin ? `
+      <h2>Admin</h2>
+      <p>This page's data lives in storage on this device. If something looks stuck on an old snapshot — missing recent additions, showing outdated numbers — this clears it and reloads the current built-in roster and promises. Any saved edits on this device are discarded; it cannot be undone.</p>
+      <button class="btn-secondary" onclick="resetToLatestData()" style="color:var(--broken); border-color:var(--broken);">Reset to latest built-in data</button>
+      ` : ''}
+    </div>
+  `;
+}
+function editDonateUrl(){
+  openModal(`
+    <h3>Donation link</h3>
+    <p style="color:var(--text-faint); font-size:13px; margin:-6px 0 14px;">Paste a link from a real payment processor — a Stripe Payment Link, PayPal.me, Ko-fi, or GiveButter page. This site can't process payments directly; it just links out to wherever donations actually get collected.</p>
+    <label>Donation URL<input id="f-donate-url" value="${escAttr(DONATE_URL)}" placeholder="https://…"></label>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveDonateUrl()">Save</button>
+    </div>
+  `);
+}
+async function saveDonateUrl(){
+  const val = document.getElementById('f-donate-url').value.trim();
+  DONATE_URL = val;
+  await persistDonateUrl();
+  closeModal();
+  showStatus('Donation link saved.');
+  render();
+}
+const SUBMISSION_TYPES = {message:'General message', suggestion:'Suggested correction', appeal:'Appeal a status'};
+let contactSelectedType = 'message';
+function appealPromise(promiseText, officialName){
+  pendingAppealContext = { type:'appeal', context:`Re: "${promiseText}" — ${officialName}` };
+  selectTab('about');
+  selectedAboutSection = 'contact';
+  render();
+}
+function renderContact(){
+  const prefillContext = pendingAppealContext ? pendingAppealContext.context : '';
+  if(pendingAppealContext) contactSelectedType = pendingAppealContext.type;
+  pendingAppealContext = null; // consume once — revisiting the tab later starts blank again
+  const inboxHTML = isAdmin ? renderSubmissionsInbox() : '';
+  const isAppeal = contactSelectedType === 'appeal';
+  const sourceField = isAppeal ? `
+      <label>Source <span class="score-note" style="font-weight:400;">(the news outlet or publication — describe it, don't paste a link)</span>
+        <input id="contact-source" placeholder="e.g. AP News, &quot;Senator votes to advance the bill,&quot; Aug 12 2026">
+      </label>
+  ` : '';
+  return `
+    <div class="section-intro">
+      <h2>Contact</h2>
+      <p>Send a general message, suggest a correction or addition, or appeal a specific status you think we got wrong. Paid members get priority review, but anyone can submit.</p>
+    </div>
+    <div class="page-form" style="max-width:560px;">
+      <label>Type<select id="contact-type" onchange="contactSelectedType=this.value; render();">
+        ${Object.entries(SUBMISSION_TYPES).map(([k,v])=>`<option value="${k}" ${k===contactSelectedType?'selected':''}>${escAttr(v)}</option>`).join('')}
+      </select></label>
+      <label>Your name<input id="contact-name" value="${CURRENT_USER?escAttr(CURRENT_USER.displayName):''}"></label>
+      <label>Your email<input id="contact-email" type="email" value="${CURRENT_USER?escAttr(CURRENT_USER.email):''}"></label>
+      <label>What's this about? <span class="score-note" style="font-weight:400;">(which official or promise, if relevant)</span><input id="contact-context" value="${escAttr(prefillContext)}"></label>
+      ${sourceField}
+      <label>Message<textarea id="contact-body" rows="5"></textarea></label>
+      <div class="modal-actions" style="margin-top:6px;"><button class="btn-primary" onclick="submitContactForm()">Send</button></div>
+    </div>
+    ${inboxHTML}
+  `;
+}
+const LOOKS_LIKE_A_LINK = /https?:\/\/|www\.|\b[a-z0-9-]+\.(com|org|net|gov|edu|io|co|news|info|us)\b/i;
+async function submitContactForm(){
+  const type = document.getElementById('contact-type').value;
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const context = document.getElementById('contact-context').value.trim();
+  const sourceEl = document.getElementById('contact-source');
+  const source = sourceEl ? sourceEl.value.trim() : '';
+  const body = document.getElementById('contact-body').value.trim();
+  if(!name || !email || !body){ showStatus('Name, email, and a message are required.', true); return; }
+  if(type==='appeal'){
+    if(!source){ showStatus('Appeals need a source — name the outlet or article you\'re citing.', true); return; }
+    if(LOOKS_LIKE_A_LINK.test(source) || LOOKS_LIKE_A_LINK.test(body)){
+      showStatus('No links, please — describe the source in words (outlet name, headline, date) instead of pasting a URL.', true);
+      return;
+    }
+  }
+  SUBMISSIONS.push({
+    id: genId('sub_'), type, name, email, context, source, body,
+    submittedAt: new Date().toISOString().slice(0,10),
+    status: 'new',
+    userId: CURRENT_USER ? CURRENT_USER.id : null,
+    userTier: CURRENT_USER ? CURRENT_USER.tier : 'free'
+  });
+  await persistSubmissions();
+  render();
+  showStatus('Sent — thanks.');
+}
+function renderSubmissionsInbox(){
+  const tierRank = t => TIERS.findIndex(x=>x.id===t);
+  const sorted = [...SUBMISSIONS].sort((a,b) => tierRank(b.userTier) - tierRank(a.userTier) || (b.submittedAt).localeCompare(a.submittedAt));
+  const rows = sorted.map(s => `
+    <div class="pcard">
+      <div class="pcard-top">
+        <p class="ptext">${escAttr(SUBMISSION_TYPES[s.type]||s.type)} — ${escAttr(s.name)} <span class="score-note">(${escAttr(s.email)})</span></p>
+        <span class="pill p-${s.status==='resolved'?'completed':(s.status==='reviewed'?'in_progress':'not_started')}">${s.status}</span>
+      </div>
+      ${s.context ? `<div class="cat-tag">${escAttr(s.context)}</div>` : ''}
+      ${s.source ? `<p class="score-note" style="margin:6px 0 0;"><strong>Source cited:</strong> ${escAttr(s.source)}</p>` : ''}
+      <p class="pnote">${escAttr(s.body)}</p>
+      <p class="score-note">${escAttr(s.submittedAt)}${s.userTier && s.userTier!=='free' ? ` · ${escAttr(TIERS.find(t=>t.id===s.userTier)?.label||s.userTier)} member` : ''}</p>
+      <div class="padmin-row">
+        <button class="btn-sm" ${s.status==='reviewed'?'disabled':''} onclick="markSubmission('${s.id}','reviewed')">Mark reviewed</button>
+        <button class="btn-sm" ${s.status==='resolved'?'disabled':''} onclick="markSubmission('${s.id}','resolved')">Mark resolved</button>
+      </div>
+    </div>
+  `).join('');
+  return `
+    <h2 style="margin-top:30px;">Inbox <span class="score-note">(admin only — ${SUBMISSIONS.length} total, sorted by member tier)</span></h2>
+    ${rows || '<div class="pcard"><p class="pnote" style="margin:0;">Nothing submitted yet.</p></div>'}
+  `;
+}
+async function markSubmission(id, status){
+  const s = SUBMISSIONS.find(x=>x.id===id);
+  if(!s) return;
+  s.status = status;
+  await persistSubmissions();
+  render();
+}
+function renderDonate(){
+  const url = (DONATE_URL||'').trim();
+  const editBtn = isAdmin ? `<button class="btn-secondary" style="margin-top:14px;" onclick="editDonateUrl()">${url ? 'Edit' : 'Set'} donation link</button>` : '';
+  const cta = url
+    ? `<a href="${escAttr(url)}" target="_blank" rel="noopener" class="btn-primary" style="display:inline-block; text-decoration:none; margin-top:8px;">Support this project</a>`
+    : `<p class="score-note" style="margin-top:8px;">Donations aren't set up yet — check back soon.</p>`;
+  return `
+    <div class="about-page">
+      <h2>Why this needs support</h2>
+      <p>Building the roster was the easy part. Every status on this site came from real research — finding a promise, sourcing it, checking back on what actually happened. That's not a one-time build, it's ongoing work, the same reason a newsroom like the Nevada Independent or Spotlight PA can keep a tracker current for one governor: they have reporters whose job is to keep watching.</p>
+      <p>Scaling this — more states, more legislatures, keeping statuses current as terms progress — takes sustained research time, not just more code.</p>
+      <h2 style="margin-top:22px;">What support funds</h2>
+      <p>Expanding coverage to more states, offices, and legislatures. Keeping existing entries current as terms and circumstances change — Cabinet turnover alone has been significant this year. A second reviewer on every status call, so no rating rests on just one person's read.</p>
+      <h2 style="margin-top:22px;">Support this project</h2>
+      ${cta}
+      ${editBtn}
+      <h2 style="margin-top:26px;">Membership tiers</h2>
+      <p>Prefer an ongoing plan over a one-time donation? Pick a tier below — you'll need an account so we know which plan to apply.</p>
+      ${renderTierTableHTML()}
+    </div>
+  `;
+}
+function resolveCompareEntity(id){
+  if(!id) return null;
+  if(id.startsWith('admin:')){
+    const key = id.slice(6);
+    let people, promisesArr, label, years, party;
+    if(key==='current'){
+      people = MEMBERS.filter(m=>m.id==='trump-pres'||m.id==='vance-vp'||m.appointed);
+      promisesArr = PROMISES;
+      label = 'Current Administration'; years = '2025–present'; party = null;
+    } else {
+      const admin = PAST_ADMINISTRATIONS.find(a=>a.id===key);
+      if(!admin) return null;
+      people = admin.people; promisesArr = PAST_PROMISES;
+      label = admin.label; years = admin.years; party = admin.party;
+    }
+    const dist = {}; Object.keys(STATUS_META).forEach(k=>dist[k]=0);
+    let total = 0;
+    const scores = [];
+    people.forEach(p=>{
+      const r = computeAOWScore(p.id, promisesArr);
+      if(r.score!==null) scores.push(r.score);
+      promisesArr.filter(pr=>pr.memberId===p.id).forEach(pr=>{ dist[pr.status]++; total++; });
+    });
+    const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : null;
+    return {label, sub:`${years} · ${people.length} people`, party, score:avg, n:total, dist, total, isAggregate:true};
+  }
+  if(id.startsWith('past-')){
+    for(const admin of PAST_ADMINISTRATIONS){
+      const p = admin.people.find(x=>x.id===id);
+      if(p){
+        const {dist,total} = computeDist(p.id, PAST_PROMISES);
+        const {score,n} = computeAOWScore(p.id, PAST_PROMISES);
+        return {label:p.name, sub:`${p.seat} · ${admin.years}`, party:p.party, score, n, dist, total, initials:p.initials, linkId:null};
+      }
+    }
+    return null;
+  }
+  if(id.startsWith('arch-')){
+    const p = ARCHIVE.find(x=>x.id===id);
+    if(!p) return null;
+    const {dist,total} = computeDist(p.id, ARCHIVE_PROMISES);
+    const {score,n} = computeAOWScore(p.id, ARCHIVE_PROMISES);
+    return {label:p.name, sub:`${p.seat} · ${ARCHIVE_CATEGORY_LABEL[p.category]||p.category}`, party:p.party, score, n, dist, total, initials:p.initials, linkId:null};
+  }
+  const m = MEMBERS.find(x=>x.id===id);
+  if(!m) return null;
+  const {dist,total} = computeDist(m.id);
+  const {score,n} = computeAOWScore(m.id);
+  return {label:m.name, sub:m.seat, party:m.party, score, n, dist, total, initials:m.initials, linkId:m.id};
+}
+function compareSearchPool(){
+  const pool = [{id:'admin:current', name:'Current Administration', sub:'2025–present · Whole administration', state:''}];
+  PAST_ADMINISTRATIONS.forEach(a=>pool.push({id:'admin:'+a.id, name:a.label, sub:a.years+' · Whole administration', state:''}));
+  MEMBERS.forEach(m=>pool.push({id:m.id, name:m.name, sub:m.seat, state:m.state}));
+  PAST_ADMINISTRATIONS.forEach(a=>a.people.forEach(p=>pool.push({id:p.id, name:p.name, sub:p.seat+' · '+a.years, state:''})));
+  ARCHIVE.forEach(p=>pool.push({id:p.id, name:p.name, sub:p.seat+' · '+(ARCHIVE_CATEGORY_LABEL[p.category]||p.category), state:''}));
+  return pool;
+}
+function pickCompare(index, id){
+  compareIds[index] = id;
+  const qEl = document.getElementById('compare-q-'+index);
+  if(qEl) qEl.value = '';
+  render();
+}
+function clearCompare(index){
+  // The first two slots are mandatory — clearing just empties them.
+  // Slots beyond that are optional — clearing the LAST one removes it entirely
+  // (always remove from the end, so no slot ever needs to be re-indexed).
+  if(compareIds.length > 2 && index === compareIds.length - 1){
+    compareIds.pop();
+    const qEl = document.getElementById('compare-q-'+index);
+    if(qEl) qEl.value = '';
+    syncComparePickerLayout();
+  } else {
+    compareIds[index] = '';
+  }
+  render();
+}
+function addCompareSlot(){
+  if(compareIds.length >= 4) return;
+  compareIds.push('');
+  syncComparePickerLayout();
+  render();
+}
+function syncComparePickerLayout(){
+  const n = compareIds.length;
+  const bar = document.getElementById('comparePickerBar');
+  if(!bar) return;
+  bar.style.setProperty('--picker-cols', `repeat(${n}, 1fr) auto`);
+  for(let i=2; i<4; i++){
+    const el = document.getElementById('compare-q-'+i);
+    if(el) el.style.display = (i < n) ? '' : 'none';
+  }
+  const addSlot = document.getElementById('compareAddSlot');
+  if(addSlot) addSlot.innerHTML = n < 4 ? `<button class="compare-add-btn" onclick="addCompareSlot()">+ Add another</button>` : '';
+}
+function compareResultsHTML(which){
+  const qEl = document.getElementById('compare-q-'+which);
+  const q = (qEl ? qEl.value : '').trim().toLowerCase();
+  if(!q) return '';
+  const pool = compareSearchPool();
+  const firstNameOf = e => e.name.split(' ')[0].toLowerCase();
+  const byFirstName = e => firstNameOf(e).startsWith(q);
+  const byAnyName = e => e.name.toLowerCase().includes(q);
+  const byState = e => e.state && (e.state.toLowerCase().includes(q) || (STATE_NAMES[e.state]||'').toLowerCase().includes(q));
+  const firstNameMatches = pool.filter(byFirstName).sort((a,b)=>a.name.localeCompare(b.name));
+  const otherNameMatches = pool.filter(e=>!byFirstName(e) && byAnyName(e)).sort((a,b)=>a.name.localeCompare(b.name));
+  const stateOnlyMatches = pool.filter(e=>!byAnyName(e) && byState(e)).sort((a,b)=>a.name.localeCompare(b.name));
+  const matches = [...firstNameMatches, ...otherNameMatches, ...stateOnlyMatches].slice(0,8);
+  if(!matches.length) return `<div class="compare-results"><div class="compare-result-empty">No matches for "${escAttr(qEl.value)}"</div></div>`;
+  return `<div class="compare-results">${matches.map(e=>`
+    <div class="compare-result-row" onclick="pickCompare(${which},'${e.id}')">
+      <span class="cr-name">${escAttr(e.name)}</span>
+      <span class="cr-sub">${escAttr(e.sub)}</span>
+    </div>
+  `).join('')}</div>`;
+}
+function compareSideHTML(which, entity){
+  const qEl = document.getElementById('compare-q-'+which);
+  const hasQuery = qEl && qEl.value.trim();
+  const removeLink = which >= 2 ? `<button class="compare-remove-empty" onclick="clearCompare(${which})">Remove this slot</button>` : '';
+  if(!entity && !hasQuery) return `<div class="compare-side empty-side">Search above to choose someone or something${removeLink}</div>`;
+  if(!entity) return '';
+  const tier = scoreTier(entity.score);
+  const barHTML = entity.total ? `<div class="mini-bar" style="margin:10px 0;">${Object.entries(entity.dist).filter(([,c])=>c>0)
+    .map(([k,c])=>`<span style="width:${(c/entity.total*100)}%;background:${STATUS_META[k].color}"></span>`).join('')}</div>` : '';
+  return `
+    <div class="compare-side">
+      <button class="compare-clear" onclick="clearCompare(${which})" title="Change selection">×</button>
+      ${entity.initials ? `<div class="avatar" style="margin:0 auto 10px;"><div class="avatar-fallback" style="display:flex;">${escAttr(entity.initials)}</div></div>` : ''}
+      <h3>${escAttr(entity.label)}${entity.linkId ? ` <a href="#" onclick="showDetail('${entity.linkId}'); return false;" style="font-size:11px; font-weight:600;">View →</a>` : ''}</h3>
+      <p class="seat" style="margin:2px 0 8px;">${escAttr(entity.sub)}${entity.party ? ` · <span class="party-dot party-${escAttr(entity.party)}"></span>${partyLabel(entity.party)}` : ''}</p>
+      <div class="aow-score aow-score-lg tier-${tier}" style="margin:0 auto;"><span class="num">${entity.score===null?'—':entity.score}</span><span class="lbl">${entity.isAggregate?'Avg Score':'Score'}</span></div>
+      ${barHTML}
+      <p class="score-note">${entity.total} promise${entity.total===1?'':'s'} tracked</p>
+    </div>
+  `;
+}
+function selectTool(toolId){ selectedTool = toolId; render(); }
+function renderTools(){
+  const TOOLS = [{id:'compare', label:'Compare'}, {id:'orgchart', label:'Org Chart'}, {id:'watchlist', label:'Watch List'}, {id:'elections', label:'Election Calendar'}];
+  const selectorHTML = `<div class="term-selector">${TOOLS.map(t=>`<button class="term-btn ${selectedTool===t.id?'active':''}" onclick="selectTool('${t.id}')">${escAttr(t.label)}</button>`).join('')}</div>`;
+  let toolHTML;
+  if(selectedTool==='orgchart') toolHTML = renderOrgChart();
+  else if(selectedTool==='watchlist') toolHTML = renderWatchList();
+  else if(selectedTool==='elections') toolHTML = renderElectionCalendar();
+  else toolHTML = renderCompare(); // selectedTool==='compare'
+  return `${selectorHTML}${toolHTML}`;
+}
+function renderWatchList(){
+  if(!CURRENT_USER){
+    return `
+      <div class="section-intro"><h2>Watch List</h2><p>Follow officials to build a personal list you can check in on anytime.</p></div>
+      <div class="pcard"><p class="pnote" style="margin:0 0 12px;">Sign up for a free account, then upgrade to ${tierLabel('supporter')} or above to start following officials.</p>
+      <button class="btn-primary" onclick="showAuthModal('signup')">Sign Up</button></div>
+    `;
+  }
+  if(!userHasTier('supporter')){
+    return `
+      <div class="section-intro"><h2>Watch List</h2><p>Follow officials to build a personal list you can check in on anytime.</p></div>
+      <div class="pcard"><p class="pnote" style="margin:0 0 12px;">Following officials is a ${tierLabel('supporter')}-tier feature and above.</p>
+      <button class="btn-primary" onclick="selectTab('about'); selectedAboutSection='donate'; render();">See plans</button></div>
+    `;
+  }
+  const ids = CURRENT_USER.watchlist || [];
+  const officials = ids.map(id => MEMBERS.find(m=>m.id===id)).filter(Boolean);
+  const capNote = !userHasTier('sustainer') ? `<p class="score-note">${tierLabel('supporter')} plans can follow up to ${WATCHLIST_SUPPORTER_CAP} officials (${ids.length}/${WATCHLIST_SUPPORTER_CAP} used) — upgrade to ${tierLabel('sustainer')} for unlimited.</p>` : '';
+  return `
+    <div class="section-intro"><h2>Watch List</h2><p>Officials you're following — click the ★ on any card to add or remove them.</p></div>
+    ${capNote}
+    ${officials.length ? `<div class="grid">${officials.map(m=>memberCardHTML(m)).join('')}</div>` : `<div class="pcard"><p class="pnote" style="margin:0;">Nothing followed yet — the ☆ on any official's card adds them here.</p></div>`}
+  `;
+}
+function selectOrgChartLevel(level){ selectedOrgChartLevel = level; render(); }
+
+/* ---------- Election Calendar ---------- */
+// Computes the next federal General Election Day (first Tuesday after the first
+// Monday in November of an even year) on or after a given date — not hardcoded to
+// any specific year, so this stays correct whenever it's actually viewed.
+function nextGeneralElectionDate(fromDate){
+  let year = fromDate.getFullYear();
+  if(year % 2 !== 0) year++; // election years are always even
+  let day = computeElectionDay(year);
+  while(day < fromDate){ year += 2; day = computeElectionDay(year); }
+  return day;
+}
+function computeElectionDay(year){
+  const d = new Date(year, 10, 1); // Nov 1
+  while(d.getDay() !== 1) d.setDate(d.getDate()+1); // advance to first Monday
+  d.setDate(d.getDate()+1); // next day = first Tuesday after
+  return d;
+}
+function nthWeekdayOfMonth(year, month, weekday, n){
+  const d = new Date(year, month, 1);
+  let count = 0;
+  while(true){
+    if(d.getDay()===weekday){ count++; if(count===n) return new Date(d); }
+    d.setDate(d.getDate()+1);
+  }
+}
+function lastWeekdayOfMonth(year, month, weekday){
+  const d = new Date(year, month+1, 0); // last calendar day of the month
+  while(d.getDay()!==weekday) d.setDate(d.getDate()-1);
+  return d;
+}
+// Federal weekend-observance rule (5 U.S.C. § 6103): a fixed-date holiday landing on
+// Saturday is observed the preceding Friday; on Sunday, the following Monday. Only
+// applies to fixed-date holidays — the "Nth weekday" ones can never land on a weekend.
+function observedDate(d){
+  if(d.getDay()===6){ const o=new Date(d); o.setDate(o.getDate()-1); return o; }
+  if(d.getDay()===0){ const o=new Date(d); o.setDate(o.getDate()+1); return o; }
+  return d;
+}
+function federalHolidaysForYear(year){
+  return [
+    {name:"New Year's Day", date: observedDate(new Date(year,0,1))},
+    {name:'Martin Luther King Jr. Day', date: nthWeekdayOfMonth(year,0,1,3)},
+    {name:"Washington's Birthday", date: nthWeekdayOfMonth(year,1,1,3)},
+    {name:'Memorial Day', date: lastWeekdayOfMonth(year,4,1)},
+    {name:'Juneteenth', date: observedDate(new Date(year,5,19))},
+    {name:'Independence Day', date: observedDate(new Date(year,6,4))},
+    {name:'Labor Day', date: nthWeekdayOfMonth(year,8,1,1)},
+    {name:'Columbus Day', date: nthWeekdayOfMonth(year,9,1,2)},
+    {name:'Veterans Day', date: observedDate(new Date(year,10,11))},
+    {name:'Thanksgiving Day', date: nthWeekdayOfMonth(year,10,4,4)},
+    {name:'Christmas Day', date: observedDate(new Date(year,11,25))}
+  ];
+}
+function fmtDateISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtDateLong(d){ return d.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'}); }
+// A senator elected in `termStart` is next up the first November on/after `today`
+// that is termStart+5, +11, +17... (6-year terms, election the November before the new term begins).
+function senateIsUpOn(termStartYear, electionYear){
+  if(!termStartYear) return false;
+  let y = parseInt(termStartYear,10) + 5;
+  while(y < electionYear) y += 6;
+  return y === electionYear;
+}
+function getElectionDates(){
+  const today = new Date();
+  const oneYearOut = new Date(today.getFullYear()+1, today.getMonth(), today.getDate());
+  const next = nextGeneralElectionDate(today);
+  if(next > oneYearOut) return [];
+  return [{date: next, label:'General Election'}];
+}
+function getRacesForDate(dateISO){
+  const d = new Date(dateISO+'T00:00:00');
+  const year = d.getFullYear();
+  const house = MEMBERS.filter(m=>m.chamber==='House');
+  const senate = MEMBERS.filter(m=>m.chamber==='Senate' && senateIsUpOn(m.termStart, year));
+  const races = [...senate.map(m=>({...m, raceGroup:'Senate'})), ...house.map(m=>({...m, raceGroup:'House'}))];
+  races.sort((a,b)=> (a.raceGroup!==b.raceGroup ? (a.raceGroup==='Senate'?-1:1) : ((STATE_NAMES[a.state]||a.state).localeCompare(STATE_NAMES[b.state]||b.state) || (a.district||0)-(b.district||0))));
+  return races;
+}
+function calendarNavMonth(delta){
+  const today = new Date();
+  if(!calendarMonth) calendarMonth = {year: today.getFullYear(), month: today.getMonth()};
+  let {year, month} = calendarMonth;
+  month += delta;
+  if(month < 0){ month = 11; year--; } else if(month > 11){ month = 0; year++; }
+  const target = new Date(year, month, 1);
+  const minMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const maxMonth = new Date(today.getFullYear()+1, today.getMonth(), 1);
+  if(target < minMonth || target > maxMonth) return;
+  calendarMonth = {year, month};
+  render();
+}
+function selectElectionDate(dateISO){ selectedElectionDate = dateISO; selectedRaceIndex = null; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function selectRace(idx){ selectedRaceIndex = idx; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function backToCalendar(){ selectedElectionDate = null; selectedRaceIndex = null; render(); }
+function backToRaceList(){ selectedRaceIndex = null; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function renderElectionCalendar(){
+  if(selectedElectionDate && selectedRaceIndex !== null) return renderRaceDetail();
+  if(selectedElectionDate) return renderRaceList();
+  return renderCalendarGrid();
+}
+function renderCalendarGrid(){
+  const today = new Date();
+  if(!calendarMonth) calendarMonth = {year: today.getFullYear(), month: today.getMonth()};
+  const {year, month} = calendarMonth;
+  const electionDates = getElectionDates();
+  const electionISOs = new Set(electionDates.map(e=>fmtDateISO(e.date)));
+  const holidayMap = {};
+  federalHolidaysForYear(year).forEach(h => { holidayMap[fmtDateISO(h.date)] = h.name; });
+  const first = new Date(year, month, 1);
+  const startDow = first.getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthLabel = first.toLocaleDateString('en-US', {month:'long', year:'numeric'});
+  const minMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const maxMonth = new Date(today.getFullYear()+1, today.getMonth(), 1);
+  const atMin = new Date(year,month,1) <= minMonth;
+  const atMax = new Date(year,month,1) >= maxMonth;
+  let cells = '';
+  let monthHolidays = [];
+  for(let i=0;i<startDow;i++) cells += `<div class="cal-day cal-empty"></div>`;
+  for(let day=1; day<=daysInMonth; day++){
+    const iso = fmtDateISO(new Date(year,month,day));
+    const isElection = electionISOs.has(iso);
+    const holidayName = holidayMap[iso];
+    if(isElection){
+      cells += `<div class="cal-day cal-election" onclick="selectElectionDate('${iso}')" title="General Election — click to see who's up">${day}</div>`;
+    } else if(holidayName){
+      cells += `<div class="cal-day cal-holiday" title="${escAttr(holidayName)}">${day}<span class="cal-holiday-dot"></span></div>`;
+      monthHolidays.push({day, name: holidayName});
+    } else {
+      cells += `<div class="cal-day">${day}</div>`;
+    }
+  }
+  const holidayListHTML = monthHolidays.length ? `
+    <div class="cal-holiday-list">
+      ${monthHolidays.map(h=>`<div><span class="cal-holiday-dot" style="position:static;"></span>${escAttr(h.name)} <span class="score-note">— ${escAttr(monthLabel.split(' ')[0])} ${h.day}</span></div>`).join('')}
+    </div>
+  ` : '';
+  const noneInWindow = electionDates.length===0 && month===maxMonth.getMonth() && year===maxMonth.getFullYear();
+  return `
+    <div class="section-intro">
+      <h2>Election Calendar</h2>
+      <p>Scoped to the next 12 months, and to dates this site can compute with real confidence — federal General Election Day (all House seats, plus whichever Senate seats are up that cycle) and federal holidays, including the official weekend-observance shift when a fixed date falls on a Saturday or Sunday. Primaries, special elections, and state/local calendars vary too much to include without dedicated research, so they're not guessed at here.</p>
+    </div>
+    <div class="pcard" style="max-width:480px;">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="calendarNavMonth(-1)" ${atMin?'disabled':''} aria-label="Previous month">‹</button>
+        <h3>${escAttr(monthLabel)}</h3>
+        <button class="cal-nav-btn" onclick="calendarNavMonth(1)" ${atMax?'disabled':''} aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid">
+        ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+        ${cells}
+      </div>
+      ${holidayListHTML}
+      <div class="cal-legend"><span class="cal-legend-dot"></span>General Election Day — click to see the races</div>
+      <div class="cal-legend"><span class="cal-holiday-dot" style="position:static;"></span>Federal holiday</div>
+      ${noneInWindow ? `<p class="score-note" style="margin-top:12px;">No further computable federal election dates in this 12-month window.</p>` : ''}
+    </div>
+  `;
+}
+function renderRaceList(){
+  const races = getRacesForDate(selectedElectionDate);
+  const d = new Date(selectedElectionDate+'T00:00:00');
+  const senateCount = races.filter(r=>r.raceGroup==='Senate').length;
+  const houseCount = races.filter(r=>r.raceGroup==='House').length;
+  let lastGroup = null;
+  const rows = races.map((m,i) => {
+    const groupHeader = m.raceGroup !== lastGroup ? `<h2 style="margin:18px 0 0;">${m.raceGroup} races (${m.raceGroup==='Senate'?senateCount:houseCount})</h2>` : '';
+    lastGroup = m.raceGroup;
+    return `${groupHeader}
+    <div class="race-row" onclick="selectRace(${i})">
+      <div><span class="rr-name">${escAttr(m.name)}</span> <span class="score-note">${escAttr(m.seat)}</span></div>
+      <span class="party-chip party-${escAttr(m.party)}">${escAttr(m.party)}</span>
+    </div>`;
+  }).join('');
+  return `
+    <button class="back-btn" onclick="backToCalendar()">&larr; Back to calendar</button>
+    <div class="section-intro">
+      <h2>${escAttr(fmtDateLong(d))}</h2>
+      <p>${races.length} races on this date — ${senateCount} Senate, ${houseCount} House. Pick one to see who currently holds it.</p>
+    </div>
+    <div class="pcard" style="padding:6px 16px;">${rows}</div>
+  `;
+}
+function renderRaceDetail(){
+  const races = getRacesForDate(selectedElectionDate);
+  const m = races[selectedRaceIndex];
+  if(!m){ selectedRaceIndex = null; return renderRaceList(); }
+  return `
+    <button class="back-btn" onclick="backToRaceList()">&larr; Back to ${escAttr(fmtDateLong(new Date(selectedElectionDate+'T00:00:00')))}</button>
+    <div class="race-nav">
+      <button class="btn-sm" ${selectedRaceIndex===0?'disabled':''} onclick="selectRace(${selectedRaceIndex-1})">‹ Previous race</button>
+      <span class="rn-position">Race ${selectedRaceIndex+1} of ${races.length}</span>
+      <button class="btn-sm" ${selectedRaceIndex===races.length-1?'disabled':''} onclick="selectRace(${selectedRaceIndex+1})">Next race ›</button>
+    </div>
+    <div class="detail-head">
+      ${avatarHTML(m)}
+      <div>
+        <h2>${escAttr(m.name)}</h2>
+        <p class="seat">${escAttr(m.seat)} · <span class="party-dot party-${escAttr(m.party)}"></span>${partyLabel(m.party)}</p>
+      </div>
+      ${scoreBadgeHTML(m.id, true)}
+    </div>
+    <div class="pcard">
+      <p class="pnote" style="margin:0;"><strong>Current officeholder</strong> — this is who holds the seat today. This dataset doesn't yet track declared challengers for this race, so there's no candidate comparison here, only the incumbent's own record.</p>
+    </div>
+    <div class="modal-actions" style="justify-content:flex-start; margin-top:10px;">
+      <button class="btn-secondary" onclick="showDetail('${m.id}')">View full profile →</button>
+    </div>
+  `;
+}
+function renderOrgChart(){
+  const levels = [{id:"federal", label:"Federal"}, {id:"state", label:"State"}];
+  const selectorHTML = `<div class="term-selector">${levels.map(l=>`<button class="term-btn ${selectedOrgChartLevel===l.id?"active":""}" onclick="selectOrgChartLevel('${l.id}')">${escAttr(l.label)}</button>`).join("")}</div>`;
+  const introText = selectedOrgChartLevel==="state"
+    ? "How a typical state government is structured. Some states vary this pattern — Nebraska's legislature is unicameral (one chamber), for instance. Solid teal boxes are currently tracked in AOW Index; dashed gray boxes exist in the real system but aren't tracked here yet."
+    : "How the federal government is structured. Solid teal boxes are currently tracked in AOW Index; dashed gray boxes exist in the real system but aren't tracked here yet.";
+  const chartSvg = selectedOrgChartLevel==="state" ? `
+<svg viewBox="0 0 692 280" xmlns="http://www.w3.org/2000/svg" class="orgchart-svg" role="img" aria-label="State Government organization chart">
+<path class="oc-link" d="M366.0 68 V86.0 H145.0 V104"/>
+<path class="oc-link" d="M366.0 68 V86.0 H376.0 V104"/>
+<path class="oc-link" d="M366.0 68 V86.0 H577.0 V104"/>
+<path class="oc-link" d="M145.0 146 V164.0 H145.0 V182"/>
+<path class="oc-link" d="M376.0 146 V164.0 H376.0 V182"/>
+<path class="oc-link" d="M577.0 146 V164.0 H577.0 V182"/>
+<g class="oc-root">
+<rect x="206.0" y="22" width="320" height="46" rx="8"/>
+<text x="366.0" y="42.0" class="oc-title" text-anchor="middle">State Government</text>
+<text x="366.0" y="58.0" class="oc-detail" text-anchor="middle">(× 50 — general pattern; some states vary)</text>
+</g>
+<g class="oc-l2">
+<rect x="80.0" y="104" width="130" height="42" rx="8"/>
+<text x="145.0" y="130.0" class="oc-title" text-anchor="middle">Executive</text>
+</g>
+<g class="oc-l2">
+<rect x="311.0" y="104" width="130" height="42" rx="8"/>
+<text x="376.0" y="130.0" class="oc-title" text-anchor="middle">Legislative</text>
+</g>
+<g class="oc-l2">
+<rect x="512.0" y="104" width="130" height="42" rx="8"/>
+<text x="577.0" y="130.0" class="oc-title" text-anchor="middle">Judicial</text>
+</g>
+<g class="oc-l3-tracked">
+<rect x="30.0" y="182" width="230" height="74" rx="8"/>
+<text x="145.0" y="208.0" class="oc-title" text-anchor="middle">Governor</text>
+<text x="145.0" y="224.0" class="oc-detail" text-anchor="middle">↓ Lt. Gov., Attorney Gen.,</text>
+<text x="145.0" y="240.0" class="oc-detail" text-anchor="middle">other statewide execs</text>
+</g>
+<g class="oc-l3-untracked">
+<rect x="286.0" y="182" width="180" height="74" rx="8"/>
+<text x="376.0" y="216.0" class="oc-title" text-anchor="middle">State Senate &amp;</text>
+<text x="376.0" y="232.0" class="oc-detail" text-anchor="middle">State House/Assembly</text>
+</g>
+<g class="oc-l3-untracked">
+<rect x="492.0" y="182" width="170" height="74" rx="8"/>
+<text x="577.0" y="216.0" class="oc-title" text-anchor="middle">State supreme &amp;</text>
+<text x="577.0" y="232.0" class="oc-detail" text-anchor="middle">lower courts</text>
+</g>
+</svg>
+` : `
+<svg viewBox="0 0 738 280" xmlns="http://www.w3.org/2000/svg" class="orgchart-svg" role="img" aria-label="Federal Government organization chart">
+<path class="oc-link" d="M375.7 68 V86.0 H125.0 V104"/>
+<path class="oc-link" d="M375.7 68 V86.0 H379.0 V104"/>
+<path class="oc-link" d="M375.7 68 V86.0 H623.0 V104"/>
+<path class="oc-link" d="M125.0 146 V164.0 H125.0 V182"/>
+<path class="oc-link" d="M379.0 146 V164.0 H306.0 V182"/>
+<path class="oc-link" d="M379.0 146 V164.0 H452.0 V182"/>
+<path class="oc-link" d="M623.0 146 V164.0 H623.0 V182"/>
+<g class="oc-root">
+<rect x="265.7" y="22" width="220" height="46" rx="8"/>
+<text x="375.7" y="50.0" class="oc-title" text-anchor="middle">Federal Government</text>
+</g>
+<g class="oc-l2">
+<rect x="60.0" y="104" width="130" height="42" rx="8"/>
+<text x="125.0" y="130.0" class="oc-title" text-anchor="middle">Executive</text>
+</g>
+<g class="oc-l2">
+<rect x="314.0" y="104" width="130" height="42" rx="8"/>
+<text x="379.0" y="130.0" class="oc-title" text-anchor="middle">Legislative</text>
+</g>
+<g class="oc-l2">
+<rect x="558.0" y="104" width="130" height="42" rx="8"/>
+<text x="623.0" y="130.0" class="oc-title" text-anchor="middle">Judicial</text>
+</g>
+<g class="oc-l3-tracked">
+<rect x="30.0" y="182" width="190" height="74" rx="8"/>
+<text x="125.0" y="208.0" class="oc-title" text-anchor="middle">President</text>
+<text x="125.0" y="224.0" class="oc-detail" text-anchor="middle">↓ Vice President</text>
+<text x="125.0" y="240.0" class="oc-detail" text-anchor="middle">↓ Cabinet</text>
+</g>
+<g class="oc-l3-tracked">
+<rect x="246.0" y="182" width="120" height="74" rx="8"/>
+<text x="306.0" y="216.0" class="oc-title" text-anchor="middle">Senate</text>
+<text x="306.0" y="232.0" class="oc-detail" text-anchor="middle">100 seats</text>
+</g>
+<g class="oc-l3-tracked">
+<rect x="392.0" y="182" width="120" height="74" rx="8"/>
+<text x="452.0" y="216.0" class="oc-title" text-anchor="middle">House</text>
+<text x="452.0" y="232.0" class="oc-detail" text-anchor="middle">435 seats*</text>
+</g>
+<g class="oc-l3-untracked">
+<rect x="538.0" y="182" width="170" height="74" rx="8"/>
+<text x="623.0" y="216.0" class="oc-title" text-anchor="middle">Supreme Court &amp;</text>
+<text x="623.0" y="232.0" class="oc-detail" text-anchor="middle">federal courts</text>
+</g>
+</svg>
+`;
+  return `
+    <div class="section-intro">
+      <h2>Organization Chart</h2>
+      <p>${introText}</p>
+    </div>
+    ${selectorHTML}
+    <div class="orgchart-wrap">${chartSvg}</div>
+    <div class="oc-legend">
+      <div class="oc-legend-item"><span class="oc-swatch" style="background:var(--bg);border:1.5px solid var(--brand);"></span>Currently tracked in AOW Index</div>
+      <div class="oc-legend-item"><span class="oc-swatch" style="background:var(--bg-alt);border:1.2px dashed var(--border);"></span>Not yet tracked</div>
+      <div class="oc-legend-item">* 435 voting members, plus 6 non-voting delegates from DC and the territories</div>
+    </div>
+  `;
+}
+function renderCompare(){
+  if(!userHasTier('sustainer')){
+    const cta = !CURRENT_USER
+      ? `<button class="btn-primary" onclick="showAuthModal('signup')">Sign Up</button>`
+      : `<button class="btn-primary" onclick="selectTab('about'); selectedAboutSection='donate'; render();">See plans</button>`;
+    return `
+      <div class="section-intro"><h2>Compare</h2><p>Two to four officials, or whole administrations, side by side — same AOW Score formula, same six statuses, across all of them.</p></div>
+      <div class="pcard"><p class="pnote" style="margin:0 0 12px;">Comparison tools are a ${tierLabel('sustainer')}-tier feature and above.</p>${cta}</div>
+    `;
+  }
+  syncComparePickerLayout();
+  const entities = compareIds.map(id => resolveCompareEntity(id));
+  const n = compareIds.length;
+  const isPair = n === 2;
+  const bothScored = isPair && entities[0] && entities[1] && entities[0].score!==null && entities[1].score!==null;
+  const delta = bothScored ? entities[0].score - entities[1].score : null;
+  const columns = isPair ? '1fr auto 1fr' : `repeat(${n}, 1fr)`;
+  const sides = compareIds.map((id,i) => `<div>${compareResultsHTML(i)}${compareSideHTML(i, entities[i])}</div>`);
+  if(isPair) sides.splice(1, 0, `<div class="compare-delta">${delta===null ? 'vs' : (delta===0?'Tied':(delta>0?'+':'')+delta)}</div>`);
+  return `
+    <div class="section-intro">
+      <h2>Compare</h2>
+      <p>Two to four officials, or whole administrations, side by side — same AOW Score formula, same six statuses, across all of them. Search by name above.</p>
+    </div>
+    <div class="compare-grid" style="--compare-cols:${columns};">
+      ${sides.join('')}
+    </div>
+  `;
+}
+function renderSearch(){
+  const q = (document.getElementById('search-q').value || '').trim().toLowerCase();
+  if(!q){
+    return `<div class="empty">Type a name or state above to search all ${MEMBERS.length} officials, federal and state.</div>`;
+  }
+  const results = MEMBERS.filter(m=>m.name.toLowerCase().includes(q) || m.state.toLowerCase().includes(q) || (STATE_NAMES[m.state]||'').toLowerCase().includes(q))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  if(!results.length){
+    return `<div class="empty">No officials match "${escAttr(document.getElementById('search-q').value)}".</div>`;
+  }
+  return `
+    <div class="section-intro"><p>${results.length} match${results.length===1?'':'es'}</p></div>
+    <div class="grid">${results.map(m=>memberCardHTML(m)).join('')}</div>
+  `;
+}
+function renderFeatured(){
+  const ids = ['trump-pres','vance-vp','slotkin-mi','golden-me','kotek-or','rokita-in'];
+  const cards = ids.map(id=>MEMBERS.find(m=>m.id===id)).filter(Boolean).map(m=>memberCardHTML(m)).join('');
+  return `
+    <div class="section-intro">
+      <h2>Featured officials</h2>
+      <p>One from each office tracked so far — President, Vice President, senator, representative, governor, and attorney general. Use the tabs above to browse a full chamber, or the States tab for governors and AGs together.</p>
+    </div>
+    <div class="grid">${cards}</div>
+  `;
+}
+function renderAdministration(){
+  if(selectedPastPersonId) return renderPastPersonDetail();
+  if(selectedAdminTerm !== 'current') return renderPastAdminRoster();
+
+  const inScope = MEMBERS.filter(m=>m.id==='trump-pres' || m.id==='vance-vp' || m.appointed);
+  const addBtn = isAdmin ? `<button class="btn-primary add-inline" onclick="addOfficialForAdministration()">+ Add official</button>` : '';
+
+  if(!inScope.length){
+    return `${termSelectorHTML()}<div class="grid"><div class="empty">No officials yet.</div></div>${addBtn}`;
+  }
+
+  const topPeople = inScope.filter(m=>m.id==='trump-pres' || m.id==='vance-vp');
+  const cabinet = inScope.filter(m=>m.appointed).sort((a,b)=>a.name.localeCompare(b.name));
+
+  const topHTML = topPeople.length ? `<div class="grid">${topPeople.map(m=>memberCardHTML(m, true)).join('')}</div>` : '';
+  const cabinetHTML = cabinet.length ? `
+    <div class="section-intro" style="margin-top:22px;">
+      <h2>Cabinet &amp; senior officials</h2>
+      <p>Nominated by the President and confirmed by the Senate — or serving in an acting capacity pending confirmation. Appointed, not elected; tagged that way on every card below.</p>
+    </div>
+    <div class="grid">${cabinet.map(m=>memberCardHTML(m, true)).join('')}</div>
+  ` : '';
+
+  return `
+    ${termSelectorHTML()}
+    <div class="section-intro" style="margin-top:18px;"><h2>Current Administration</h2></div>
+    ${topHTML}
+    ${cabinetHTML}
+    ${addBtn}
+  `;
+}
+function stateTileHTML(code, officials){
+  const totalPromises = officials.reduce((sum,m)=>sum + PROMISES.filter(p=>p.memberId===m.id).length, 0);
+  return `
+    <div class="mcard state-tile" onclick="selectState('${code}')">
+      <div class="state-tile-name">${escAttr(STATE_NAMES[code] || code)}</div>
+      <p class="seat">${officials.length} official${officials.length===1?'':'s'} tracked</p>
+      <div class="mcard-foot">
+        <span class="ct">${totalPromises} promise${totalPromises===1?'':'s'}</span>
+        <span class="view">Open →</span>
+      </div>
+    </div>`;
+}
+function selectState(code){ selectedState = code; selectedId = null; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function backToStatesList(){ selectedState = null; render(); }
+
+function renderStatesPicker(){
+  const stateOfficials = MEMBERS.filter(m=>m.level==='state');
+  const filtered = stateOfficials.filter(matchesFilters);
+  const byState = {};
+  filtered.forEach(m=>{ (byState[m.state] = byState[m.state] || []).push(m); });
+
+  const totalStates = new Set(stateOfficials.map(m=>m.state)).size;
+  const shownStates = Object.keys(byState).length;
+  document.getElementById('count').textContent = `${shownStates} of ${totalStates} states shown`;
+
+  const tiles = Object.keys(byState).sort((a,b)=>(STATE_NAMES[a]||a).localeCompare(STATE_NAMES[b]||b))
+    .map(code=>stateTileHTML(code, byState[code])).join('');
+  const addTile = isAdmin ? `<div class="mcard add-tile" onclick="addOfficialForStates()">+ Add state official</div>` : '';
+
+  if(!shownStates && !addTile){
+    return `<div class="grid"><div class="empty">No states match those filters.</div></div>`;
+  }
+  return `
+    <div class="section-intro">
+      <h2>States</h2>
+      <p>Click a state to see its tracked officials.</p>
+    </div>
+    <div class="grid">${tiles}${addTile}</div>
+  `;
+}
+function ocPersonHTML(m){
+  return `
+    <div class="oc-person" onclick="showDetail('${m.id}')">
+      ${avatarHTML(m)}
+      <div style="flex:1;">
+        <p class="oc-name">${escAttr(m.name)}</p>
+        <p class="oc-title"><span class="party-dot party-${escAttr(m.party)}"></span>${escAttr(m.chamber)} · ${partyLabel(m.party)}</p>
+      </div>
+      ${scoreBadgeHTML(m.id)}
+    </div>`;
+}
+function chipHTML(m, tag){
+  return `
+    <div class="leg-chip" onclick="showDetail('${m.id}')" title="${partyLabel(m.party)}">
+      <span class="leg-party party-${escAttr(m.party)}">${escAttr(m.party)}</span>
+      <span class="leg-name">${escAttr(m.name)}</span>
+      ${tag ? `<span class="leg-district">${escAttr(tag)}</span>` : ''}
+    </div>`;
+}
+function renderLegislatureSection(members){
+  const senate = members.filter(m=>m.chamber==='State Senate').sort((a,b)=>(a.district||0)-(b.district||0));
+  const house = members.filter(m=>m.chamber==='State House').sort((a,b)=>(a.district||0)-(b.district||0));
+  if(!senate.length && !house.length) return '';
+  return `
+    <div class="leg-section">
+      ${senate.length ? `<h3 class="leg-heading">Oregon State Senate <span class="leg-count">${senate.length}</span></h3><div class="leg-chips">${senate.map(m=>chipHTML(m,'D'+m.district)).join('')}</div>` : ''}
+      ${house.length ? `<h3 class="leg-heading">Oregon House of Representatives <span class="leg-count">${house.length}</span></h3><div class="leg-chips">${house.map(m=>chipHTML(m,'D'+m.district)).join('')}</div>` : ''}
+    </div>`;
+}
+function renderJudiciarySection(members){
+  const supreme = members.filter(m=>m.chamber==='Supreme Court');
+  const coa = members.filter(m=>m.chamber==='Court of Appeals').sort((a,b)=>(a.position||0)-(b.position||0));
+  if(!supreme.length && !coa.length) return '';
+  return `
+    <div class="leg-section">
+      ${supreme.length ? `<h3 class="leg-heading">Oregon Supreme Court <span class="leg-count">${supreme.length}</span></h3><div class="leg-chips">${supreme.map(m=>chipHTML(m)).join('')}</div>` : ''}
+      ${coa.length ? `<h3 class="leg-heading">Oregon Court of Appeals <span class="leg-count">${coa.length}</span></h3><div class="leg-chips">${coa.map(m=>chipHTML(m,'Pos '+m.position)).join('')}</div>` : ''}
+    </div>`;
+}
+function renderStateOfficials(code){
+  const inState = MEMBERS.filter(m=>m.level==='state' && m.state===code);
+  const filtered = inState.filter(matchesFilters);
+  document.getElementById('count').textContent = `${filtered.length} of ${inState.length} shown`;
+  const addBtn = isAdmin ? `<button class="btn-primary add-inline" onclick="addOfficialForState('${code}')">+ Add official</button>` : '';
+
+  if(!filtered.length){
+    return `
+      <button class="back-btn" onclick="backToStatesList()">&larr; Back to States</button>
+      <div class="section-intro"><h2>${escAttr(STATE_NAMES[code] || code)}</h2></div>
+      <div class="grid"><div class="empty">No officials match those filters.</div></div>
+      ${addBtn}
+    `;
+  }
+
+  const LEG_CHAMBERS = ['State Senate','State House'];
+  const JUD_CHAMBERS = ['Supreme Court','Court of Appeals'];
+  const execOfficials = filtered.filter(m=>!LEG_CHAMBERS.includes(m.chamber) && !JUD_CHAMBERS.includes(m.chamber));
+  const legOfficials = filtered.filter(m=>LEG_CHAMBERS.includes(m.chamber));
+  const judOfficials = filtered.filter(m=>JUD_CHAMBERS.includes(m.chamber));
+
+  const governor = execOfficials.find(m=>m.chamber==='Governor');
+  const otherExec = execOfficials.filter(m=>m!==governor);
+  const hasTop = !!governor;
+
+  const topHTML = hasTop ? `<div class="orgchart-top has-branches">${ocPersonHTML(governor)}</div>` : '';
+
+  // Three coequal branches, matching Oregon's actual constitutional structure —
+  // the governor is pulled out to the top slot above, so Executive here shows
+  // just the other four independently-elected statewide offices.
+  const branches = [];
+  if(legOfficials.length){
+    branches.push({label:'Legislative Branch', body:`<div class="branch-body">${renderLegislatureSection(legOfficials)}</div>`});
+  }
+  if(otherExec.length){
+    branches.push({label:'Executive Branch', body:`<div class="branch-body">${otherExec.map(ocPersonHTML).join('')}</div>`});
+  }
+  if(judOfficials.length){
+    branches.push({label:'Judicial Branch', body:`<div class="branch-body">${renderJudiciarySection(judOfficials)}</div>`});
+  }
+
+  const branchesHTML = branches.length ? `
+    <div class="orgchart-branches ${hasTop?'has-top':''}">
+      ${branches.map(b=>`
+        <div class="orgchart-branch ${hasTop?'has-top':''}">
+          <div class="orgchart-dept-label">${escAttr(b.label)}</div>
+          ${b.body}
+        </div>
+      `).join('')}
+    </div>` : '';
+
+  return `
+    <button class="back-btn" onclick="backToStatesList()">&larr; Back to States</button>
+    <div class="section-intro"><h2>${escAttr(STATE_NAMES[code] || code)}</h2></div>
+    <div class="orgchart">${topHTML}${branchesHTML}</div>
+    ${addBtn}
+  `;
+}
+function renderDetailView(id){
+  document.getElementById('count').textContent = '';
+  const m = MEMBERS.find(x=>x.id===id);
+  if(!m){ selectedId = null; return renderFeatured(); }
+  const backLabel = (activeTab==='states' && selectedState) ? (STATE_NAMES[selectedState] || selectedState) : TAB_LABELS[activeTab];
+  if(getLinkedRoleIds(id).length > 1) return renderMultiRoleDetail(id, backLabel, 'backFromDetail()');
+  const ps = PROMISES.filter(p=>p.memberId===id);
+  return `
+    <button class="back-btn" onclick="backFromDetail()">&larr; Back to ${backLabel}</button>
+    <div class="detail-head">
+      ${avatarHTML(m)}
+      <div>
+        <h2>${escAttr(m.name)}${m.appointed ? `<span class="appointed-tag">Appointed, not elected</span>` : ''}${m.nonVoting ? `<span class="appointed-tag">Non-voting seat</span>` : ''}</h2>
+        <p class="seat">${escAttr(m.seat)} · <span class="party-dot party-${escAttr(m.party)}"></span>${partyLabel(m.party)} · Serving since ${escAttr(m.termStart)}</p>
+      </div>
+      ${scoreBadgeHTML(m.id, true)}
+      ${isAdmin ? `<div class="detail-head-actions">
+        <button class="btn-sm" onclick="editOfficial('${m.id}')">Edit official</button>
+        <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${m.id}')">Delete official</button>
+      </div>` : ''}
+    </div>
+    ${scoreHistoryHTML(m.id)}
+    ${ps.length ? ps.map(p=>promiseCardHTML(p, m.name, isAdmin)).join('') : promiseEmptyCardHTML('No promises logged for this official yet.')}
+    ${isAdmin ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${m.id}',null)">+ Add promise</button>` : ''}
+  `;
+}
+function render(){
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.tab===activeTab);
+  });
+  const gridTabs = ['congress','states'];
+  const showToolbar = !selectedId && gridTabs.includes(activeTab);
+  document.getElementById('toolbar').style.display = showToolbar ? 'flex' : 'none';
+  const sortEl = document.getElementById('sort');
+  sortEl.style.display = (showToolbar && activeTab==='congress') ? 'block' : 'none';
+  document.getElementById('comparePickerBar').style.display = (activeTab==='tools' && selectedTool==='compare' && userHasTier('sustainer')) ? 'grid' : 'none';
+
+  let html;
+  try {
+    if(selectedId) html = renderDetailView(selectedId);
+    else if(activeTab==='featured') html = renderFeatured();
+    else if(activeTab==='search') html = renderSearch();
+    else if(activeTab==='administration') html = renderAdministration();
+    else if(activeTab==='congress') html = renderCongress();
+    else if(activeTab==='states') html = selectedState ? renderStateOfficials(selectedState) : renderStatesPicker();
+    else if(activeTab==='tools') html = renderTools();
+    else if(activeTab==='archive') html = renderArchive();
+    else if(activeTab==='about') html = renderAboutSection();
+  } catch(e) {
+    console.error('Render failed for activeTab=' + activeTab + ':', e);
+    activeTab = 'featured';
+    selectedId = null;
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.tab===activeTab);
+    });
+    html = renderFeatured();
+    showStatus('Something went wrong loading that page — back to Featured.', true);
+  }
+  document.getElementById('content').innerHTML = html;
+}
+
+['party','status','sort'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', render);
+  el.addEventListener('change', render);
+});
+// Text search inputs get 'input' only, not 'change'. Clicking a result row blurs
+// whichever of these was focused; since its value changed since focus, 'change'
+// would otherwise fire (and re-render, destroying the result row) a beat BEFORE
+// the row's own click handler runs — which silently eats the click.
+['compare-q-0','compare-q-1','compare-q-2','compare-q-3'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', render);
+});
+// The main search bar is always visible now, not tied to a dedicated tab — typing
+// into it from anywhere switches the view to results, same as clicking a tab would.
+document.getElementById('search-q').addEventListener('input', () => {
+  activeTab = 'search';
+  selectedId = null;
+  render();
+});
+
+initData();
+</script>
+<script src="cookie-consent.js"></script>
+</body>
+</html>
