@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
+<title>Thank You — ActionOverWords Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-alt:#F4F6F9;
+    --border:#DFE3E9; --text:#171A21; --text-muted:#5B6472; --text-faint:#8992A3;
+    --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF;
+    --completed:#1E8E5A; --completed-bg:#E4F5EC;
+    --radius:10px;
+    --shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1D222B; --bg-alt:#14171D;
+      --border:#2B313C; --text:#E8EAED; --text-muted:#9CA3AF; --text-faint:#6B7280;
+      --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E;
+      --completed:#3DBE82; --completed-bg:#1A3327;
+      --shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg-alt); color:var(--text);
+    font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  a{color:var(--brand);}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  /* ---------- masthead (matches aow-index.html) ---------- */
+  .masthead{background:var(--bg); border-bottom:1px solid var(--border);}
+  .masthead-inner{max-width:1080px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:12px;}
+  .logo{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);}
+  .logo-mark{width:46px; height:32px; border-radius:7px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; letter-spacing:.02em; flex:none;}
+  .logo-word{font-weight:800; font-size:19px; letter-spacing:-.01em; white-space:nowrap;}
+  .logo-word .lw-short{display:none;}
+  @media (max-width:480px){.logo-word .lw-full{display:none;} .logo-word .lw-short{display:inline;}}
+  .beta-tag{font-size:11.5px; font-weight:700; color:var(--brand); background:var(--brand-tint); padding:4px 10px; border-radius:20px; letter-spacing:.02em; margin-left:2px;}
+
+  /* ---------- confirmation content ---------- */
+  .main{flex:1; display:flex; align-items:center; justify-content:center; padding:48px 20px;}
+  .confirm-card{
+    background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow-md); padding:44px 40px; max-width:520px; width:100%; text-align:center;
+  }
+  .confirm-icon{
+    width:64px; height:64px; border-radius:50%; background:var(--brand-tint); color:var(--brand);
+    display:flex; align-items:center; justify-content:center; margin:0 auto;
+  }
+  .pill{
+    display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px;
+    font-size:11.5px; font-weight:700; letter-spacing:.02em; white-space:nowrap; margin:18px 0;
+    background:var(--completed-bg); color:var(--completed);
+  }
+  .pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+  .confirm-card h1{font-size:21px; margin:0 0 10px; letter-spacing:-.01em;}
+  .confirm-card p{font-size:14.5px; line-height:1.6; color:var(--text-muted); margin:0 0 16px;}
+  .fine-print{font-size:12px; line-height:1.6; color:var(--text-faint); margin:0 0 26px;}
+  .confirm-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:22px;}
+  .btn-primary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:none; background:var(--brand); color:#fff; text-decoration:none; display:inline-block;
+  }
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-secondary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--border); background:var(--bg); color:var(--text-muted); font-family:inherit;
+  }
+  .btn-secondary:hover{background:var(--bg-alt);}
+  .closing-note{font-size:13px; line-height:1.5; color:var(--text-muted); border-top:1px solid var(--border); margin:0; padding-top:20px;}
+
+  footer{background:var(--bg); border-top:1px solid var(--border); padding:22px 0;}
+  footer p{font-size:12.5px; line-height:1.6; color:var(--text-faint); max-width:70ch; margin:0;}
+
+  @media (max-width:480px){
+    .confirm-card{padding:32px 24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">AOW</span>
+      <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
+    </a>
+    <span class="beta-tag">Prototype</span>
+  </div>
+</div>
+
+<main class="main">
+  <div class="confirm-card">
+    <div class="confirm-icon" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <span class="pill">Payment received</span>
+    <h1>Thanks for the support</h1>
+    <p>Your donation just went toward the actual work behind this site — finding a promise, sourcing it, and checking back on what happened. That's ongoing research time, not a one-time build, and it's the only thing that keeps this record honest instead of going stale.</p>
+    <p class="fine-print">You should have a receipt from our payment processor in your inbox shortly. This site never sees or stores your card details — payment is handled entirely off-site.</p>
+    <div class="confirm-actions">
+      <a class="btn-primary" href="index.html">← Back to the Index</a>
+      <button class="btn-secondary" type="button" onclick="history.back()">Go back</button>
+    </div>
+    <p class="closing-note">Prefer this to happen automatically every month instead? Membership plans are on the Donate tab back on the Index.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>ActionOverWords Index — an independent tracker of specific promises made by elected officials, and what actually happened to them.</p>
+  </div>
+</footer>
+
+<script src="cookie-consent.js"></script>
+</body>
+</html>

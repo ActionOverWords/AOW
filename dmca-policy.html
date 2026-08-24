@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Copyright / DMCA Policy for ActionOverWords Index: how to submit a copyright takedown notice, how counter-notices work, and how to reach our designated agent.">
+<title>Copyright / DMCA Policy — ActionOverWords Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --bg-alt:#F4F6F9;
+    --border:#DFE3E9; --text:#171A21; --text-muted:#5B6472; --text-faint:#8992A3;
+    --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF;
+    --radius:10px;
+    --shadow-sm:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+    --shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);
+    --todo-bg:rgba(217,119,6,.12); --todo-text:#B45309; --todo-border:#D97706;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1D222B; --bg-alt:#14171D;
+      --border:#2B313C; --text:#E8EAED; --text-muted:#9CA3AF; --text-faint:#6B7280;
+      --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E;
+      --shadow-sm:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);
+      --shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);
+      --todo-bg:rgba(224,153,61,.16); --todo-text:#E0993D; --todo-border:#E0993D;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--bg-alt); color:var(--text);
+    font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  a{color:var(--brand);}
+  .wrap{max-width:760px; margin:0 auto; padding:0 20px;}
+
+  /* ---------- masthead (matches aow-index.html) ---------- */
+  .masthead{background:var(--bg); border-bottom:1px solid var(--border);}
+  .masthead-inner{max-width:1080px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:12px;}
+  .logo{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text);}
+  .logo-mark{width:46px; height:32px; border-radius:7px; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; letter-spacing:.02em; flex:none;}
+  .logo-word{font-weight:800; font-size:19px; letter-spacing:-.01em; white-space:nowrap;}
+  .logo-word .lw-short{display:none;}
+  @media (max-width:480px){.logo-word .lw-full{display:none;} .logo-word .lw-short{display:inline;}}
+  .beta-tag{font-size:11.5px; font-weight:700; color:var(--brand); background:var(--brand-tint); padding:4px 10px; border-radius:20px; letter-spacing:.02em; margin-left:2px;}
+
+  /* ---------- page content ---------- */
+  main{flex:1; padding:44px 0 32px;}
+  .page-head h1{font-size:28px; margin:0 0 8px; letter-spacing:-.01em;}
+  .page-head p{font-size:15px; color:var(--text-muted); margin:0; max-width:58ch; line-height:1.6;}
+  .updated-line{font-size:13px; color:var(--text-faint); margin:10px 0 0;}
+
+  /* ---------- short-version summary box ---------- */
+  .tldr{background:var(--brand-tint); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin:26px 0;}
+  .tldr h2{font-size:12px; margin:0 0 12px; text-transform:uppercase; letter-spacing:.05em; color:var(--brand-dark);}
+  .tldr p{font-size:14px; line-height:1.6; color:var(--text); margin:0 0 10px;}
+  .tldr p:last-child{margin-bottom:0;}
+  .tldr strong{color:var(--text);}
+
+  /* ---------- table of contents ---------- */
+  .toc{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; margin:0 0 8px; box-shadow:var(--shadow-sm);}
+  .toc h2{font-size:11.5px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint);}
+  .toc ol{margin:0; padding-left:19px; columns:2; column-gap:24px; font-size:13.5px; line-height:1.95;}
+  .toc a{color:var(--text-muted); text-decoration:none;}
+  .toc a:hover{color:var(--brand); text-decoration:underline;}
+  @media (max-width:480px){.toc ol{columns:1;}}
+
+  /* ---------- policy body ---------- */
+  .policy-page{max-width:72ch;}
+  .policy-page h2{font-size:18px; margin:34px 0 8px; scroll-margin-top:16px;}
+  .policy-page h2:first-of-type{margin-top:34px;}
+  .policy-page p{font-size:14.5px; line-height:1.65; color:var(--text-muted); margin:0 0 12px;}
+  .policy-page strong{color:var(--text);}
+  .policy-page ul{margin:0 0 12px; padding-left:20px;}
+  .policy-page li{font-size:14.5px; line-height:1.65; color:var(--text-muted); margin:0 0 6px;}
+  .todo{background:var(--todo-bg); color:var(--todo-text); border:1px dashed var(--todo-border); border-radius:4px; padding:1px 7px; font-weight:700;}
+
+  /* ---------- designated agent box ---------- */
+  .agent-box{background:var(--brand-tint); border:1px solid var(--border); border-radius:var(--radius); padding:18px 22px; margin:14px 0 18px;}
+  .agent-box dl{margin:0; display:grid; grid-template-columns:max-content 1fr; column-gap:18px; row-gap:11px; align-items:baseline;}
+  .agent-box dt{font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--brand-dark); margin:0;}
+  .agent-box dd{margin:0; font-size:14.5px; color:var(--text);}
+  .agent-box dd.todo{font-size:13px; display:inline-block;}
+  @media (max-width:480px){.agent-box dl{grid-template-columns:1fr;} .agent-box dt{margin-top:6px;}}
+
+  .closing-cta{
+    margin-top:36px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+    padding:22px 24px; box-shadow:var(--shadow-sm);
+  }
+  .closing-cta h2{font-size:15.5px; margin:0 0 6px;}
+  .closing-cta p{font-size:13.5px; color:var(--text-muted); margin:0 0 16px; line-height:1.6;}
+  .btn-primary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:none; background:var(--brand); color:#fff; text-decoration:none; display:inline-block;
+  }
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-secondary{
+    font-size:13.5px; font-weight:700; padding:10px 18px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--border); background:var(--bg); color:var(--text-muted); text-decoration:none; display:inline-block;
+  }
+  .btn-secondary:hover{background:var(--bg-alt);}
+  .cta-actions{display:flex; gap:10px; flex-wrap:wrap;}
+
+  footer{background:var(--bg); border-top:1px solid var(--border); padding:22px 0;}
+  footer p{font-size:12.5px; line-height:1.6; color:var(--text-faint); max-width:70ch; margin:0;}
+
+  @media (max-width:480px){
+    .page-head h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">AOW</span>
+      <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
+    </a>
+    <span class="beta-tag">Prototype</span>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Copyright / DMCA Policy</h1>
+      <p>How ActionOverWords Index handles copyright complaints — what to include in a takedown notice, how counter-notices work, and how to reach our designated agent directly.</p>
+      <p class="updated-line">Last updated August 21, 2026</p>
+    </div>
+
+    <div class="tldr">
+      <h2>The short version</h2>
+      <p><strong>We respond to valid DMCA takedown notices</strong> and remove or disable the material they identify. Send those to the designated agent below, not the general Contact form.</p>
+      <p><strong>Most of what's on this site links out to its original source</strong> rather than hosting it. The main thing we host directly is officials' photos, and those are simple to pull if a claim checks out.</p>
+      <p><strong>If your own material got taken down by mistake,</strong> you can file a counter-notice using the process further down this page.</p>
+      <p><strong>Please only file a notice you believe in good faith</strong> — knowingly misrepresenting a claim can carry real legal consequences for the person who files it, not just for us.</p>
+    </div>
+
+    <nav class="toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#agent">Our designated DMCA agent</a></li>
+        <li><a href="#scope">What this policy covers</a></li>
+        <li><a href="#notice">How to submit a takedown notice</a></li>
+        <li><a href="#response">What happens after we receive a notice</a></li>
+        <li><a href="#counter-notice">Counter-notification</a></li>
+        <li><a href="#repeat-infringers">Repeat infringers</a></li>
+        <li><a href="#false-claims">False claims</a></li>
+        <li><a href="#changes">Changes to this policy</a></li>
+        <li><a href="#contact">Contact us</a></li>
+      </ol>
+    </nav>
+
+    <div class="policy-page">
+      <h2 id="overview">Overview</h2>
+      <p>ActionOverWords Index ("AOW Index," "we," "us," or "our") respects copyright and expects the same from anyone who uses this site. This policy explains how we handle claims that material appearing on the site infringes someone's copyright, following the notice-and-takedown process set out in the Digital Millennium Copyright Act (DMCA), 17 U.S.C. § 512. It works alongside our <a href="terms-of-service.html#intellectual-property">Terms of Service</a>, which covers our own intellectual property and what you're allowed to do with content on the site more generally.</p>
+      <p>This page is specifically for copyright claims. General questions, suggested corrections, and appeals of a promise's status still go through the Contact form described in our <a href="faq.html">FAQ</a> — those aren't copyright matters, even when they're about accuracy.</p>
+
+      <h2 id="agent">Our designated DMCA agent</h2>
+      <p>Send a takedown notice or counter-notice to the agent below — by mail or email, not the general Contact form, which isn't monitored the same way and will slow things down.</p>
+      <div class="agent-box">
+        <dl>
+          <dt>Name</dt><dd class="todo">[add designated agent's name]</dd>
+          <dt>Mailing address</dt><dd class="todo">[add designated agent's mailing address]</dd>
+          <dt>Email</dt><dd class="todo">[add designated agent's email]</dd>
+          <dt>Phone</dt><dd class="todo">[add designated agent's phone (optional)]</dd>
+        </dl>
+      </div>
+      <p>For this designation to actually qualify the site for DMCA safe-harbor protection, the agent above also needs to be registered in the U.S. Copyright Office's online Designated Agent Directory — a separate step from publishing this page. <span class="todo">[register at copyright.gov/dmca-directory, then confirm the registration is current here]</span></p>
+
+      <h2 id="scope">What this policy covers</h2>
+      <p>Most of what appears on this site about an official — the news coverage behind a status, the government record behind a vote — is linked out to where it was originally published, not reproduced here. A claim about that underlying reporting belongs with the outlet that published it, not with us.</p>
+      <p>What we do host directly is narrower: officials' photos, and short quoted material (a headline, a line from a campaign statement) used for identification and commentary the way any news or reference site would. If a specific photo is the subject of a valid claim, removing it is simple — every avatar on this site already falls back to the official's initials automatically if the photo URL fails to load, so pulling an image doesn't break anything else on the page.</p>
+      <p>The site's own design, code, compiled promise database, and original written analysis are covered separately in the Intellectual Property section of our <a href="terms-of-service.html#intellectual-property">Terms of Service</a> — this page is about claims that we're infringing someone else's copyright, not about ours.</p>
+
+      <h2 id="notice">How to submit a takedown notice</h2>
+      <p>To be a valid notice under 17 U.S.C. § 512(c)(3), send our designated agent a written notice that includes all six of the following:</p>
+      <ul>
+        <li>A physical or electronic signature of the copyright owner, or someone authorized to act on their behalf.</li>
+        <li>Identification of the copyrighted work you claim is infringed.</li>
+        <li>Identification of the material you claim is infringing, and information reasonably sufficient for us to locate it — a URL, the official's name, or a description of where it appears is usually enough.</li>
+        <li>Your contact information: address, telephone number, and email address.</li>
+        <li>A statement that you have a good-faith belief the use isn't authorized by the copyright owner, its agent, or the law.</li>
+        <li>A statement, made under penalty of perjury, that the information above is accurate and that you're authorized to act on the copyright owner's behalf.</li>
+      </ul>
+      <p>A notice missing one of these elements may not qualify for action under the DMCA specifically, though we may still look into it as a general complaint.</p>
+
+      <h2 id="response">What happens after we receive a notice</h2>
+      <p>We review each notice against the requirements above. Where a notice qualifies, we'll remove or disable access to the material it identifies — for a photo, that generally just means pulling the image URL — and we'll try to let the person or account associated with it know what changed. This process addresses the specific material identified in a notice; it isn't a ruling on the underlying promise, status, or any broader dispute about the page it appeared on. That kind of disagreement still goes through the correction and appeal process described in our <a href="faq.html">FAQ</a>, not this one.</p>
+
+      <h2 id="counter-notice">Counter-notification</h2>
+      <p>If material of yours was removed and you believe that happened by mistake or misidentification, you can send a counter-notice to the same designated agent. Under 17 U.S.C. § 512(g)(3), it needs to include:</p>
+      <ul>
+        <li>Your physical or electronic signature.</li>
+        <li>Identification of the material that was removed, and where it appeared before it was taken down.</li>
+        <li>A statement, made under penalty of perjury, that you have a good-faith belief the material was removed as a result of mistake or misidentification.</li>
+        <li>Your name, address, and telephone number, along with a statement that you consent to the jurisdiction of the Federal District Court for the judicial district where your address is located (or, if you're outside the United States, any judicial district where we may be found), and that you'll accept service of process from the person who filed the original notice.</li>
+      </ul>
+      <p>If we receive a valid counter-notice, we'll forward it to whoever filed the original notice. Under the same statute, unless they tell us they've filed a court action to keep the material down, we'll typically restore it within 10 to 14 business days of the counter-notice.</p>
+
+      <h2 id="repeat-infringers">Repeat infringers</h2>
+      <p>Consistent with the Acceptable Use and Termination sections of our <a href="terms-of-service.html">Terms of Service</a>, an account responsible for repeated, valid copyright infringement can have its access suspended or terminated.</p>
+
+      <h2 id="false-claims">False claims</h2>
+      <p>Under 17 U.S.C. § 512(f), anyone who knowingly and materially misrepresents that material is infringing — or, in a counter-notice, that it was taken down by mistake — can be held liable for damages, including our costs and attorney's fees in sorting it out. Please only file a notice or counter-notice you believe in good faith to be accurate.</p>
+
+      <h2 id="changes">Changes to this policy</h2>
+      <p>We'll update this page if our process or contact information changes. The date at the top will change whenever we do.</p>
+
+      <h2 id="contact">Contact us</h2>
+      <p>Copyright notices and counter-notices go to the designated agent above. For anything else — a suggested correction, a status appeal, or a general question — use the Contact form on the About tab back on the Index, described in our <a href="faq.html">FAQ</a>.</p>
+    </div>
+
+    <div class="closing-cta">
+      <h2>Looking for something else?</h2>
+      <p>This page covers copyright claims specifically. For how we handle your information, or the rules for using the site more broadly, see the pages below.</p>
+      <div class="cta-actions">
+        <a class="btn-primary" href="index.html">Go to the Index</a>
+        <a class="btn-secondary" href="terms-of-service.html">Read the Terms of Service</a>
+        <a class="btn-secondary" href="privacy-policy.html">Read the Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>ActionOverWords Index — an independent tracker of specific promises made by elected officials, and what actually happened to them.</p>
+  </div>
+</footer>
+
+<script src="cookie-consent.js"></script>
+</body>
+</html>
