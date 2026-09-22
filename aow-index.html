@@ -13,10 +13,9 @@
     --border:#DFE3E9; --text:#171A21; --text-muted:#5B6472; --text-faint:#8992A3;
     --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF; --brand-tint-hover:#D2ECE6;
     --not_started:#8A93A3; --in_progress:#C2790F; --stalled:#5D7599;
-    --compromise:#8A5CA8; --completed:#1E8E5A; --broken:#C0392B; --undetermined:#15171B;
+    --compromise:#8A5CA8; --completed:#1E8E5A; --broken:#C0392B;
     --not_started-bg:#EEF0F3; --in_progress-bg:#FBF0DF; --stalled-bg:#E9EDF4;
     --compromise-bg:#F3E9F6; --completed-bg:#E4F5EC; --broken-bg:#FBE7E4; --broken-border:#F0D3CE;
-    --undetermined-bg:#E4E4E7;
     --party-d:#2058B0; --party-d-bg:#E7EFFC; --party-r:#B23A2F; --party-r-bg:#FBEAE7;
     --party-i:#8B5E00; --party-i-bg:#F7EEDA; --party-np:#6B7280; --party-np-bg:#EEF0F2;
     --watch-on:#D97706; --watch-on-bg:#FEF3E2;
@@ -29,10 +28,9 @@
     --border:#2B313C; --text:#E8EAED; --text-muted:#9CA3AF; --text-faint:#6B7280;
     --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E; --brand-tint-hover:#1E4038;
     --not_started:#9AA3B2; --in_progress:#E0993D; --stalled:#7C93C4;
-    --compromise:#B084D1; --completed:#3DBE82; --broken:#E0685A; --undetermined:#E4E4E7;
+    --compromise:#B084D1; --completed:#3DBE82; --broken:#E0685A;
     --not_started-bg:#262B33; --in_progress-bg:#3A2E1B; --stalled-bg:#212A38;
     --compromise-bg:#2E2438; --completed-bg:#1A3327; --broken-bg:#3A2220; --broken-border:#4D2B27;
-    --undetermined-bg:#2C2E33;
     --party-d:#5B9BF0; --party-d-bg:#1B2A42; --party-r:#F0776A; --party-r-bg:#3A2220;
     --party-i:#D9A93F; --party-i-bg:#332A16; --party-np:#9AA3B2; --party-np-bg:#262B33;
     --watch-on:#E0993D; --watch-on-bg:#3A2E1B;
@@ -237,8 +235,6 @@
   .detail-head-actions{margin-left:auto; display:flex; gap:8px;}
 
   .pcard{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-top:12px; box-shadow:var(--shadow);}
-  .pcard-draft{border:1.5px dashed var(--undetermined); box-shadow:none;}
-  .draft-banner{background:var(--undetermined-bg); color:var(--undetermined); font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:4px 10px; border-radius:4px 4px 0 0; margin:-18px -18px 12px -18px;}
   .score-history{background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-top:16px;}
   .role-block{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-top:16px; box-shadow:var(--shadow);}
   .role-block-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px;}
@@ -265,7 +261,6 @@
   .p-compromise{background:var(--compromise-bg); color:var(--compromise);}
   .p-completed{background:var(--completed-bg); color:var(--completed);}
   .p-broken{background:var(--broken-bg); color:var(--broken);}
-  .p-undetermined{background:var(--undetermined-bg); color:var(--undetermined);}
   .cat-tag{font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.04em; font-weight:600; margin-top:6px;}
   .pnote{font-size:13.5px; color:var(--text-muted); margin:10px 0 0; line-height:1.55;}
   .psource{display:flex; align-items:center; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); font-size:12.5px; color:var(--text-faint); flex-wrap:wrap;}
@@ -437,7 +432,6 @@
       <option value="compromise">Compromise</option>
       <option value="completed">Completed</option>
       <option value="broken">Broken</option>
-      <option value="undetermined">Undetermined</option>
     </select>
     <select id="sort">
       <option value="name-asc">Name (A–Z)</option>
@@ -556,6 +550,12 @@
 <script src="data/prior-roles/part-1.js"></script>
 <script src="data/prior-roles/part-2.js"></script>
 <script src="data/prior-roles/part-3.js"></script>
+<!-- Supabase client (Phase 2 backend). Pinned to major version 2 only — this app calls
+     only the long-stable v2 surface (createClient, auth.*, from().*, rpc()), so a minor/
+     patch bump here should never break it. Declares a global named `supabase`; the app's
+     own client instance below is deliberately named `sb`, not `supabase`, so it doesn't
+     shadow that global and silently kill this whole inline script. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const STATUS_META = {
   not_started:{label:'Not started', color:'var(--not_started)'},
@@ -563,18 +563,12 @@ const STATUS_META = {
   stalled:{label:'Stalled', color:'var(--stalled)'},
   compromise:{label:'Compromise', color:'var(--compromise)'},
   completed:{label:'Completed', color:'var(--completed)'},
-  broken:{label:'Broken', color:'var(--broken)'},
-  undetermined:{label:'Undetermined', color:'var(--undetermined)'}
+  broken:{label:'Broken', color:'var(--broken)'}
 };
 // AOW Score: 0-100, the average of these weights across a person's tracked promises.
 // Not Started and Broken both score 0 for different reasons — one hasn't happened yet,
 // the other happened and failed — but a low score reads the same either way today.
 // Documented here and in the footer so the formula is never a mystery.
-// Undetermined is deliberately absent from this map: it isn't a real-world outcome like
-// the six above, it's "we haven't finished verifying this one yet." computeAOWScore()
-// filters undetermined promises out entirely before this map is ever consulted, so they
-// don't pull a score toward 0 the way Not Started/Broken legitimately do — they just don't
-// count yet, in either direction.
 const AOW_WEIGHTS = { completed:100, compromise:60, in_progress:40, stalled:15, not_started:0, broken:0 };
 const SRC_TYPE_LABEL = {
   campaign_statement:'Campaign statement', interview:'Interview',
@@ -594,13 +588,20 @@ const STATE_NAMES = {
   PR:'Puerto Rico', GU:'Guam', AS:'American Samoa', VI:'U.S. Virgin Islands', MP:'Northern Mariana Islands'
 };
 
-// Admin access is now tied to accounts, not a shared passcode (see the account system
-// below). This is the ONE bootstrap point: whichever account signs up or logs in with
-// this email automatically becomes an admin, so there's a first admin to grant everyone
-// else access from. Set this to your real email before anyone else creates an account.
-// Like the old passcode, this is visible to anyone who views the page source — it only
-// controls who gets flagged admin on THIS specific email, not a secret in itself.
-const BOOTSTRAP_ADMIN_EMAIL = 'you@example.com';
+// ---------- Phase 2 backend config ----------
+// The URL and publishable key below are safe to expose in page source by design — the
+// publishable key identifies this project, it does not grant access on its own. Every
+// table it can reach has row-level security (see aow-phase2-setup.sql); this key can
+// never read or write anything RLS doesn't already allow. The one-time "become the
+// first admin" step now happens as a SQL statement run directly in Supabase (see the
+// bottom of that file), not as an email hardcoded here — so there is nothing in this
+// file's source that grants anyone admin access.
+const SUPABASE_URL = 'https://iqouvbbuiarrsryfkgsz.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Q1M5T3VhhyTV4vOVYhONiA_SYk6tsmG';
+const BILLING_FUNCTION_URL = SUPABASE_URL + '/functions/v1/billing';
+// Named `sb`, not `supabase` — the CDN script above already defines a global called
+// `supabase`; reusing that name here would silently redeclare it and break the page.
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 function getLinkedRoleIds(id){
   const group = PERSON_LINKS.find(g=>g.ids.includes(id));
@@ -662,13 +663,12 @@ let selectedArchivePersonId = null;
 let isAdmin = false;
 let officialFormMode = null, officialFormId = null;
 let promiseFormMode = null, promiseFormId = null, promiseFormMemberId = null;
-// Phase 1 accounts — NOT real security. Passwords here are stored and compared in
-// plain text in shared storage, visible to anyone who inspects it. This exists to
-// build and test the account/tier UI before the real auth swap (Supabase Auth),
-// which will replace this whole block without changing the sign-up/login forms.
-let USERS = [];          // shared — every registered account: {id, email, displayName, password, tier, joinedAt}
-let CURRENT_USER = null; // this browser's logged-in user (personal, not shared), or null if logged out
-let SUBMISSIONS = [];    // shared — every message/suggestion/appeal: {id, type, name, email, context, body, submittedAt, status, userId, userTier}
+// Real accounts now — Supabase Auth holds the credentials and the login session;
+// nothing here stores or compares a password. CURRENT_USER is assembled on login/
+// session-restore from the "profiles" row (display name, tier, admin flag) plus this
+// browser's own "user_data" rows (watchlist, dark mode) — see loadCurrentUser() below.
+let CURRENT_USER = null;      // this browser's logged-in member, or null if logged out
+let SUBMISSIONS = [];         // admin-only cache of the "submissions" table, loaded on login for admins
 let pendingAppealContext = null; // set by "Appeal this status" links, consumed once by the Contact form
 
 function escAttr(s){
@@ -695,19 +695,23 @@ function showStatus(msg, isError){
 
 /* ---------- storage backend ----------
    Everything the app persists goes through Backend.get/Backend.set.
-   This is the ONLY place that needs to change to swap storage providers
-   (e.g. window.storage -> Supabase). Nothing else in the file talks to
-   a storage API directly.
-   Current provider: window.storage (Claude artifact storage — per-session,
-   not a real shared backend). Swap the two methods below to point at
-   Supabase (or any other backend) once credentials are available. */
+   This is the ONLY place that needs to change to swap storage providers.
+   Nothing else in the file talks to a storage API directly.
+   Current provider: Supabase's "app_data" table — one row per key. The four keys
+   used below (aow_officials, aow_promises, aow_donate_url, aow_score_log) are
+   readable by anyone and writable only by admins; see aow-phase2-setup.sql. The
+   `shared` parameter is kept (but unused) only so every call site below still
+   works unchanged — everything in this table is genuinely shared now, there's no
+   more personal/local mode the way window.storage had one. */
 const Backend = {
   async get(key, shared=true){
-    const res = await window.storage.get(key, shared);
-    return (res && res.value) ? JSON.parse(res.value) : null;
+    const { data, error } = await sb.from('app_data').select('value').eq('key', key).maybeSingle();
+    if(error) throw error;
+    return data ? data.value : null;
   },
   async set(key, value, shared=true){
-    await window.storage.set(key, JSON.stringify(value), shared);
+    const { error } = await sb.from('app_data').upsert({ key, value });
+    if(error) throw error;
   }
 };
 
@@ -717,7 +721,7 @@ async function loadOrSeed(key, defaults, shared=true){
     const val = await Backend.get(key, shared);
     if(val !== null) return val;
   } catch(e) { /* key not seeded yet */ }
-  try { await Backend.set(key, defaults, shared); } catch(e){ /* ignore, will retry on next save */ }
+  try { await Backend.set(key, defaults, shared); } catch(e){ /* not an admin, or offline — an admin's first save will seed it */ }
   return defaults;
 }
 async function persistOfficials(){
@@ -736,23 +740,45 @@ async function persistScoreLog(){
   try { await Backend.set('aow_score_log', SCORE_LOG); }
   catch(e){ /* non-critical — don't block the save on this */ }
 }
-async function persistUsers(){
-  try { await Backend.set('aow_users', USERS); }
-  catch(e){ showStatus('Could not save account — try again.', true); }
+// Composes CURRENT_USER from this member's "profiles" row (display name, tier, admin
+// flag — server-controlled: writable here only via saveAccountName()'s display_name
+// call, never tier or the admin flag) plus their own "user_data" rows (watchlist,
+// dark mode — personal, RLS-scoped to their own id).
+async function loadCurrentUser(authUser){
+  const [{data:profile, error:profileErr}, {data:rows, error:dataErr}] = await Promise.all([
+    sb.from('profiles').select('display_name, tier, is_admin_account, joined_at').eq('id', authUser.id).single(),
+    sb.from('user_data').select('key, value').eq('user_id', authUser.id)
+  ]);
+  if(profileErr || !profile) throw profileErr || new Error('No profile row for this account yet.');
+  if(dataErr) throw dataErr;
+  const byKey = {}; (rows||[]).forEach(r=>{ byKey[r.key] = r.value; });
+  return {
+    id: authUser.id,
+    email: authUser.email,
+    displayName: profile.display_name,
+    tier: profile.tier,
+    isAdminAccount: profile.is_admin_account,
+    joinedAt: profile.joined_at,
+    watchlist: byKey.watchlist || [],
+    darkMode: !!byKey.dark_mode
+  };
 }
-async function persistSubmissions(){
-  try { await Backend.set('aow_submissions', SUBMISSIONS); }
-  catch(e){ showStatus('Could not save that — try again.', true); }
-}
-async function persistSession(){
-  // Personal (shared:false) — each visitor's browser remembers only their own login,
-  // never anyone else's, even though the USERS directory itself is shared.
-  try { await Backend.set('aow_session', CURRENT_USER ? CURRENT_USER.id : null, false); }
-  catch(e){ /* non-critical — worst case they just have to log in again next visit */ }
+// Admin-only cache of the "submissions" table (contact messages, suggestions, appeals).
+// Row-level security already returns an empty list to anyone who isn't an admin, so
+// this is safe to call for any signed-in member — it just won't find anything for a
+// non-admin. Field names are mapped from the table's snake_case columns to the
+// camelCase shape the rest of this file already expects.
+async function loadSubmissionsForAdmin(){
+  const { data, error } = await sb.from('submissions').select('*').order('submitted_at', {ascending:false});
+  if(error){ SUBMISSIONS = []; return; }
+  SUBMISSIONS = (data||[]).map(r=>({
+    id:r.id, type:r.type, name:r.name, email:r.email, context:r.context, source:r.source,
+    body:r.body, status:r.status, submittedAt:r.submitted_at, userId:r.user_id, userTier:r.user_tier
+  }));
 }
 async function resetToLatestData(){
   if(!isAdmin) return;
-  if(!confirm('This discards any saved admin edits on this device and reloads the current built-in roster and promises. This cannot be undone. Continue?')) return;
+  if(!confirm('This overwrites the LIVE site data — for every visitor, not just this device — with the built-in roster and promises. Any admin edits made since the last built-in update are lost. This cannot be undone. Continue?')) return;
   MEMBERS = DEFAULT_MEMBERS.slice();
   PROMISES = DEFAULT_PROMISES.slice();
   await persistOfficials();
@@ -767,11 +793,21 @@ async function initData(){
   PROMISES = await loadOrSeed('aow_promises', DEFAULT_PROMISES);
   DONATE_URL = await loadOrSeed('aow_donate_url', '');
   SCORE_LOG = await loadOrSeed('aow_score_log', []);
-  USERS = await loadOrSeed('aow_users', []);
-  SUBMISSIONS = await loadOrSeed('aow_submissions', []);
-  const sessionUserId = await loadOrSeed('aow_session', null, false);
-  CURRENT_USER = sessionUserId ? (USERS.find(u=>u.id===sessionUserId) || null) : null;
-  syncAdminState();
+  // Supabase's own client restores a saved session from this browser (if any) —
+  // there's no more manual session key to load.
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){
+    try {
+      CURRENT_USER = await loadCurrentUser(session.user);
+      syncAdminState();
+      if(isAdmin) await loadSubmissionsForAdmin();
+    } catch(e){
+      // Session exists but the profile/user_data lookup failed — treat as logged out
+      // rather than leaving a half-loaded account state on screen.
+      CURRENT_USER = null; isAdmin = false;
+      try { await sb.auth.signOut(); } catch(e2){ /* ignore */ }
+    }
+  }
   applyTheme(!!(CURRENT_USER && CURRENT_USER.darkMode));
   renderTally();
   renderLegend();
@@ -784,12 +820,12 @@ function syncAdminState(){
   isAdmin = !!(CURRENT_USER && CURRENT_USER.isAdminAccount);
 }
 
-/* ---------- user accounts (Phase 1 — see security note on USERS/CURRENT_USER above) ---------- */
+/* ---------- user accounts (real Supabase Auth — see loadCurrentUser() above) ---------- */
 const TIERS = [
   {id:'free', label:'Free', price:'$0'},
-  {id:'supporter', label:'Plus', price:'$5–8/mo'},
-  {id:'sustainer', label:'Premium', price:'$15–20/mo'},
-  {id:'patron', label:'Supporter', price:'$40+/mo'}
+  {id:'supporter', label:'Plus', price:'$4.99/mo'},
+  {id:'sustainer', label:'Premium', price:'$14.99/mo'},
+  {id:'patron', label:'Supporter', price:'$39.99/mo'}
 ];
 function tierLabel(id){ return (TIERS.find(t=>t.id===id) || {}).label || id; }
 const TIER_FEATURES = [
@@ -816,13 +852,19 @@ function userHasTier(minTierId){
 function applyTheme(dark){
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 }
+// Personal, per-member data — RLS on "user_data" already restricts every row to its
+// own owner, so this one upsert covers both the watchlist and the dark-mode keys.
+async function persistUserData(key, value){
+  try {
+    const { error } = await sb.from('user_data').upsert({ user_id: CURRENT_USER.id, key, value }, { onConflict: 'user_id,key' });
+    if(error) throw error;
+  } catch(e){ showStatus('Could not save that — try again.', true); }
+}
 async function toggleDarkMode(){
   if(!CURRENT_USER){ showAuthModal('signup'); showStatus(`Create a free account, then upgrade to ${tierLabel('supporter')} to unlock dark mode.`); return; }
   if(!userHasTier('supporter')){ showStatus(`Dark mode is a ${tierLabel('supporter')}-tier feature — see the Donate tab to upgrade.`, true); return; }
   CURRENT_USER.darkMode = !CURRENT_USER.darkMode;
-  const userIdx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
-  if(userIdx>=0) USERS[userIdx] = CURRENT_USER;
-  await persistUsers();
+  await persistUserData('dark_mode', CURRENT_USER.darkMode);
   applyTheme(CURRENT_USER.darkMode);
   showAccountSettings(); // re-render the modal in place so the toggle reflects the new state
 }
@@ -845,9 +887,7 @@ async function toggleWatch(officialId, event){
     }
     list.push(officialId);
   }
-  const userIdx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
-  if(userIdx>=0) USERS[userIdx] = CURRENT_USER;
-  await persistUsers();
+  await persistUserData('watchlist', list);
   render();
 }
 function watchStarHTML(officialId){
@@ -879,24 +919,25 @@ function showAuthModal(mode){
   document.getElementById('auth-email').focus();
   document.getElementById('auth-password').addEventListener('keydown', e=>{ if(e.key==='Enter') (isSignup?trySignUp:tryLogIn)(); });
 }
-function applyBootstrapAdmin(user){
-  // Runs on both signup and login so the flag stays correct even if BOOTSTRAP_ADMIN_EMAIL
-  // is set after this account already existed.
-  if(user.email === BOOTSTRAP_ADMIN_EMAIL.toLowerCase()) user.isAdminAccount = true;
-  return user;
-}
 async function trySignUp(){
   const name = document.getElementById('auth-name').value.trim();
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
   if(!name || !email || !password){ showStatus('Fill in all fields.', true); return; }
-  if(USERS.some(u=>u.email===email)){ showStatus('An account with that email already exists.', true); return; }
-  const user = applyBootstrapAdmin({id:genId('user_'), email, displayName:name, password, tier:'free', isAdminAccount:false, watchlist:[], darkMode:false, joinedAt:new Date().toISOString().slice(0,10)});
-  USERS.push(user);
-  await persistUsers();
-  CURRENT_USER = user;
-  await persistSession();
-  syncAdminState();
+  const { data, error } = await sb.auth.signUp({
+    email, password,
+    options: { data: { display_name: name }, emailRedirectTo: window.location.origin + window.location.pathname }
+  });
+  if(error){ showStatus(error.message || 'Could not create that account — try again.', true); return; }
+  if(!data.session){
+    // Email confirmation is required and no session comes back until that happens —
+    // there's nothing to log into yet.
+    closeModal();
+    showStatus('Check your email to confirm your account, then log in.');
+    return;
+  }
+  try { CURRENT_USER = await loadCurrentUser(data.user); syncAdminState(); }
+  catch(e){ showStatus('Account created, but something went wrong loading it — try logging in.', true); return; }
   closeModal();
   renderAccountZone();
   render();
@@ -905,13 +946,12 @@ async function trySignUp(){
 async function tryLogIn(){
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
-  const user = USERS.find(u=>u.email===email && u.password===password);
-  if(!user){ showStatus('Email or password not recognized.', true); return; }
-  applyBootstrapAdmin(user);
-  CURRENT_USER = user;
-  await persistUsers(); // in case applyBootstrapAdmin just changed something
-  await persistSession();
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ showStatus(error.message || 'Could not log in — try again.', true); return; }
+  try { CURRENT_USER = await loadCurrentUser(data.user); }
+  catch(e){ showStatus('Logged in, but something went wrong loading your account — try again.', true); return; }
   syncAdminState();
+  if(isAdmin) await loadSubmissionsForAdmin();
   applyTheme(!!CURRENT_USER.darkMode);
   closeModal();
   renderAccountZone();
@@ -919,8 +959,9 @@ async function tryLogIn(){
   showStatus('Logged in.');
 }
 async function logOut(){
+  await sb.auth.signOut();
   CURRENT_USER = null;
-  await persistSession();
+  SUBMISSIONS = [];
   syncAdminState();
   applyTheme(false);
   closeModal();
@@ -929,13 +970,20 @@ async function logOut(){
 }
 function renderTierTableHTML(){
   const currentTierId = CURRENT_USER ? CURRENT_USER.tier : null;
+  const hasSubscription = !!(CURRENT_USER && CURRENT_USER.tier !== 'free');
   const rows = TIER_FEATURES.map(f => `
     <tr><td>${escAttr(f.label)}</td><td${currentTierId==='free'?' class="tier-current"':''}>${escAttr(f.free)}</td><td${currentTierId==='supporter'?' class="tier-current"':''}>${escAttr(f.supporter)}</td><td${currentTierId==='sustainer'?' class="tier-current"':''}>${escAttr(f.sustainer)}</td><td${currentTierId==='patron'?' class="tier-current"':''}>${escAttr(f.patron)}</td></tr>
   `).join('');
   const pickCells = TIERS.map(t => {
     const isCurrent = t.id===currentTierId;
-    const label = isCurrent ? 'Current plan' : (CURRENT_USER ? 'Switch' : 'Sign up');
-    const action = isCurrent ? '' : (CURRENT_USER ? `onclick="setTier('${t.id}')"` : `onclick="showAuthModal('signup')"`);
+    let label, action;
+    if(isCurrent){ label = 'Current plan'; action = ''; }
+    else if(!CURRENT_USER){ label = 'Sign up'; action = `onclick="showAuthModal('signup')"`; }
+    // Already on some paid plan — Stripe's checkout refuses a second subscription for the
+    // same member (see the billing function), so every other tier routes to the portal,
+    // which is also where Stripe lets them switch, downgrade, or cancel.
+    else if(hasSubscription){ label = 'Manage subscription'; action = `onclick="openBillingPortal()"`; }
+    else { label = 'Subscribe'; action = `onclick="startCheckout('${t.id}')"`; }
     return `<td><button class="tier-pick-btn${isCurrent?' current':''}" ${isCurrent?'disabled':''} ${action}>${label}</button></td>`;
   }).join('');
   return `
@@ -944,23 +992,27 @@ function renderTierTableHTML(){
       ${rows}
       <tr class="tier-pick-row"><td></td>${pickCells}</tr>
     </table>
-    <p class="score-note">Billing isn't connected yet — switching tiers here is free during this preview and won't charge you.</p>
+    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there.'}</p>
   `;
 }
-function showAccountSettings(){
+async function showAccountSettings(){
   if(!CURRENT_USER) return;
-  const teamPanel = CURRENT_USER.isAdminAccount ? `
+  let teamPanel = '';
+  if(CURRENT_USER.isAdminAccount){
+    const { data: members, error } = await sb.rpc('admin_list_users');
+    teamPanel = `
     <h3 style="margin-top:22px;">Team access</h3>
     <p class="score-note" style="margin:-6px 0 10px;">Anyone with a checked box below can edit officials and promises on the live site.</p>
     <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
-      ${USERS.map(u => `
+      ${error ? `<p class="score-note" style="padding:10px;">Could not load the member list.</p>` : (members||[]).map(u => `
         <label style="display:flex; align-items:center; gap:8px; padding:8px 10px; margin:0; border-bottom:1px solid var(--border); font-weight:400;">
-          <input type="checkbox" style="width:auto; margin:0;" ${u.isAdminAccount?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked)">
-          <span style="flex:1; color:var(--text);">${escAttr(u.displayName)} <span class="score-note">(${escAttr(u.email)})</span></span>
+          <input type="checkbox" style="width:auto; margin:0;" ${u.is_admin_account?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked, '${escJsAttr(u.display_name)}')">
+          <span style="flex:1; color:var(--text);">${escAttr(u.display_name)} <span class="score-note">(${escAttr(u.email)})</span></span>
         </label>
       `).join('')}
     </div>
-  ` : '';
+  `;
+  }
   const darkModeRow = userHasTier('supporter') ? `
     <label style="display:flex; align-items:center; gap:10px; font-weight:400; cursor:pointer;">
       <input type="checkbox" style="width:auto; margin:0;" ${CURRENT_USER.darkMode?'checked':''} onchange="toggleDarkMode()">
@@ -983,32 +1035,59 @@ function showAccountSettings(){
     <div class="modal-actions" style="margin-top:18px;"><button class="btn-secondary" onclick="closeModal()">Close</button></div>
   `);
 }
-async function toggleUserAdmin(userId, checked){
-  const u = USERS.find(x=>x.id===userId);
-  if(!u) return;
-  u.isAdminAccount = checked;
-  await persistUsers();
-  if(CURRENT_USER && CURRENT_USER.id===userId){ CURRENT_USER = u; syncAdminState(); renderAccountZone(); render(); }
-  showStatus(checked ? `${u.displayName} can now edit the site.` : `${u.displayName}'s edit access was removed.`);
+async function toggleUserAdmin(userId, checked, displayName){
+  const { error } = await sb.rpc('set_admin_status', { target_user_id: userId, new_status: checked });
+  if(error){ showStatus(error.message || 'Could not update that — try again.', true); showAccountSettings(); return; }
+  showStatus(checked ? `${displayName} can now edit the site.` : `${displayName}'s edit access was removed.`);
+  showAccountSettings(); // re-render with the fresh list
 }
 async function saveAccountName(){
   const name = document.getElementById('acct-name').value.trim();
   if(!name){ showStatus('Name can\'t be empty.', true); return; }
+  const { error } = await sb.from('profiles').update({ display_name: name }).eq('id', CURRENT_USER.id);
+  if(error){ showStatus('Could not save — try again.', true); return; }
   CURRENT_USER.displayName = name;
-  const idx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
-  if(idx>=0) USERS[idx] = CURRENT_USER;
-  await persistUsers();
   renderAccountZone();
   showStatus('Saved.');
 }
-async function setTier(tierId){
+// Both of these hand off to Stripe's own hosted pages — the billing function decides the
+// price server-side (see aow-billing-function.txt), so nothing here ever sends an amount.
+async function callBillingFunction(action, extra){
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ showStatus('Please log in again.', true); return null; }
+  try {
+    const res = await fetch(BILLING_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, ...extra })
+    });
+    const body = await res.json().catch(()=>({}));
+    if(!res.ok || !body.url) return { error: body.error || 'unknown' };
+    return { url: body.url };
+  } catch(e){ return { error: 'network' }; }
+}
+async function startCheckout(tierId){
   if(!CURRENT_USER) return;
-  CURRENT_USER.tier = tierId;
-  const idx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
-  if(idx>=0) USERS[idx] = CURRENT_USER;
-  await persistUsers();
-  showAccountSettings();
-  showStatus('Plan updated.');
+  showStatus('Redirecting to checkout…');
+  const result = await callBillingFunction('checkout', { tier: tierId });
+  if(!result || result.error){
+    const msg = result && result.error==='already_subscribed' ? 'You already have an active plan — use Manage subscription instead.'
+      : result && result.error==='email_not_confirmed' ? 'Confirm your email before subscribing.'
+      : 'Could not start checkout — try again.';
+    showStatus(msg, true);
+    return;
+  }
+  window.location.href = result.url;
+}
+async function openBillingPortal(){
+  if(!CURRENT_USER) return;
+  showStatus('Opening your billing portal…');
+  const result = await callBillingFunction('portal');
+  if(!result || result.error){
+    showStatus(result && result.error==='no_subscription' ? 'No active subscription to manage yet.' : 'Could not open the billing portal — try again.', true);
+    return;
+  }
+  window.location.href = result.url;
 }
 
 
@@ -1201,31 +1280,14 @@ function avatarHTML(m, size){
     <div class="avatar-fallback">${escAttr(m.initials)}</div>
   </div>`;
 }
-// Drafts (promise.draft === true) are staged data, not published claims — real text,
-// found through research, but not yet checked against a source. They're written into
-// the data files like any other promise so sourcing one later is just deleting a flag,
-// not writing an entry from scratch. But every render path that lists a person's
-// promises goes through this single filter, so a draft is invisible to anyone who
-// isn't logged in as admin — no public page, card, count, or search filter can surface
-// one. One choke point instead of a flag checked ad hoc at each call site, so nothing
-// gets missed.
-function visiblePromises(arr, memberId){
-  return arr.filter(p => p.memberId===memberId && (!p.draft || isAdmin));
-}
 function computeDist(memberId, promisesArr){
-  const ps = visiblePromises(promisesArr||PROMISES, memberId);
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId);
   const dist = {}; Object.keys(STATUS_META).forEach(k=>dist[k]=0);
   ps.forEach(p=>dist[p.status]++);
   return {dist, total: ps.length};
 }
 function computeAOWScore(memberId, promisesArr){
-  // Undetermined promises are excluded here, not just weighted at 0 — they shouldn't move
-  // the average in either direction while their outcome is still unverified. n reflects only
-  // the promises actually counted, so the UI's "based on N promises" stays honest too.
-  // visiblePromises() also strips drafts as a second, independent safeguard — a draft with
-  // its status accidentally left as something other than 'undetermined' still can't reach
-  // the score.
-  const ps = visiblePromises(promisesArr||PROMISES, memberId).filter(p=>p.status!=='undetermined');
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId);
   if(!ps.length) return {score:null, n:0};
   const sum = ps.reduce((t,p)=>t+(AOW_WEIGHTS[p.status]??0), 0);
   return {score: Math.round(sum/ps.length), n: ps.length};
@@ -1285,7 +1347,7 @@ function matchesFilters(m){
   if(party && m.party!==party) return false;
   if(q && !(m.name.toLowerCase().includes(q) || m.state.toLowerCase().includes(q))) return false;
   if(status){
-    const ps = visiblePromises(PROMISES, m.id);
+    const ps = PROMISES.filter(p=>p.memberId===m.id);
     if(!ps.some(p=>p.status===status)) return false;
   }
   return true;
@@ -1415,14 +1477,7 @@ function renderCongress(){
   return `${selectorHTML}${gridHTML}`;
 }
 function selectAdminTerm(termId){ selectedAdminTerm = termId; selectedPastPersonId = null; render(); }
-function showPastPerson(personId){
-  const admin = PAST_ADMINISTRATIONS.find(a=>a.people.some(p=>p.id===personId));
-  if(admin) selectedAdminTerm = admin.id;
-  selectedPastPersonId = personId;
-  activeTab = 'administration';
-  render();
-  window.scrollTo({top:0, behavior:'smooth'});
-}
+function showPastPerson(personId){ selectedPastPersonId = personId; render(); window.scrollTo({top:0, behavior:'smooth'}); }
 function backToPastAdminRoster(){ selectedPastPersonId = null; render(); }
 
 function termSelectorHTML(){
@@ -1473,8 +1528,7 @@ function promiseSources(p){
 }
 function promiseCardHTML(p, personName, canEdit){
   return `
-    <div class="pcard${p.draft ? ' pcard-draft' : ''}">
-      ${p.draft ? `<div class="draft-banner">DRAFT — not sourced, not visible to site visitors. Only admins see this.</div>` : ''}
+    <div class="pcard">
       <div class="pcard-top" role="button" tabindex="0" aria-expanded="false" aria-controls="pcard-body-${p.id}" onclick="togglePromiseCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); togglePromiseCard(this);}">
         <p class="ptext">${escAttr(p.text)}</p>
         <span class="pcard-top-right">
@@ -1486,7 +1540,7 @@ function promiseCardHTML(p, personName, canEdit){
         <div class="cat-tag">${escAttr(p.category)}</div>
         <p class="pnote">${escAttr(p.note)}</p>
         <div class="psource">
-          ${promiseSources(p).map(src => `<span class="src-type">${SRC_TYPE_LABEL[src.type]||'Source'}</span> <span>${escAttr(src.publisher)}</span>${src.url ? ` <a href="${escAttr(src.url)}" target="_blank" rel="noopener">View source ↗</a>` : ''}`).join(' <span style="color:var(--text-faint);">·</span> ') || (p.draft ? `<span style="color:var(--broken); font-style:italic;">No source yet — this is what makes it a draft.</span>` : '')}
+          ${promiseSources(p).map(src => `<span class="src-type">${SRC_TYPE_LABEL[src.type]||'Source'}</span> <span>${escAttr(src.publisher)}</span>${src.url ? ` <a href="${escAttr(src.url)}" target="_blank" rel="noopener">View source ↗</a>` : ''}`).join(' <span style="color:var(--text-faint);">·</span> ')}
           <a href="#" onclick="appealPromise('${escJsAttr(p.text)}','${escJsAttr(personName)}'); return false;" style="margin-left:auto; font-size:11.5px;">Appeal this status</a>
         </div>
         ${canEdit ? `<div class="padmin-row">
@@ -1497,7 +1551,7 @@ function promiseCardHTML(p, personName, canEdit){
     </div>`;
 }
 function roleBlockHTML(role){
-  const ps = visiblePromises(role.promisesArr, role.id);
+  const ps = role.promisesArr.filter(p=>p.memberId===role.id);
   const tier = scoreTier(role.score);
   return `
     <div class="role-block">
@@ -1532,7 +1586,7 @@ function renderPastPersonDetail(){
   const m = admin && admin.people.find(p=>p.id===selectedPastPersonId);
   if(!m){ selectedPastPersonId = null; return renderPastAdminRoster(); }
   if(getLinkedRoleIds(m.id).length > 1) return renderMultiRoleDetail(m.id, admin.label, 'backToPastAdminRoster()');
-  const ps = visiblePromises(PAST_PROMISES, m.id);
+  const ps = PAST_PROMISES.filter(p=>p.memberId===m.id);
   return `
     <button class="back-btn" onclick="backToPastAdminRoster()">&larr; Back to ${escAttr(admin.label)}</button>
     <div class="detail-head">
@@ -1615,7 +1669,7 @@ function renderAbout(){
       <p>Every promise gets one of six statuses: <strong>Not started</strong> (nothing has happened yet), <strong>In progress</strong> (active movement, not yet resolved), <strong>Stalled</strong> (attempted, but momentum has died), <strong>Compromise</strong> (something was delivered, narrower than promised), <strong>Completed</strong> (kept as stated), or <strong>Broken</strong> (not kept). Every sourced entry links back to where it came from and is labeled by source type — a campaign statement and an independently reported outcome don't carry the same weight, and this site doesn't pretend otherwise.</p>
 
       <h2>What the tags mean</h2>
-      <p><strong>Appointed</strong> — nominated and confirmed by the Senate, or serving in an acting capacity, rather than elected by voters. Applies to Cabinet secretaries and senior agency heads. <strong>Non-voting</strong> — genuinely elected, but without a vote on final House passage: the District of Columbia, Puerto Rico, and four Pacific and Caribbean territories each send a delegate (Puerto Rico's is called the Resident Commissioner). <strong>Nonpartisan</strong> — elected on a ballot with no party label, by law — a handful of state judiciaries and statewide offices work this way.</p>
+      <p><strong>Appointed</strong> — nominated and confirmed by the Senate, or serving in an acting capacity, rather than elected by voters. Applies to Cabinet secretaries and senior agency heads. <strong>Non-voting</strong> — genuinely elected, but without a vote on final House passage: the District of Columbia, Puerto Rico, and four Pacific and Caribbean territories each send a delegate (Puerto Rico's is called the Resident Commissioner). <strong>Nonpartisan</strong> — elected on a ballot with no party label, by law — Oregon's judiciary and a couple of statewide offices work this way.</p>
 
       <h2>The Archive</h2>
       <p>Not everyone worth tracking currently holds office. The Archive covers three kinds of people: <strong>former officeholders</strong> who left a tracked seat (resignation, retirement, defeat, or death), <strong>candidates who ran and lost</strong>, and other <strong>historical figures</strong> whose promises are still worth having on record. A promise doesn't stop being checkable just because someone left office or never won — the same six statuses and the same sourcing standard apply. For someone who never held office, most promises will simply sit at Not Started indefinitely, since there was never any power to act on them; some, particularly promises about a candidate's own conduct rather than governing, can still resolve either way even without a win.</p>
@@ -1633,13 +1687,13 @@ function renderAbout(){
 
       <h2>What's covered so far</h2>
       <p>736 officials are seeded here. <strong>Federal:</strong> the complete Congress — 100 senators, all 431 currently-filled voting House seats (4 are vacant), and the 6 non-voting House seats — plus the President, Vice President, the 21-member Cabinet and senior White House officials, and 7 sub-Cabinet law-enforcement and agency heads (FBI, DEA, ATF, U.S. Marshals, CBP, ICE, Secret Service), verified against senate.gov, house.gov, whitehouse.gov, and each agency's own leadership page. Two comparable posts — TSA Administrator and IRS Commissioner — are currently vacant or in genuine legal limbo rather than simply unresearched, so both are omitted rather than assigned a name that wouldn't be accurate.</p>
-      <p><strong>State:</strong> every state has its Governor, Lieutenant Governor (or whichever office is actually first in succession — Secretary of State in a few states, Senate President in others), and Attorney General, verified against the National Lieutenant Governors Association and National Association of Attorneys General's own current rosters. Six major states (California, Texas, Florida, New York, Pennsylvania, Illinois) go deeper with their remaining executive offices.</p>
+      <p><strong>State:</strong> every state has its Governor, Lieutenant Governor (or whichever office is actually first in succession — Secretary of State in a few states, Senate President in others), and Attorney General, verified against the National Lieutenant Governors Association and National Association of Attorneys General's own current rosters. Six major states (California, Texas, Florida, New York, Pennsylvania, Illinois) go deeper with their remaining executive offices. Oregon alone has its full state government — the complete 90-member Legislature and all 20 appellate judges, on top of its five executives.</p>
 
       <h2>A few honest caveats</h2>
-      <p>Most entries have 1–3 sourced promises; every governor added after the first batch doesn't have promises logged yet — this phase was about getting names, parties, and offices right and correctly organized before layering in promise research. A couple of secondary fields are lower-confidence than the roster itself: governors' exact term-start years are approximate pending a closer pass; the names, offices, and parties are what's verified against official sources. Status calls throughout are a single research pass for demonstration, not a verified editorial record — a production version needs a written, consistent standard applied by more than one reviewer. Data lives in persistent storage attached to this page; admin edits are saved and will still be here next time it loads.</p>
+      <p>Most non-legislature, non-judicial entries have 1–3 sourced promises; Oregon's 90 legislators and 20 judges, and every governor added after the first batch, don't have promises logged yet — this phase was about getting names, parties, and offices right and correctly organized before layering in promise research. A couple of secondary fields are lower-confidence than the roster itself: judges' and governors' exact term-start years are approximate pending a closer pass; the names, offices, and parties are what's verified against official sources. Status calls throughout are a single research pass for demonstration, not a verified editorial record — a production version needs a written, consistent standard applied by more than one reviewer. Data lives in persistent storage attached to this page; admin edits are saved and will still be here next time it loads.</p>
 
       <h2>What isn't covered yet</h2>
-      <p>County and city government, school boards, and special districts aren't in scope yet — that tier is thousands of people with no single clean national source, unlike Congress or the executive branch. State legislatures and judiciaries aren't built out yet. Federal judges (lifetime-appointed, not elected) and independent regulatory boards like the Federal Reserve are a different category — appointed and often deliberately apolitical, with less to track in the same way.</p>
+      <p>County and city government, school boards, and special districts aren't in scope yet — that tier is thousands of people with no single clean national source, unlike Congress or the executive branch. Most states' legislatures and judiciaries beyond Oregon aren't built out. Federal judges (lifetime-appointed, not elected) and independent regulatory boards like the Federal Reserve are a different category — appointed and often deliberately apolitical, with less to track in the same way.</p>
 
       ${isAdmin ? `
       <h2>Admin</h2>
@@ -1723,14 +1777,12 @@ async function submitContactForm(){
       return;
     }
   }
-  SUBMISSIONS.push({
-    id: genId('sub_'), type, name, email, context, source, body,
-    submittedAt: new Date().toISOString().slice(0,10),
-    status: 'new',
-    userId: CURRENT_USER ? CURRENT_USER.id : null,
-    userTier: CURRENT_USER ? CURRENT_USER.tier : 'free'
-  });
-  await persistSubmissions();
+  // user_id and user_tier are stamped server-side from the logged-in session (see the
+  // submissions_stamp trigger in aow-phase2-setup.sql) — nothing sent from here can
+  // claim a tier that isn't really this visitor's.
+  const { error } = await sb.from('submissions').insert({ type, name, email, context, source, body });
+  if(error){ showStatus('Could not send that — try again.', true); return; }
+  if(isAdmin) await loadSubmissionsForAdmin(); // reflect it in the admin's own inbox right away
   render();
   showStatus('Sent — thanks.');
 }
@@ -1759,10 +1811,10 @@ function renderSubmissionsInbox(){
   `;
 }
 async function markSubmission(id, status){
+  const { error } = await sb.from('submissions').update({ status }).eq('id', id);
+  if(error){ showStatus('Could not update that — try again.', true); return; }
   const s = SUBMISSIONS.find(x=>x.id===id);
-  if(!s) return;
-  s.status = status;
-  await persistSubmissions();
+  if(s) s.status = status;
   render();
 }
 function renderDonate(){
@@ -2329,25 +2381,12 @@ function renderSearch(){
   `;
 }
 function renderFeatured(){
-  // The 10 most-searched U.S. politicians, per national search/news-trend prominence —
-  // a snapshot of current attention, not a permanent list; revisit periodically.
-  // Most are current officials (MEMBERS). Harris and Biden are tracked under Past
-  // Administrations, so they're looked up there and rendered with pastPersonCardHTML.
-  const pastIds = ['past-harris','past-biden'];
-  const ids = ['trump-pres','vance-vp','past-harris','past-biden','sen-sanders-vt','rep-ny14','gov-ca','gov-fl','rep-la04','sen-cruz-tx'];
-  const cards = ids.map(id=>{
-    if(pastIds.includes(id)){
-      const admin = PAST_ADMINISTRATIONS.find(a=>a.people.some(p=>p.id===id));
-      const p = admin && admin.people.find(x=>x.id===id);
-      return p ? pastPersonCardHTML(p) : '';
-    }
-    const m = MEMBERS.find(x=>x.id===id);
-    return m ? memberCardHTML(m) : '';
-  }).filter(Boolean).join('');
+  const ids = ['trump-pres','vance-vp','slotkin-mi','golden-me','kotek-or','rokita-in'];
+  const cards = ids.map(id=>MEMBERS.find(m=>m.id===id)).filter(Boolean).map(m=>memberCardHTML(m)).join('');
   return `
     <div class="section-intro">
       <h2>Featured officials</h2>
-      <p>The 10 most-searched U.S. politicians, based on national search and news-trend prominence. A snapshot of current attention, not a ranking of importance — expect this list to shift over time. Use the tabs above to browse a full chamber, or the States tab for governors and AGs together.</p>
+      <p>One from each office tracked so far — President, Vice President, senator, representative, governor, and attorney general. Use the tabs above to browse a full chamber, or the States tab for governors and AGs together.</p>
     </div>
     <div class="grid">${cards}</div>
   `;
@@ -2384,7 +2423,7 @@ function renderAdministration(){
   `;
 }
 function stateTileHTML(code, officials){
-  const totalPromises = officials.reduce((sum,m)=>sum + visiblePromises(PROMISES, m.id).length, 0);
+  const totalPromises = officials.reduce((sum,m)=>sum + PROMISES.filter(p=>p.memberId===m.id).length, 0);
   return `
     <div class="mcard state-tile" onclick="selectState('${code}')">
       <div class="state-tile-name">${escAttr(STATE_NAMES[code] || code)}</div>
@@ -2442,24 +2481,24 @@ function chipHTML(m, tag){
       ${tag ? `<span class="leg-district">${escAttr(tag)}</span>` : ''}
     </div>`;
 }
-function renderLegislatureSection(members, stateName){
+function renderLegislatureSection(members){
   const senate = members.filter(m=>m.chamber==='State Senate').sort((a,b)=>(a.district||0)-(b.district||0));
   const house = members.filter(m=>m.chamber==='State House').sort((a,b)=>(a.district||0)-(b.district||0));
   if(!senate.length && !house.length) return '';
   return `
     <div class="leg-section">
-      ${senate.length ? `<h3 class="leg-heading">${escAttr(stateName)} State Senate <span class="leg-count">${senate.length}</span></h3><div class="leg-chips">${senate.map(m=>chipHTML(m,'D'+m.district)).join('')}</div>` : ''}
-      ${house.length ? `<h3 class="leg-heading">${escAttr(stateName)} House of Representatives <span class="leg-count">${house.length}</span></h3><div class="leg-chips">${house.map(m=>chipHTML(m,'D'+m.district)).join('')}</div>` : ''}
+      ${senate.length ? `<h3 class="leg-heading">Oregon State Senate <span class="leg-count">${senate.length}</span></h3><div class="leg-chips">${senate.map(m=>chipHTML(m,'D'+m.district)).join('')}</div>` : ''}
+      ${house.length ? `<h3 class="leg-heading">Oregon House of Representatives <span class="leg-count">${house.length}</span></h3><div class="leg-chips">${house.map(m=>chipHTML(m,'D'+m.district)).join('')}</div>` : ''}
     </div>`;
 }
-function renderJudiciarySection(members, stateName){
+function renderJudiciarySection(members){
   const supreme = members.filter(m=>m.chamber==='Supreme Court');
   const coa = members.filter(m=>m.chamber==='Court of Appeals').sort((a,b)=>(a.position||0)-(b.position||0));
   if(!supreme.length && !coa.length) return '';
   return `
     <div class="leg-section">
-      ${supreme.length ? `<h3 class="leg-heading">${escAttr(stateName)} Supreme Court <span class="leg-count">${supreme.length}</span></h3><div class="leg-chips">${supreme.map(m=>chipHTML(m)).join('')}</div>` : ''}
-      ${coa.length ? `<h3 class="leg-heading">${escAttr(stateName)} Court of Appeals <span class="leg-count">${coa.length}</span></h3><div class="leg-chips">${coa.map(m=>chipHTML(m,'Pos '+m.position)).join('')}</div>` : ''}
+      ${supreme.length ? `<h3 class="leg-heading">Oregon Supreme Court <span class="leg-count">${supreme.length}</span></h3><div class="leg-chips">${supreme.map(m=>chipHTML(m)).join('')}</div>` : ''}
+      ${coa.length ? `<h3 class="leg-heading">Oregon Court of Appeals <span class="leg-count">${coa.length}</span></h3><div class="leg-chips">${coa.map(m=>chipHTML(m,'Pos '+m.position)).join('')}</div>` : ''}
     </div>`;
 }
 function renderStateOfficials(code){
@@ -2489,19 +2528,18 @@ function renderStateOfficials(code){
 
   const topHTML = hasTop ? `<div class="orgchart-top has-branches">${ocPersonHTML(governor)}</div>` : '';
 
-  // Three coequal branches of state government — the governor is pulled out to
-  // the top slot above, so Executive here shows just the other independently-
-  // elected statewide offices.
-  const stateFullName = STATE_NAMES[code] || code;
+  // Three coequal branches, matching Oregon's actual constitutional structure —
+  // the governor is pulled out to the top slot above, so Executive here shows
+  // just the other four independently-elected statewide offices.
   const branches = [];
   if(legOfficials.length){
-    branches.push({label:'Legislative Branch', body:`<div class="branch-body">${renderLegislatureSection(legOfficials, stateFullName)}</div>`});
+    branches.push({label:'Legislative Branch', body:`<div class="branch-body">${renderLegislatureSection(legOfficials)}</div>`});
   }
   if(otherExec.length){
     branches.push({label:'Executive Branch', body:`<div class="branch-body">${otherExec.map(ocPersonHTML).join('')}</div>`});
   }
   if(judOfficials.length){
-    branches.push({label:'Judicial Branch', body:`<div class="branch-body">${renderJudiciarySection(judOfficials, stateFullName)}</div>`});
+    branches.push({label:'Judicial Branch', body:`<div class="branch-body">${renderJudiciarySection(judOfficials)}</div>`});
   }
 
   const branchesHTML = branches.length ? `
@@ -2527,7 +2565,7 @@ function renderDetailView(id){
   if(!m){ selectedId = null; return renderFeatured(); }
   const backLabel = (activeTab==='states' && selectedState) ? (STATE_NAMES[selectedState] || selectedState) : TAB_LABELS[activeTab];
   if(getLinkedRoleIds(id).length > 1) return renderMultiRoleDetail(id, backLabel, 'backFromDetail()');
-  const ps = visiblePromises(PROMISES, id);
+  const ps = PROMISES.filter(p=>p.memberId===id);
   return `
     <button class="back-btn" onclick="backFromDetail()">&larr; Back to ${backLabel}</button>
     <div class="detail-head">
