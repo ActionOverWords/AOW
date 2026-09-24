@@ -601,7 +601,63 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Q1M5T3VhhyTV4vOVYhONiA_SYk6tsmG
 const BILLING_FUNCTION_URL = SUPABASE_URL + '/functions/v1/billing';
 // Named `sb`, not `supabase` — the CDN script above already defines a global called
 // `supabase`; reusing that name here would silently redeclare it and break the page.
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+// Guarded rather than assumed: if that CDN script failed to load (network issue,
+// ad-blocker), `window.supabase` won't exist. Leaving `sb` null here — instead of
+// letting this line throw — means the rest of this script still defines normally, and
+// initData()'s own try/catches (below) let the built-in roster still render, logged
+// out, instead of the whole page staying blank on "Loading…" forever.
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
+
+// ---------- advertising (Google AdSense) ----------
+// Free tier only — matches the "Ad-free" perk already promised in the pricing table.
+// Two things happen here, both required by Google's EU User Consent Policy before any
+// ad script is allowed to run for EEA/UK/Switzerland visitors:
+//   1. Consent Mode v2 defaults every ad/analytics signal to "denied" immediately, so
+//      even if the AdSense script below loads before real consent exists, it starts
+//      from the safe, non-personalized state rather than an unset one.
+//   2. The actual EEA/UK/CH consent prompt is NOT built here — Google requires a
+//      Google-certified CMP integrated with the IAB's Transparency and Consent
+//      Framework for that, which is a much bigger, standardized piece of infrastructure
+//      than this site's own cookie-consent.js can correctly claim to satisfy. The
+//      practical path is Google's own free "Privacy & messaging" tool, turned on in the
+//      AdSense dashboard once the account exists — see the delivery notes for the exact
+//      steps. That tool supplies its own script (account-specific, so it can't be
+//      hardcoded here) which calls gtag('consent','update', …) once a visitor actually
+//      answers the prompt; everything below just sets the correct starting point for
+//      that update to build on.
+window.dataLayer = window.dataLayer || [];
+function gtag(){ window.dataLayer.push(arguments); }
+gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied',
+  'analytics_storage': 'denied',
+  'wait_for_update': 2000
+});
+
+// Blank until the AdSense account exists and this site is approved — maybeLoadAds()
+// below is a no-op until this is filled in, so nothing about page load changes before
+// then. Format once you have it: 'ca-pub-XXXXXXXXXXXXXXXX', from the AdSense dashboard
+// (a different service and a different ID than anything Stripe-related).
+const ADSENSE_PUBLISHER_ID = '';
+let adsLoaded = false;
+// Injected as a dynamic script tag, not static markup, and only once a member's tier is
+// actually known — a Plus/Premium/Supporter member never even briefly sees an ad before
+// their tier loads. Uses Auto ads (Google chooses placement from the rendered page)
+// rather than fixed ad-unit slots: this page's content is almost entirely rebuilt by
+// render() on every filter change and tab switch, and Auto ads is built to cope with
+// that; hand-placed <ins> units would need re-inserting and re-initializing on every one
+// of those re-renders.
+function maybeLoadAds(){
+  if(adsLoaded || !ADSENSE_PUBLISHER_ID) return;
+  if(userHasTier('supporter')) return; // any paid tier — stays ad-free
+  adsLoaded = true;
+  const s = document.createElement('script');
+  s.async = true;
+  s.crossOrigin = 'anonymous';
+  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID;
+  document.head.appendChild(s);
+}
 
 function getLinkedRoleIds(id){
   const group = PERSON_LINKS.find(g=>g.ids.includes(id));
@@ -793,26 +849,31 @@ async function initData(){
   PROMISES = await loadOrSeed('aow_promises', DEFAULT_PROMISES);
   DONATE_URL = await loadOrSeed('aow_donate_url', '');
   SCORE_LOG = await loadOrSeed('aow_score_log', []);
-  // Supabase's own client restores a saved session from this browser (if any) —
-  // there's no more manual session key to load.
-  const { data: { session } } = await sb.auth.getSession();
-  if(session){
-    try {
+  // Supabase's own client restores a saved session from this browser (if any) — there's
+  // no more manual session key to load. Wrapped around getSession() too (not just the
+  // profile lookup below it) so that even a Supabase outage, or a null `sb` from a failed
+  // CDN load, still reaches the render calls below with the built-in roster already
+  // loaded above — logged out, but not stuck on a blank "Loading…" page.
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if(session){
       CURRENT_USER = await loadCurrentUser(session.user);
       syncAdminState();
       if(isAdmin) await loadSubmissionsForAdmin();
-    } catch(e){
-      // Session exists but the profile/user_data lookup failed — treat as logged out
-      // rather than leaving a half-loaded account state on screen.
-      CURRENT_USER = null; isAdmin = false;
-      try { await sb.auth.signOut(); } catch(e2){ /* ignore */ }
     }
+  } catch(e){
+    // Covers both "session exists but the profile/user_data lookup failed" and
+    // "sb is null / Supabase is unreachable" — either way, treat as logged out
+    // rather than leaving a half-loaded account state, or nothing, on screen.
+    CURRENT_USER = null; isAdmin = false;
+    if(sb){ try { await sb.auth.signOut(); } catch(e2){ /* ignore */ } }
   }
   applyTheme(!!(CURRENT_USER && CURRENT_USER.darkMode));
   renderTally();
   renderLegend();
   renderAccountZone();
   render();
+  maybeLoadAds();
 }
 
 /* ---------- admin state (derived from the logged-in account, see user accounts below) ---------- */
@@ -956,6 +1017,7 @@ async function tryLogIn(){
   closeModal();
   renderAccountZone();
   render();
+  maybeLoadAds();
   showStatus('Logged in.');
 }
 async function logOut(){
@@ -967,6 +1029,7 @@ async function logOut(){
   closeModal();
   renderAccountZone();
   render();
+  maybeLoadAds();
 }
 function renderTierTableHTML(){
   const currentTierId = CURRENT_USER ? CURRENT_USER.tier : null;
@@ -1553,6 +1616,10 @@ function promiseCardHTML(p, personName, canEdit){
 function roleBlockHTML(role){
   const ps = role.promisesArr.filter(p=>p.memberId===role.id);
   const tier = scoreTier(role.score);
+  // Prior/past/archive roles (role.isPast) are built-in reference data with no editable
+  // backing record — only the role that maps to a real, current MEMBERS entry can be
+  // edited, matching how single-role officials already work.
+  const canEditThisRole = isAdmin && !role.isPast;
   return `
     <div class="role-block">
       <div class="role-block-head">
@@ -1562,7 +1629,12 @@ function roleBlockHTML(role){
         </div>
         <div class="aow-score tier-${tier}"><span class="num">${role.score===null?'—':role.score}</span><span class="lbl">Score</span></div>
       </div>
-      ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, false)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
+      ${canEditThisRole ? `<div class="detail-head-actions">
+        <button class="btn-sm" onclick="editOfficial('${role.id}')">Edit official</button>
+        <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${role.id}')">Delete official</button>
+      </div>` : ''}
+      ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, canEditThisRole)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
+      ${canEditThisRole ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${role.id}',null)">+ Add promise</button>` : ''}
     </div>
   `;
 }
@@ -2643,7 +2715,15 @@ document.getElementById('search-q').addEventListener('input', () => {
   render();
 });
 
-initData();
+initData().catch(err => {
+  // Last resort — everything reasonably anticipated (a null `sb`, a Supabase outage,
+  // a bad session) is already handled inside initData() itself. This only fires for
+  // something genuinely unexpected, so it doesn't try to guess a fix — just replaces
+  // the permanent "Loading…" placeholder with something honest.
+  console.error('AOW failed to start:', err);
+  const c = document.getElementById('content');
+  if(c) c.innerHTML = '<div class="empty">Something went wrong loading the site. Refreshing the page usually fixes it.</div>';
+});
 </script>
 <script src="cookie-consent.js"></script>
 </body>
