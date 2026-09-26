@@ -460,7 +460,6 @@
       <a href="privacy-policy.html">Privacy Policy</a>
       <a href="terms-of-service.html">Terms of Service</a>
       <a href="cookie-policy.html">Cookie Policy</a>
-      <a href="dmca-policy.html">Copyright / DMCA</a>
       <a href="faq.html">FAQ</a>
       <a href="#" onclick="if(window.AOWConsent) window.AOWConsent.openPreferences(); return false;">Cookie Preferences</a>
     </div>
@@ -550,12 +549,6 @@
 <script src="data/prior-roles/part-1.js"></script>
 <script src="data/prior-roles/part-2.js"></script>
 <script src="data/prior-roles/part-3.js"></script>
-<!-- Supabase client (Phase 2 backend). Pinned to major version 2 only — this app calls
-     only the long-stable v2 surface (createClient, auth.*, from().*, rpc()), so a minor/
-     patch bump here should never break it. Declares a global named `supabase`; the app's
-     own client instance below is deliberately named `sb`, not `supabase`, so it doesn't
-     shadow that global and silently kill this whole inline script. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const STATUS_META = {
   not_started:{label:'Not started', color:'var(--not_started)'},
@@ -588,76 +581,13 @@ const STATE_NAMES = {
   PR:'Puerto Rico', GU:'Guam', AS:'American Samoa', VI:'U.S. Virgin Islands', MP:'Northern Mariana Islands'
 };
 
-// ---------- Phase 2 backend config ----------
-// The URL and publishable key below are safe to expose in page source by design — the
-// publishable key identifies this project, it does not grant access on its own. Every
-// table it can reach has row-level security (see aow-phase2-setup.sql); this key can
-// never read or write anything RLS doesn't already allow. The one-time "become the
-// first admin" step now happens as a SQL statement run directly in Supabase (see the
-// bottom of that file), not as an email hardcoded here — so there is nothing in this
-// file's source that grants anyone admin access.
-const SUPABASE_URL = 'https://iqouvbbuiarrsryfkgsz.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Q1M5T3VhhyTV4vOVYhONiA_SYk6tsmG';
-const BILLING_FUNCTION_URL = SUPABASE_URL + '/functions/v1/billing';
-// Named `sb`, not `supabase` — the CDN script above already defines a global called
-// `supabase`; reusing that name here would silently redeclare it and break the page.
-// Guarded rather than assumed: if that CDN script failed to load (network issue,
-// ad-blocker), `window.supabase` won't exist. Leaving `sb` null here — instead of
-// letting this line throw — means the rest of this script still defines normally, and
-// initData()'s own try/catches (below) let the built-in roster still render, logged
-// out, instead of the whole page staying blank on "Loading…" forever.
-const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
-
-// ---------- advertising (Google AdSense) ----------
-// Free tier only — matches the "Ad-free" perk already promised in the pricing table.
-// Two things happen here, both required by Google's EU User Consent Policy before any
-// ad script is allowed to run for EEA/UK/Switzerland visitors:
-//   1. Consent Mode v2 defaults every ad/analytics signal to "denied" immediately, so
-//      even if the AdSense script below loads before real consent exists, it starts
-//      from the safe, non-personalized state rather than an unset one.
-//   2. The actual EEA/UK/CH consent prompt is NOT built here — Google requires a
-//      Google-certified CMP integrated with the IAB's Transparency and Consent
-//      Framework for that, which is a much bigger, standardized piece of infrastructure
-//      than this site's own cookie-consent.js can correctly claim to satisfy. The
-//      practical path is Google's own free "Privacy & messaging" tool, turned on in the
-//      AdSense dashboard once the account exists — see the delivery notes for the exact
-//      steps. That tool supplies its own script (account-specific, so it can't be
-//      hardcoded here) which calls gtag('consent','update', …) once a visitor actually
-//      answers the prompt; everything below just sets the correct starting point for
-//      that update to build on.
-window.dataLayer = window.dataLayer || [];
-function gtag(){ window.dataLayer.push(arguments); }
-gtag('consent', 'default', {
-  'ad_storage': 'denied',
-  'ad_user_data': 'denied',
-  'ad_personalization': 'denied',
-  'analytics_storage': 'denied',
-  'wait_for_update': 2000
-});
-
-// Blank until the AdSense account exists and this site is approved — maybeLoadAds()
-// below is a no-op until this is filled in, so nothing about page load changes before
-// then. Format once you have it: 'ca-pub-XXXXXXXXXXXXXXXX', from the AdSense dashboard
-// (a different service and a different ID than anything Stripe-related).
-const ADSENSE_PUBLISHER_ID = '';
-let adsLoaded = false;
-// Injected as a dynamic script tag, not static markup, and only once a member's tier is
-// actually known — a Plus/Premium/Supporter member never even briefly sees an ad before
-// their tier loads. Uses Auto ads (Google chooses placement from the rendered page)
-// rather than fixed ad-unit slots: this page's content is almost entirely rebuilt by
-// render() on every filter change and tab switch, and Auto ads is built to cope with
-// that; hand-placed <ins> units would need re-inserting and re-initializing on every one
-// of those re-renders.
-function maybeLoadAds(){
-  if(adsLoaded || !ADSENSE_PUBLISHER_ID) return;
-  if(userHasTier('supporter')) return; // any paid tier — stays ad-free
-  adsLoaded = true;
-  const s = document.createElement('script');
-  s.async = true;
-  s.crossOrigin = 'anonymous';
-  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID;
-  document.head.appendChild(s);
-}
+// Admin access is now tied to accounts, not a shared passcode (see the account system
+// below). This is the ONE bootstrap point: whichever account signs up or logs in with
+// this email automatically becomes an admin, so there's a first admin to grant everyone
+// else access from. Set this to your real email before anyone else creates an account.
+// Like the old passcode, this is visible to anyone who views the page source — it only
+// controls who gets flagged admin on THIS specific email, not a secret in itself.
+const BOOTSTRAP_ADMIN_EMAIL = 'you@example.com';
 
 function getLinkedRoleIds(id){
   const group = PERSON_LINKS.find(g=>g.ids.includes(id));
@@ -719,12 +649,13 @@ let selectedArchivePersonId = null;
 let isAdmin = false;
 let officialFormMode = null, officialFormId = null;
 let promiseFormMode = null, promiseFormId = null, promiseFormMemberId = null;
-// Real accounts now — Supabase Auth holds the credentials and the login session;
-// nothing here stores or compares a password. CURRENT_USER is assembled on login/
-// session-restore from the "profiles" row (display name, tier, admin flag) plus this
-// browser's own "user_data" rows (watchlist, dark mode) — see loadCurrentUser() below.
-let CURRENT_USER = null;      // this browser's logged-in member, or null if logged out
-let SUBMISSIONS = [];         // admin-only cache of the "submissions" table, loaded on login for admins
+// Phase 1 accounts — NOT real security. Passwords here are stored and compared in
+// plain text in shared storage, visible to anyone who inspects it. This exists to
+// build and test the account/tier UI before the real auth swap (Supabase Auth),
+// which will replace this whole block without changing the sign-up/login forms.
+let USERS = [];          // shared — every registered account: {id, email, displayName, password, tier, joinedAt}
+let CURRENT_USER = null; // this browser's logged-in user (personal, not shared), or null if logged out
+let SUBMISSIONS = [];    // shared — every message/suggestion/appeal: {id, type, name, email, context, body, submittedAt, status, userId, userTier}
 let pendingAppealContext = null; // set by "Appeal this status" links, consumed once by the Contact form
 
 function escAttr(s){
@@ -751,23 +682,19 @@ function showStatus(msg, isError){
 
 /* ---------- storage backend ----------
    Everything the app persists goes through Backend.get/Backend.set.
-   This is the ONLY place that needs to change to swap storage providers.
-   Nothing else in the file talks to a storage API directly.
-   Current provider: Supabase's "app_data" table — one row per key. The four keys
-   used below (aow_officials, aow_promises, aow_donate_url, aow_score_log) are
-   readable by anyone and writable only by admins; see aow-phase2-setup.sql. The
-   `shared` parameter is kept (but unused) only so every call site below still
-   works unchanged — everything in this table is genuinely shared now, there's no
-   more personal/local mode the way window.storage had one. */
+   This is the ONLY place that needs to change to swap storage providers
+   (e.g. window.storage -> Supabase). Nothing else in the file talks to
+   a storage API directly.
+   Current provider: window.storage (Claude artifact storage — per-session,
+   not a real shared backend). Swap the two methods below to point at
+   Supabase (or any other backend) once credentials are available. */
 const Backend = {
   async get(key, shared=true){
-    const { data, error } = await sb.from('app_data').select('value').eq('key', key).maybeSingle();
-    if(error) throw error;
-    return data ? data.value : null;
+    const res = await window.storage.get(key, shared);
+    return (res && res.value) ? JSON.parse(res.value) : null;
   },
   async set(key, value, shared=true){
-    const { error } = await sb.from('app_data').upsert({ key, value });
-    if(error) throw error;
+    await window.storage.set(key, JSON.stringify(value), shared);
   }
 };
 
@@ -777,7 +704,7 @@ async function loadOrSeed(key, defaults, shared=true){
     const val = await Backend.get(key, shared);
     if(val !== null) return val;
   } catch(e) { /* key not seeded yet */ }
-  try { await Backend.set(key, defaults, shared); } catch(e){ /* not an admin, or offline — an admin's first save will seed it */ }
+  try { await Backend.set(key, defaults, shared); } catch(e){ /* ignore, will retry on next save */ }
   return defaults;
 }
 async function persistOfficials(){
@@ -796,45 +723,23 @@ async function persistScoreLog(){
   try { await Backend.set('aow_score_log', SCORE_LOG); }
   catch(e){ /* non-critical — don't block the save on this */ }
 }
-// Composes CURRENT_USER from this member's "profiles" row (display name, tier, admin
-// flag — server-controlled: writable here only via saveAccountName()'s display_name
-// call, never tier or the admin flag) plus their own "user_data" rows (watchlist,
-// dark mode — personal, RLS-scoped to their own id).
-async function loadCurrentUser(authUser){
-  const [{data:profile, error:profileErr}, {data:rows, error:dataErr}] = await Promise.all([
-    sb.from('profiles').select('display_name, tier, is_admin_account, joined_at').eq('id', authUser.id).single(),
-    sb.from('user_data').select('key, value').eq('user_id', authUser.id)
-  ]);
-  if(profileErr || !profile) throw profileErr || new Error('No profile row for this account yet.');
-  if(dataErr) throw dataErr;
-  const byKey = {}; (rows||[]).forEach(r=>{ byKey[r.key] = r.value; });
-  return {
-    id: authUser.id,
-    email: authUser.email,
-    displayName: profile.display_name,
-    tier: profile.tier,
-    isAdminAccount: profile.is_admin_account,
-    joinedAt: profile.joined_at,
-    watchlist: byKey.watchlist || [],
-    darkMode: !!byKey.dark_mode
-  };
+async function persistUsers(){
+  try { await Backend.set('aow_users', USERS); }
+  catch(e){ showStatus('Could not save account — try again.', true); }
 }
-// Admin-only cache of the "submissions" table (contact messages, suggestions, appeals).
-// Row-level security already returns an empty list to anyone who isn't an admin, so
-// this is safe to call for any signed-in member — it just won't find anything for a
-// non-admin. Field names are mapped from the table's snake_case columns to the
-// camelCase shape the rest of this file already expects.
-async function loadSubmissionsForAdmin(){
-  const { data, error } = await sb.from('submissions').select('*').order('submitted_at', {ascending:false});
-  if(error){ SUBMISSIONS = []; return; }
-  SUBMISSIONS = (data||[]).map(r=>({
-    id:r.id, type:r.type, name:r.name, email:r.email, context:r.context, source:r.source,
-    body:r.body, status:r.status, submittedAt:r.submitted_at, userId:r.user_id, userTier:r.user_tier
-  }));
+async function persistSubmissions(){
+  try { await Backend.set('aow_submissions', SUBMISSIONS); }
+  catch(e){ showStatus('Could not save that — try again.', true); }
+}
+async function persistSession(){
+  // Personal (shared:false) — each visitor's browser remembers only their own login,
+  // never anyone else's, even though the USERS directory itself is shared.
+  try { await Backend.set('aow_session', CURRENT_USER ? CURRENT_USER.id : null, false); }
+  catch(e){ /* non-critical — worst case they just have to log in again next visit */ }
 }
 async function resetToLatestData(){
   if(!isAdmin) return;
-  if(!confirm('This overwrites the LIVE site data — for every visitor, not just this device — with the built-in roster and promises. Any admin edits made since the last built-in update are lost. This cannot be undone. Continue?')) return;
+  if(!confirm('This discards any saved admin edits on this device and reloads the current built-in roster and promises. This cannot be undone. Continue?')) return;
   MEMBERS = DEFAULT_MEMBERS.slice();
   PROMISES = DEFAULT_PROMISES.slice();
   await persistOfficials();
@@ -849,31 +754,16 @@ async function initData(){
   PROMISES = await loadOrSeed('aow_promises', DEFAULT_PROMISES);
   DONATE_URL = await loadOrSeed('aow_donate_url', '');
   SCORE_LOG = await loadOrSeed('aow_score_log', []);
-  // Supabase's own client restores a saved session from this browser (if any) — there's
-  // no more manual session key to load. Wrapped around getSession() too (not just the
-  // profile lookup below it) so that even a Supabase outage, or a null `sb` from a failed
-  // CDN load, still reaches the render calls below with the built-in roster already
-  // loaded above — logged out, but not stuck on a blank "Loading…" page.
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if(session){
-      CURRENT_USER = await loadCurrentUser(session.user);
-      syncAdminState();
-      if(isAdmin) await loadSubmissionsForAdmin();
-    }
-  } catch(e){
-    // Covers both "session exists but the profile/user_data lookup failed" and
-    // "sb is null / Supabase is unreachable" — either way, treat as logged out
-    // rather than leaving a half-loaded account state, or nothing, on screen.
-    CURRENT_USER = null; isAdmin = false;
-    if(sb){ try { await sb.auth.signOut(); } catch(e2){ /* ignore */ } }
-  }
+  USERS = await loadOrSeed('aow_users', []);
+  SUBMISSIONS = await loadOrSeed('aow_submissions', []);
+  const sessionUserId = await loadOrSeed('aow_session', null, false);
+  CURRENT_USER = sessionUserId ? (USERS.find(u=>u.id===sessionUserId) || null) : null;
+  syncAdminState();
   applyTheme(!!(CURRENT_USER && CURRENT_USER.darkMode));
   renderTally();
   renderLegend();
   renderAccountZone();
   render();
-  maybeLoadAds();
 }
 
 /* ---------- admin state (derived from the logged-in account, see user accounts below) ---------- */
@@ -881,12 +771,12 @@ function syncAdminState(){
   isAdmin = !!(CURRENT_USER && CURRENT_USER.isAdminAccount);
 }
 
-/* ---------- user accounts (real Supabase Auth — see loadCurrentUser() above) ---------- */
+/* ---------- user accounts (Phase 1 — see security note on USERS/CURRENT_USER above) ---------- */
 const TIERS = [
   {id:'free', label:'Free', price:'$0'},
-  {id:'supporter', label:'Plus', price:'$4.99/mo'},
-  {id:'sustainer', label:'Premium', price:'$14.99/mo'},
-  {id:'patron', label:'Supporter', price:'$39.99/mo'}
+  {id:'supporter', label:'Plus', price:'$5–8/mo'},
+  {id:'sustainer', label:'Premium', price:'$15–20/mo'},
+  {id:'patron', label:'Supporter', price:'$40+/mo'}
 ];
 function tierLabel(id){ return (TIERS.find(t=>t.id===id) || {}).label || id; }
 const TIER_FEATURES = [
@@ -913,19 +803,13 @@ function userHasTier(minTierId){
 function applyTheme(dark){
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 }
-// Personal, per-member data — RLS on "user_data" already restricts every row to its
-// own owner, so this one upsert covers both the watchlist and the dark-mode keys.
-async function persistUserData(key, value){
-  try {
-    const { error } = await sb.from('user_data').upsert({ user_id: CURRENT_USER.id, key, value }, { onConflict: 'user_id,key' });
-    if(error) throw error;
-  } catch(e){ showStatus('Could not save that — try again.', true); }
-}
 async function toggleDarkMode(){
   if(!CURRENT_USER){ showAuthModal('signup'); showStatus(`Create a free account, then upgrade to ${tierLabel('supporter')} to unlock dark mode.`); return; }
   if(!userHasTier('supporter')){ showStatus(`Dark mode is a ${tierLabel('supporter')}-tier feature — see the Donate tab to upgrade.`, true); return; }
   CURRENT_USER.darkMode = !CURRENT_USER.darkMode;
-  await persistUserData('dark_mode', CURRENT_USER.darkMode);
+  const userIdx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(userIdx>=0) USERS[userIdx] = CURRENT_USER;
+  await persistUsers();
   applyTheme(CURRENT_USER.darkMode);
   showAccountSettings(); // re-render the modal in place so the toggle reflects the new state
 }
@@ -948,7 +832,9 @@ async function toggleWatch(officialId, event){
     }
     list.push(officialId);
   }
-  await persistUserData('watchlist', list);
+  const userIdx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(userIdx>=0) USERS[userIdx] = CURRENT_USER;
+  await persistUsers();
   render();
 }
 function watchStarHTML(officialId){
@@ -980,25 +866,24 @@ function showAuthModal(mode){
   document.getElementById('auth-email').focus();
   document.getElementById('auth-password').addEventListener('keydown', e=>{ if(e.key==='Enter') (isSignup?trySignUp:tryLogIn)(); });
 }
+function applyBootstrapAdmin(user){
+  // Runs on both signup and login so the flag stays correct even if BOOTSTRAP_ADMIN_EMAIL
+  // is set after this account already existed.
+  if(user.email === BOOTSTRAP_ADMIN_EMAIL.toLowerCase()) user.isAdminAccount = true;
+  return user;
+}
 async function trySignUp(){
   const name = document.getElementById('auth-name').value.trim();
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
   if(!name || !email || !password){ showStatus('Fill in all fields.', true); return; }
-  const { data, error } = await sb.auth.signUp({
-    email, password,
-    options: { data: { display_name: name }, emailRedirectTo: window.location.origin + window.location.pathname }
-  });
-  if(error){ showStatus(error.message || 'Could not create that account — try again.', true); return; }
-  if(!data.session){
-    // Email confirmation is required and no session comes back until that happens —
-    // there's nothing to log into yet.
-    closeModal();
-    showStatus('Check your email to confirm your account, then log in.');
-    return;
-  }
-  try { CURRENT_USER = await loadCurrentUser(data.user); syncAdminState(); }
-  catch(e){ showStatus('Account created, but something went wrong loading it — try logging in.', true); return; }
+  if(USERS.some(u=>u.email===email)){ showStatus('An account with that email already exists.', true); return; }
+  const user = applyBootstrapAdmin({id:genId('user_'), email, displayName:name, password, tier:'free', isAdminAccount:false, watchlist:[], darkMode:false, joinedAt:new Date().toISOString().slice(0,10)});
+  USERS.push(user);
+  await persistUsers();
+  CURRENT_USER = user;
+  await persistSession();
+  syncAdminState();
   closeModal();
   renderAccountZone();
   render();
@@ -1007,46 +892,37 @@ async function trySignUp(){
 async function tryLogIn(){
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if(error){ showStatus(error.message || 'Could not log in — try again.', true); return; }
-  try { CURRENT_USER = await loadCurrentUser(data.user); }
-  catch(e){ showStatus('Logged in, but something went wrong loading your account — try again.', true); return; }
+  const user = USERS.find(u=>u.email===email && u.password===password);
+  if(!user){ showStatus('Email or password not recognized.', true); return; }
+  applyBootstrapAdmin(user);
+  CURRENT_USER = user;
+  await persistUsers(); // in case applyBootstrapAdmin just changed something
+  await persistSession();
   syncAdminState();
-  if(isAdmin) await loadSubmissionsForAdmin();
   applyTheme(!!CURRENT_USER.darkMode);
   closeModal();
   renderAccountZone();
   render();
-  maybeLoadAds();
   showStatus('Logged in.');
 }
 async function logOut(){
-  await sb.auth.signOut();
   CURRENT_USER = null;
-  SUBMISSIONS = [];
+  await persistSession();
   syncAdminState();
   applyTheme(false);
   closeModal();
   renderAccountZone();
   render();
-  maybeLoadAds();
 }
 function renderTierTableHTML(){
   const currentTierId = CURRENT_USER ? CURRENT_USER.tier : null;
-  const hasSubscription = !!(CURRENT_USER && CURRENT_USER.tier !== 'free');
   const rows = TIER_FEATURES.map(f => `
     <tr><td>${escAttr(f.label)}</td><td${currentTierId==='free'?' class="tier-current"':''}>${escAttr(f.free)}</td><td${currentTierId==='supporter'?' class="tier-current"':''}>${escAttr(f.supporter)}</td><td${currentTierId==='sustainer'?' class="tier-current"':''}>${escAttr(f.sustainer)}</td><td${currentTierId==='patron'?' class="tier-current"':''}>${escAttr(f.patron)}</td></tr>
   `).join('');
   const pickCells = TIERS.map(t => {
     const isCurrent = t.id===currentTierId;
-    let label, action;
-    if(isCurrent){ label = 'Current plan'; action = ''; }
-    else if(!CURRENT_USER){ label = 'Sign up'; action = `onclick="showAuthModal('signup')"`; }
-    // Already on some paid plan — Stripe's checkout refuses a second subscription for the
-    // same member (see the billing function), so every other tier routes to the portal,
-    // which is also where Stripe lets them switch, downgrade, or cancel.
-    else if(hasSubscription){ label = 'Manage subscription'; action = `onclick="openBillingPortal()"`; }
-    else { label = 'Subscribe'; action = `onclick="startCheckout('${t.id}')"`; }
+    const label = isCurrent ? 'Current plan' : (CURRENT_USER ? 'Switch' : 'Sign up');
+    const action = isCurrent ? '' : (CURRENT_USER ? `onclick="setTier('${t.id}')"` : `onclick="showAuthModal('signup')"`);
     return `<td><button class="tier-pick-btn${isCurrent?' current':''}" ${isCurrent?'disabled':''} ${action}>${label}</button></td>`;
   }).join('');
   return `
@@ -1055,27 +931,23 @@ function renderTierTableHTML(){
       ${rows}
       <tr class="tier-pick-row"><td></td>${pickCells}</tr>
     </table>
-    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there.'}</p>
+    <p class="score-note">Billing isn't connected yet — switching tiers here is free during this preview and won't charge you.</p>
   `;
 }
-async function showAccountSettings(){
+function showAccountSettings(){
   if(!CURRENT_USER) return;
-  let teamPanel = '';
-  if(CURRENT_USER.isAdminAccount){
-    const { data: members, error } = await sb.rpc('admin_list_users');
-    teamPanel = `
+  const teamPanel = CURRENT_USER.isAdminAccount ? `
     <h3 style="margin-top:22px;">Team access</h3>
     <p class="score-note" style="margin:-6px 0 10px;">Anyone with a checked box below can edit officials and promises on the live site.</p>
     <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
-      ${error ? `<p class="score-note" style="padding:10px;">Could not load the member list.</p>` : (members||[]).map(u => `
+      ${USERS.map(u => `
         <label style="display:flex; align-items:center; gap:8px; padding:8px 10px; margin:0; border-bottom:1px solid var(--border); font-weight:400;">
-          <input type="checkbox" style="width:auto; margin:0;" ${u.is_admin_account?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked, '${escJsAttr(u.display_name)}')">
-          <span style="flex:1; color:var(--text);">${escAttr(u.display_name)} <span class="score-note">(${escAttr(u.email)})</span></span>
+          <input type="checkbox" style="width:auto; margin:0;" ${u.isAdminAccount?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked)">
+          <span style="flex:1; color:var(--text);">${escAttr(u.displayName)} <span class="score-note">(${escAttr(u.email)})</span></span>
         </label>
       `).join('')}
     </div>
-  `;
-  }
+  ` : '';
   const darkModeRow = userHasTier('supporter') ? `
     <label style="display:flex; align-items:center; gap:10px; font-weight:400; cursor:pointer;">
       <input type="checkbox" style="width:auto; margin:0;" ${CURRENT_USER.darkMode?'checked':''} onchange="toggleDarkMode()">
@@ -1098,59 +970,32 @@ async function showAccountSettings(){
     <div class="modal-actions" style="margin-top:18px;"><button class="btn-secondary" onclick="closeModal()">Close</button></div>
   `);
 }
-async function toggleUserAdmin(userId, checked, displayName){
-  const { error } = await sb.rpc('set_admin_status', { target_user_id: userId, new_status: checked });
-  if(error){ showStatus(error.message || 'Could not update that — try again.', true); showAccountSettings(); return; }
-  showStatus(checked ? `${displayName} can now edit the site.` : `${displayName}'s edit access was removed.`);
-  showAccountSettings(); // re-render with the fresh list
+async function toggleUserAdmin(userId, checked){
+  const u = USERS.find(x=>x.id===userId);
+  if(!u) return;
+  u.isAdminAccount = checked;
+  await persistUsers();
+  if(CURRENT_USER && CURRENT_USER.id===userId){ CURRENT_USER = u; syncAdminState(); renderAccountZone(); render(); }
+  showStatus(checked ? `${u.displayName} can now edit the site.` : `${u.displayName}'s edit access was removed.`);
 }
 async function saveAccountName(){
   const name = document.getElementById('acct-name').value.trim();
   if(!name){ showStatus('Name can\'t be empty.', true); return; }
-  const { error } = await sb.from('profiles').update({ display_name: name }).eq('id', CURRENT_USER.id);
-  if(error){ showStatus('Could not save — try again.', true); return; }
   CURRENT_USER.displayName = name;
+  const idx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(idx>=0) USERS[idx] = CURRENT_USER;
+  await persistUsers();
   renderAccountZone();
   showStatus('Saved.');
 }
-// Both of these hand off to Stripe's own hosted pages — the billing function decides the
-// price server-side (see aow-billing-function.txt), so nothing here ever sends an amount.
-async function callBillingFunction(action, extra){
-  const { data: { session } } = await sb.auth.getSession();
-  if(!session){ showStatus('Please log in again.', true); return null; }
-  try {
-    const res = await fetch(BILLING_FUNCTION_URL, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, ...extra })
-    });
-    const body = await res.json().catch(()=>({}));
-    if(!res.ok || !body.url) return { error: body.error || 'unknown' };
-    return { url: body.url };
-  } catch(e){ return { error: 'network' }; }
-}
-async function startCheckout(tierId){
+async function setTier(tierId){
   if(!CURRENT_USER) return;
-  showStatus('Redirecting to checkout…');
-  const result = await callBillingFunction('checkout', { tier: tierId });
-  if(!result || result.error){
-    const msg = result && result.error==='already_subscribed' ? 'You already have an active plan — use Manage subscription instead.'
-      : result && result.error==='email_not_confirmed' ? 'Confirm your email before subscribing.'
-      : 'Could not start checkout — try again.';
-    showStatus(msg, true);
-    return;
-  }
-  window.location.href = result.url;
-}
-async function openBillingPortal(){
-  if(!CURRENT_USER) return;
-  showStatus('Opening your billing portal…');
-  const result = await callBillingFunction('portal');
-  if(!result || result.error){
-    showStatus(result && result.error==='no_subscription' ? 'No active subscription to manage yet.' : 'Could not open the billing portal — try again.', true);
-    return;
-  }
-  window.location.href = result.url;
+  CURRENT_USER.tier = tierId;
+  const idx = USERS.findIndex(u=>u.id===CURRENT_USER.id);
+  if(idx>=0) USERS[idx] = CURRENT_USER;
+  await persistUsers();
+  showAccountSettings();
+  showStatus('Plan updated.');
 }
 
 
@@ -1616,10 +1461,6 @@ function promiseCardHTML(p, personName, canEdit){
 function roleBlockHTML(role){
   const ps = role.promisesArr.filter(p=>p.memberId===role.id);
   const tier = scoreTier(role.score);
-  // Prior/past/archive roles (role.isPast) are built-in reference data with no editable
-  // backing record — only the role that maps to a real, current MEMBERS entry can be
-  // edited, matching how single-role officials already work.
-  const canEditThisRole = isAdmin && !role.isPast;
   return `
     <div class="role-block">
       <div class="role-block-head">
@@ -1629,12 +1470,7 @@ function roleBlockHTML(role){
         </div>
         <div class="aow-score tier-${tier}"><span class="num">${role.score===null?'—':role.score}</span><span class="lbl">Score</span></div>
       </div>
-      ${canEditThisRole ? `<div class="detail-head-actions">
-        <button class="btn-sm" onclick="editOfficial('${role.id}')">Edit official</button>
-        <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${role.id}')">Delete official</button>
-      </div>` : ''}
-      ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, canEditThisRole)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
-      ${canEditThisRole ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${role.id}',null)">+ Add promise</button>` : ''}
+      ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, false)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
     </div>
   `;
 }
@@ -1849,12 +1685,14 @@ async function submitContactForm(){
       return;
     }
   }
-  // user_id and user_tier are stamped server-side from the logged-in session (see the
-  // submissions_stamp trigger in aow-phase2-setup.sql) — nothing sent from here can
-  // claim a tier that isn't really this visitor's.
-  const { error } = await sb.from('submissions').insert({ type, name, email, context, source, body });
-  if(error){ showStatus('Could not send that — try again.', true); return; }
-  if(isAdmin) await loadSubmissionsForAdmin(); // reflect it in the admin's own inbox right away
+  SUBMISSIONS.push({
+    id: genId('sub_'), type, name, email, context, source, body,
+    submittedAt: new Date().toISOString().slice(0,10),
+    status: 'new',
+    userId: CURRENT_USER ? CURRENT_USER.id : null,
+    userTier: CURRENT_USER ? CURRENT_USER.tier : 'free'
+  });
+  await persistSubmissions();
   render();
   showStatus('Sent — thanks.');
 }
@@ -1883,10 +1721,10 @@ function renderSubmissionsInbox(){
   `;
 }
 async function markSubmission(id, status){
-  const { error } = await sb.from('submissions').update({ status }).eq('id', id);
-  if(error){ showStatus('Could not update that — try again.', true); return; }
   const s = SUBMISSIONS.find(x=>x.id===id);
-  if(s) s.status = status;
+  if(!s) return;
+  s.status = status;
+  await persistSubmissions();
   render();
 }
 function renderDonate(){
@@ -2715,15 +2553,7 @@ document.getElementById('search-q').addEventListener('input', () => {
   render();
 });
 
-initData().catch(err => {
-  // Last resort — everything reasonably anticipated (a null `sb`, a Supabase outage,
-  // a bad session) is already handled inside initData() itself. This only fires for
-  // something genuinely unexpected, so it doesn't try to guess a fix — just replaces
-  // the permanent "Loading…" placeholder with something honest.
-  console.error('AOW failed to start:', err);
-  const c = document.getElementById('content');
-  if(c) c.innerHTML = '<div class="empty">Something went wrong loading the site. Refreshing the page usually fixes it.</div>';
-});
+initData();
 </script>
 <script src="cookie-consent.js"></script>
 </body>
