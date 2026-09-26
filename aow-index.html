@@ -383,6 +383,12 @@
   .acct-toggle.on::after{transform:translateX(15px);}
   .acct-tabs{display:flex; gap:3px; background:var(--bg-alt); border-radius:var(--radius-sm); padding:4px; margin:16px 0;}
   .acct-tabs .tab-btn{padding:8px 10px; font-size:12.5px;}
+  /* The account panel caps its own height and scrolls internally — see openModal/
+     closeModal for why the page behind it no longer also scrolls. min-height:0 on the
+     scroll region is load-bearing: without it, a flex child won't actually shrink below
+     its content's height, and the scrollbar never appears. */
+  .acct-shell{display:flex; flex-direction:column; max-height:calc(85vh - 48px);}
+  .acct-shell-scroll{overflow-y:auto; min-height:0;}
   /* Plan tab: cards stacked in one column, never a wide row of columns — this is what
      keeps it from ever needing a horizontal scrollbar, at any modal or screen width. */
   .plan-cards{display:flex; flex-direction:column; gap:12px; margin:2px 0 14px;}
@@ -1236,7 +1242,7 @@ async function showAccountSettings(){
         <span class="acct-row-icon">${ICON_TEAM}</span>
         <div class="acct-row-body">
           <p class="score-note" style="margin:0 0 10px;">Anyone with a checked box below can edit officials and promises on the live site.</p>
-          <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
+          <div style="border:1px solid var(--border); border-radius:var(--radius-sm);">
             ${error ? `<p class="score-note" style="padding:10px;">Could not load the member list.</p>` : (members||[]).map(u => `
               <label style="display:flex; align-items:center; gap:8px; padding:8px 10px; margin:0; border-bottom:1px solid var(--border); font-weight:400;">
                 <input type="checkbox" style="width:auto; margin:0;" ${u.is_admin_account?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked, '${escJsAttr(u.display_name)}')">
@@ -1250,6 +1256,7 @@ async function showAccountSettings(){
   }
 
   openModal(`
+    <div class="acct-shell">
     <button class="acct-close" onclick="closeModal()" aria-label="Close">${ICON_CLOSE}</button>
 
     <div class="acct-header">
@@ -1264,13 +1271,16 @@ async function showAccountSettings(){
       ${tabs.map(t => `<button class="tab-btn${selectedAcctTab===t.id?' active':''}" onclick="selectAcctTab('${t.id}')">${escAttr(t.label)}</button>`).join('')}
     </div>
 
-    ${tabContent}
+    <div class="acct-shell-scroll">
+      ${tabContent}
+    </div>
 
     <div class="acct-row danger" role="button" tabindex="0" onclick="logOut()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); logOut();}">
       <span class="acct-row-icon">${ICON_LOGOUT}</span>
       <div class="acct-row-body acct-row-top">
         <div class="acct-row-label">Log out</div>
       </div>
+    </div>
     </div>
   `);
 }
@@ -1331,10 +1341,24 @@ async function openBillingPortal(){
 
 
 /* ---------- modal ---------- */
-function closeModal(){ document.getElementById('modalBackdrop').style.display = 'none'; }
+// Every modal in this app (sign-up, edit forms, account settings) goes through these two
+// functions, so the fix belongs here once rather than per-modal. Without it, the page
+// behind a tall modal stays scrollable at the same time as the modal's own scroll region
+// — two independent scrollbars fighting each other, which is what "double scroll bars"
+// actually was. Locking body scroll while a modal is open, and compensating with
+// paddingRight for the scrollbar's own width, is the standard fix so content doesn't
+// visibly shift sideways the instant a modal opens or closes.
+function closeModal(){
+  document.getElementById('modalBackdrop').style.display = 'none';
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+}
 function openModal(html){
   document.getElementById('modalCard').innerHTML = html;
   document.getElementById('modalBackdrop').style.display = 'flex';
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  document.body.style.overflow = 'hidden';
+  document.body.style.paddingRight = scrollbarWidth > 0 ? scrollbarWidth + 'px' : '';
 }
 
 /* ---------- officials CRUD ---------- */
