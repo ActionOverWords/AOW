@@ -381,6 +381,19 @@
   .acct-toggle::after{content:''; position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; transition:transform .15s ease;}
   .acct-toggle.on{background:var(--brand);}
   .acct-toggle.on::after{transform:translateX(15px);}
+  .acct-tabs{display:flex; gap:3px; background:var(--bg-alt); border-radius:var(--radius-sm); padding:4px; margin:16px 0;}
+  .acct-tabs .tab-btn{padding:8px 10px; font-size:12.5px;}
+  /* Plan tab: cards stacked in one column, never a wide row of columns — this is what
+     keeps it from ever needing a horizontal scrollbar, at any modal or screen width. */
+  .plan-cards{display:flex; flex-direction:column; gap:12px; margin:2px 0 14px;}
+  .plan-card{border:1px solid var(--border); border-radius:var(--radius); padding:16px;}
+  .plan-card.current{border-color:var(--brand); background:var(--brand-tint);}
+  .plan-card-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:10px;}
+  .plan-card-name{font-size:15px; font-weight:800; color:var(--text);}
+  .plan-card-price{font-size:12.5px; color:var(--text-muted);}
+  .plan-card-list{list-style:none; margin:0 0 12px; padding:0; display:flex; flex-direction:column; gap:6px;}
+  .plan-card-list li{font-size:12.5px; color:var(--text-muted); padding-left:18px; position:relative;}
+  .plan-card-list li::before{content:'✓'; position:absolute; left:0; color:var(--brand); font-weight:700;}
   .page-form{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:24px;}
   .page-form label{display:block; font-size:12.5px; font-weight:700; color:var(--text-muted); margin:0 0 14px;}
   .page-form input, .page-form select, .page-form textarea{
@@ -737,6 +750,7 @@ let compareIds = ['', ''];
 let selectedPastPersonId = null;
 let selectedCongressChamber = 'senate';
 let selectedTool = 'compare';
+let selectedAcctTab = 'profile'; // which tab is open in the account panel: profile | appearance | plan | team
 let selectedOrgChartLevel = 'federal';
 let calendarMonth = null; // {year, month} 0-indexed, lazily set to today's month on first render
 let selectedElectionDate = null; // 'YYYY-MM-DD' once a marked date is clicked
@@ -1098,37 +1112,143 @@ const ICON_MOON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" st
 const ICON_CARD = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M1.5 6.5h13"/></svg>';
 const ICON_TEAM = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.6" cy="5.2" r="2.2"/><path d="M1.6 13.8c0-2.4 1.8-3.9 4-3.9s4 1.5 4 3.9"/><path d="M10.2 4.6a2.2 2.2 0 010 4.3M14.4 13.8c0-2-1.4-3.5-3.1-3.85"/></svg>';
 const ICON_LOGOUT = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6.3 13.8H3a1 1 0 01-1-1V3.2a1 1 0 011-1h3.3"/><path d="M10.3 11.3L13.8 8l-3.5-3.3"/><path d="M13.8 8H6.2"/></svg>';
+const ICON_MAIL = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><path d="M2 4l6 5 6-5"/></svg>';
 function initialsFrom(name){
   const parts = (name||'').trim().split(/\s+/).filter(Boolean);
   if(!parts.length) return '?';
   return (parts[0][0] + (parts.length>1 ? parts[parts.length-1][0] : '')).toUpperCase();
 }
+// Card-based plan display for the account panel specifically — deliberately NOT the same
+// markup as renderTierTableHTML() (still used on the public Donate page, where a wide
+// table has plenty of room). Stacked in one column so it can never need a horizontal
+// scrollbar inside the narrower modal, at any screen width.
+function renderPlanCardsHTML(){
+  const currentTierId = CURRENT_USER.tier; // only called from showAccountSettings(), which already requires a signed-in member
+  const hasSubscription = currentTierId !== 'free';
+  const cards = TIERS.map(t => {
+    const isCurrent = t.id === currentTierId;
+    const included = TIER_FEATURES.map(f => {
+      const val = f[t.id];
+      if(val === '–' || val === undefined) return null;
+      return `<li>${val === '✓' ? escAttr(f.label) : `${escAttr(f.label)}: ${escAttr(val)}`}</li>`;
+    }).filter(Boolean).join('');
+    // Same decision the table version uses: Stripe's checkout refuses a second
+    // subscription for a member who already has one, so any tier that isn't the
+    // current one routes an existing subscriber to the portal instead of checkout.
+    let actionHTML;
+    if(isCurrent) actionHTML = `<span class="pill p-completed">Current plan</span>`;
+    else if(hasSubscription) actionHTML = `<button class="btn-secondary" style="width:100%;" onclick="openBillingPortal()">Manage subscription</button>`;
+    else actionHTML = `<button class="btn-primary" style="width:100%;" onclick="startCheckout('${t.id}')">Subscribe</button>`;
+    return `
+      <div class="plan-card${isCurrent?' current':''}">
+        <div class="plan-card-head">
+          <div class="plan-card-name">${escAttr(t.label)}</div>
+          <div class="plan-card-price">${escAttr(t.price)}</div>
+        </div>
+        <ul class="plan-card-list">${included}</ul>
+        ${actionHTML}
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="plan-cards">${cards}</div>
+    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there.'}</p>
+  `;
+}
+// Supabase sends a confirmation link to the new address (and, depending on the project's
+// "Secure email change" setting, possibly the current one too) before the email actually
+// changes — so CURRENT_USER.email is deliberately left untouched here, since it hasn't
+// changed yet. It updates the next time the session loads, after confirmation.
+async function changeEmail(){
+  const input = document.getElementById('acct-email-new');
+  const newEmail = input.value.trim().toLowerCase();
+  if(!newEmail){ showStatus('Enter a new email address.', true); return; }
+  if(newEmail === CURRENT_USER.email){ showStatus("That's already your email.", true); return; }
+  const { error } = await sb.auth.updateUser({ email: newEmail });
+  if(error){ showStatus(error.message || 'Could not start that change — try again.', true); return; }
+  input.value = '';
+  showStatus('Check your inbox to confirm the new email address.');
+}
+function selectAcctTab(tab){
+  selectedAcctTab = tab;
+  showAccountSettings();
+}
 async function showAccountSettings(){
   if(!CURRENT_USER) return;
-  let teamPanel = '';
-  if(CURRENT_USER.isAdminAccount){
-    const { data: members, error } = await sb.rpc('admin_list_users');
-    teamPanel = `
-    <div class="acct-row">
-      <span class="acct-row-icon">${ICON_TEAM}</span>
-      <div class="acct-row-body">
-        <div class="acct-row-label">Team access</div>
-        <p class="score-note" style="margin:4px 0 10px;">Anyone with a checked box below can edit officials and promises on the live site.</p>
-        <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
-          ${error ? `<p class="score-note" style="padding:10px;">Could not load the member list.</p>` : (members||[]).map(u => `
-            <label style="display:flex; align-items:center; gap:8px; padding:8px 10px; margin:0; border-bottom:1px solid var(--border); font-weight:400;">
-              <input type="checkbox" style="width:auto; margin:0;" ${u.is_admin_account?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked, '${escJsAttr(u.display_name)}')">
-              <span style="flex:1; color:var(--text);">${escAttr(u.display_name)} <span class="score-note">(${escAttr(u.email)})</span></span>
-            </label>
-          `).join('')}
-        </div>
-      </div>
-    </div>`;
-  }
+  if(selectedAcctTab==='team' && !CURRENT_USER.isAdminAccount) selectedAcctTab = 'profile';
+
+  const tabs = [
+    {id:'profile', label:'Profile'},
+    {id:'appearance', label:'Appearance'},
+    {id:'plan', label:'Plan'},
+  ];
+  if(CURRENT_USER.isAdminAccount) tabs.push({id:'team', label:'Team'});
+
   const isPaid = CURRENT_USER.tier !== 'free';
   const darkModeControl = userHasTier('supporter')
     ? `<button class="acct-toggle ${CURRENT_USER.darkMode?'on':''}" onclick="toggleDarkMode()" aria-label="Toggle dark mode" aria-pressed="${CURRENT_USER.darkMode?'true':'false'}"></button>`
     : `<span class="acct-row-value">${escAttr(tierLabel('supporter'))}+ only</span>`;
+
+  let tabContent = '';
+  if(selectedAcctTab==='profile'){
+    tabContent = `
+      <div class="acct-row">
+        <span class="acct-row-icon">${ICON_EDIT}</span>
+        <div class="acct-row-body">
+          <label for="acct-name" class="acct-row-label" style="display:block; margin:0; font-size:14px; font-weight:700; color:var(--text);">Display name</label>
+          <input id="acct-name" value="${escAttr(CURRENT_USER.displayName)}">
+          <p class="score-note" style="margin:8px 0 0;">Joined ${escAttr(CURRENT_USER.joinedAt)}</p>
+          <div class="modal-actions" style="margin-top:10px;"><button class="btn-primary" onclick="saveAccountName()">Save name</button></div>
+        </div>
+      </div>
+      <div class="acct-row">
+        <span class="acct-row-icon">${ICON_MAIL}</span>
+        <div class="acct-row-body">
+          <div class="acct-row-label">Email</div>
+          <p class="score-note" style="margin:4px 0 10px;">${escAttr(CURRENT_USER.email)}</p>
+          <input id="acct-email-new" type="email" placeholder="New email address">
+          <p class="score-note" style="margin:8px 0 0;">We'll send a confirmation link to the new address before it takes effect.</p>
+          <div class="modal-actions" style="margin-top:10px;"><button class="btn-primary" onclick="changeEmail()">Change email</button></div>
+        </div>
+      </div>
+    `;
+  } else if(selectedAcctTab==='appearance'){
+    tabContent = `
+      <div class="acct-row">
+        <span class="acct-row-icon">${ICON_MOON}</span>
+        <div class="acct-row-body acct-row-top">
+          <div class="acct-row-label">Dark mode</div>
+          ${darkModeControl}
+        </div>
+      </div>
+    `;
+  } else if(selectedAcctTab==='plan'){
+    tabContent = `
+      <div class="acct-row">
+        <span class="acct-row-icon">${ICON_CARD}</span>
+        <div class="acct-row-body">${renderPlanCardsHTML()}</div>
+      </div>
+    `;
+  } else if(selectedAcctTab==='team'){
+    const { data: members, error } = await sb.rpc('admin_list_users');
+    tabContent = `
+      <div class="acct-row">
+        <span class="acct-row-icon">${ICON_TEAM}</span>
+        <div class="acct-row-body">
+          <p class="score-note" style="margin:0 0 10px;">Anyone with a checked box below can edit officials and promises on the live site.</p>
+          <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius-sm);">
+            ${error ? `<p class="score-note" style="padding:10px;">Could not load the member list.</p>` : (members||[]).map(u => `
+              <label style="display:flex; align-items:center; gap:8px; padding:8px 10px; margin:0; border-bottom:1px solid var(--border); font-weight:400;">
+                <input type="checkbox" style="width:auto; margin:0;" ${u.is_admin_account?'checked':''} ${u.id===CURRENT_USER.id?'disabled':''} onchange="toggleUserAdmin('${u.id}', this.checked, '${escJsAttr(u.display_name)}')">
+                <span style="flex:1; color:var(--text);">${escAttr(u.display_name)} <span class="score-note">(${escAttr(u.email)})</span></span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   openModal(`
     <button class="acct-close" onclick="closeModal()" aria-label="Close">${ICON_CLOSE}</button>
 
@@ -1140,36 +1260,11 @@ async function showAccountSettings(){
       </div>
     </div>
 
-    <div class="acct-row">
-      <span class="acct-row-icon">${ICON_EDIT}</span>
-      <div class="acct-row-body">
-        <label for="acct-name" class="acct-row-label" style="display:block; margin:0; font-size:14px; font-weight:700; color:var(--text);">Display name</label>
-        <input id="acct-name" value="${escAttr(CURRENT_USER.displayName)}">
-        <p class="score-note" style="margin:8px 0 0;">${escAttr(CURRENT_USER.email)} · Joined ${escAttr(CURRENT_USER.joinedAt)}</p>
-        <div class="modal-actions" style="margin-top:10px;"><button class="btn-primary" onclick="saveAccountName()">Save name</button></div>
-      </div>
+    <div class="acct-tabs">
+      ${tabs.map(t => `<button class="tab-btn${selectedAcctTab===t.id?' active':''}" onclick="selectAcctTab('${t.id}')">${escAttr(t.label)}</button>`).join('')}
     </div>
 
-    <div class="acct-row">
-      <span class="acct-row-icon">${ICON_MOON}</span>
-      <div class="acct-row-body acct-row-top">
-        <div class="acct-row-label">Dark mode</div>
-        ${darkModeControl}
-      </div>
-    </div>
-
-    <div class="acct-row">
-      <span class="acct-row-icon">${ICON_CARD}</span>
-      <div class="acct-row-body">
-        <div class="acct-row-top">
-          <div class="acct-row-label">Your plan</div>
-          <span class="acct-row-value">${escAttr(tierLabel(CURRENT_USER.tier))}</span>
-        </div>
-        ${renderTierTableHTML()}
-      </div>
-    </div>
-
-    ${teamPanel}
+    ${tabContent}
 
     <div class="acct-row danger" role="button" tabindex="0" onclick="logOut()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); logOut();}">
       <span class="acct-row-icon">${ICON_LOGOUT}</span>
