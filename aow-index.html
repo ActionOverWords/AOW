@@ -814,7 +814,7 @@ async function loadCurrentUser(authUser){
     displayName: profile.display_name,
     tier: profile.tier,
     isAdminAccount: profile.is_admin_account,
-    joinedAt: profile.joined_at,
+    joinedAt: (profile.joined_at || '').slice(0, 10), // Postgres returns a full timestamp; only the date is shown
     watchlist: byKey.watchlist || [],
     darkMode: !!byKey.dark_mode
   };
@@ -1050,11 +1050,13 @@ function renderTierTableHTML(){
     return `<td><button class="tier-pick-btn${isCurrent?' current':''}" ${isCurrent?'disabled':''} ${action}>${label}</button></td>`;
   }).join('');
   return `
+    <div style="overflow-x:auto;">
     <table class="tier-table">
       <tr><th></th>${TIERS.map(t=>`<th${t.id===currentTierId?' class="tier-current"':''}>${escAttr(t.label)}<br><span style="font-weight:400; text-transform:none; letter-spacing:0;">${escAttr(t.price)}</span></th>`).join('')}</tr>
       ${rows}
       <tr class="tier-pick-row"><td></td>${pickCells}</tr>
     </table>
+    </div>
     <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there.'}</p>
   `;
 }
