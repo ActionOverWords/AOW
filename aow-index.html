@@ -891,12 +891,16 @@ async function persistScoreLog(){
 // call, never tier or the admin flag) plus their own "user_data" rows (watchlist,
 // dark mode — personal, RLS-scoped to their own id).
 async function loadCurrentUser(authUser){
-  const [{data:profile, error:profileErr}, {data:rows, error:dataErr}] = await Promise.all([
+  const [{data:profile, error:profileErr}, {data:rows, error:dataErr}, {data:billing, error:billingErr}] = await Promise.all([
     sb.from('profiles').select('display_name, tier, is_admin_account, joined_at').eq('id', authUser.id).single(),
-    sb.from('user_data').select('key, value').eq('user_id', authUser.id)
+    sb.from('user_data').select('key, value').eq('user_id', authUser.id),
+    // Free members, or anyone who's never started a checkout, have no row here yet —
+    // maybeSingle() so that's a normal, non-error outcome rather than a thrown error.
+    sb.from('billing').select('subscription_status, current_period_end, cancel_at_period_end').eq('user_id', authUser.id).maybeSingle()
   ]);
   if(profileErr || !profile) throw profileErr || new Error('No profile row for this account yet.');
   if(dataErr) throw dataErr;
+  if(billingErr) throw billingErr;
   const byKey = {}; (rows||[]).forEach(r=>{ byKey[r.key] = r.value; });
   return {
     id: authUser.id,
@@ -906,7 +910,10 @@ async function loadCurrentUser(authUser){
     isAdminAccount: profile.is_admin_account,
     joinedAt: (profile.joined_at || '').slice(0, 10), // Postgres returns a full timestamp; only the date is shown
     watchlist: byKey.watchlist || [],
-    darkMode: !!byKey.dark_mode
+    darkMode: !!byKey.dark_mode,
+    subscriptionStatus: billing ? billing.subscription_status : null,
+    currentPeriodEnd: billing ? billing.current_period_end : null,
+    cancelAtPeriodEnd: billing ? billing.cancel_at_period_end : false
   };
 }
 // Admin-only cache of the "submissions" table (contact messages, suggestions, appeals).
@@ -1189,6 +1196,12 @@ function renderPlanCardsHTML(){
     if(isCurrent) actionHTML = `<span class="pill p-completed">Current plan</span>`;
     else if(hasSubscription) actionHTML = `<button class="btn-secondary" style="width:100%;" onclick="openBillingPortal()">Manage subscription</button>`;
     else actionHTML = `<button class="btn-primary" style="width:100%;" onclick="startCheckout('${t.id}')">Subscribe</button>`;
+    // Only the member's own current paid plan has a real date to show — Stripe tracks
+    // this on the subscription itself, so it only exists once CURRENT_USER has a billing
+    // row at all. cancelAtPeriodEnd distinguishes "renews" from "ends" on the same date.
+    const periodEndHTML = (isCurrent && hasSubscription && CURRENT_USER.currentPeriodEnd)
+      ? `<p class="score-note" style="margin:6px 0 0; text-align:center;">${CURRENT_USER.cancelAtPeriodEnd ? 'Ends' : 'Renews'} ${new Date(CURRENT_USER.currentPeriodEnd).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}</p>`
+      : '';
     return `
       <div class="plan-card${isCurrent?' current':''}">
         <div class="plan-card-head">
@@ -1197,6 +1210,7 @@ function renderPlanCardsHTML(){
         </div>
         <ul class="plan-card-list">${included}</ul>
         ${actionHTML}
+        ${periodEndHTML}
       </div>
     `;
   }).join('');
