@@ -1,0 +1,38 @@
+AOW static pages report (deterministic; no timestamps)
+data files read: 76
+officials with a page: 29
+promises published on pages: 63
+promises held back (fewer than 3 distinct publishers, or no primary-record source): 33
+  - p27 (Donald Trump): 3 publisher(s), primary-record source: no
+  - p44 (Donald Trump): 2 publisher(s), primary-record source: no
+  - p87 (John Ratcliffe): 3 publisher(s), primary-record source: no
+  - p68 (Pete Hegseth): 2 publisher(s), primary-record source: yes
+  - p21 (Kris Mayes): 1 publisher(s), primary-record source: no
+  - p22 (Kris Mayes): 1 publisher(s), primary-record source: no
+  - p08 (Lauren Boebert): 1 publisher(s), primary-record source: yes
+  - p09 (Lauren Boebert): 1 publisher(s), primary-record source: yes
+  - p23 (Todd Rokita): 1 publisher(s), primary-record source: yes
+  - p24 (Todd Rokita): 1 publisher(s), primary-record source: no
+  - p12 (Jared Golden): 1 publisher(s), primary-record source: no
+  - p13 (Jared Golden): 1 publisher(s), primary-record source: no
+  - p01 (Elissa Slotkin): 1 publisher(s), primary-record source: no
+  - p02 (Elissa Slotkin): 1 publisher(s), primary-record source: no
+  - p03 (Elissa Slotkin): 1 publisher(s), primary-record source: no
+  - p10 (Andy Kim): 1 publisher(s), primary-record source: yes
+  - p11 (Andy Kim): 1 publisher(s), primary-record source: no
+  - p04 (Bernie Moreno): 1 publisher(s), primary-record source: no
+  - p05 (Bernie Moreno): 1 publisher(s), primary-record source: no
+  - p06 (Bernie Moreno): 1 publisher(s), primary-record source: no
+  - p17 (Tina Kotek): 1 publisher(s), primary-record source: no
+  - p18 (Tina Kotek): 1 publisher(s), primary-record source: no
+  - p07 (Val Hoyle): 1 publisher(s), primary-record source: no
+  - p19 (Greg Abbott): 1 publisher(s), primary-record source: no
+  - p20 (Greg Abbott): 1 publisher(s), primary-record source: no
+  - pp1 (Joe Biden): 1 publisher(s), primary-record source: no
+  - pp2 (Joe Biden): 1 publisher(s), primary-record source: no
+  - pp3 (Kamala Harris): 1 publisher(s), primary-record source: no
+  - pp4 (Donald Trump): 1 publisher(s), primary-record source: no
+  - pp5 (Donald Trump): 1 publisher(s), primary-record source: no
+  - arc1 (Eric Swalwell): 1 publisher(s), primary-record source: no
+  - arc2 (Beto O'Rourke): 1 publisher(s), primary-record source: no
+  - arc3 (Mitt Romney): 1 publisher(s), primary-record source: no

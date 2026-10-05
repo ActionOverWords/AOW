@@ -1,0 +1,7 @@
+# aow-generated: do not edit by hand; rebuilt by tools/build-pages.js
+User-agent: *
+Allow: /
+Disallow: /thank-you-donate.html
+Disallow: /thank-you-subscribe.html
+
+Sitemap: https://action-over-words.com/sitemap.xml
