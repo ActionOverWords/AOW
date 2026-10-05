@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: build-pages
@@ -32,13 +33,15 @@ jobs:
           node-version: '20'
       - name: Syntax check
         run: node --check tools/build-pages.js
-      - name: Build pages (fails safe: refuses empty or sharply shrunken output)
+      - name: "Build pages (fails safe, refuses empty or sharply shrunken output)"
         run: node tools/build-pages.js
       - name: Commit changes, if any
+        id: commit
         run: |
           git add officials sitemap.xml robots.txt tools/pages-manifest.json tools/pages-report.txt
           if git diff --cached --quiet; then
             echo "No page changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name "aow-pages-bot"
@@ -46,3 +49,12 @@ jobs:
           git commit -m "Rebuild static pages from data"
           git pull --rebase origin main
           git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      # Pushes made with the built-in token don't always trigger a Pages rebuild, so ask for one.
+      # A manual run always asks, even when there was nothing new to commit.
+      - name: Ask GitHub Pages to rebuild
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
