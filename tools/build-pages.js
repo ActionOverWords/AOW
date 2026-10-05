@@ -165,10 +165,13 @@ function buildModel(D) {
       .map(e => ({ entry: e, all: byMember.get(e.id).all, shown: byMember.get(e.id).shown }));
     if (!roles.length) return;
     if (!/^[a-z0-9][a-z0-9-]*$/.test(primary.id)) fatal('Unsafe page slug (ids must be a-z, 0-9, hyphen): ' + primary.id);
-    pages.push({ slug: primary.id, name: primary.name, primary, roles, priors: list.filter(e => e.kind === 'prior') });
+    pages.push({ slug: primary.id, name: primary.name, primary, roles, priors: list.filter(e => e.kind === 'prior'), ids: list.map(e => e.id) });
   });
   pages.sort((a, b) => a.name.localeCompare(b.name) || a.slug.localeCompare(b.slug));
-  return { entries, pages, excluded };
+  const covered = new Set(pages.flatMap(pg => pg.ids));
+  const roster = [...entries.values()].filter(e => e.kind === 'current' && !covered.has(e.id))
+    .sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
+  return { entries, pages, excluded, roster };
 }
 
 /* --------------------------------- scoring --------------------------------- */
@@ -209,7 +212,7 @@ h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{fon
 .cat{font-size:12.5px;color:var(--text-muted);margin-left:8px}.note{margin:0 0 10px;color:var(--text)}
 .sources{list-style:none;margin:6px 0 12px;padding:0;font-size:13.5px}.sources li{padding:3px 0}.stype{display:inline-block;min-width:175px;font-size:11.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
 .info{font-size:13.5px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:18px 0}
-.dir-sec h2{font-size:17px;margin:26px 0 6px}.dir{list-style:none;margin:0;padding:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
+.dir-sec h2,.dir-sec h3{font-size:17px;margin:26px 0 6px}.dir{list-style:none;margin:0;padding:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
 .dir li{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--border);flex-wrap:wrap}.dir li:first-child{border-top:0}.dir .meta{color:var(--text-muted);font-size:13px;margin-left:auto}
 footer{border-top:1px solid var(--border);margin-top:40px;padding:22px 0 40px;font-size:13px;color:var(--text-muted)}footer a{color:var(--text-muted);margin-right:14px}
 `.replace(/\n/g, '\n').trim();
@@ -317,7 +320,7 @@ ${priors}
   return layout({ depth: 2, title, description: desc, canonical, body, ld, lastmodToken: '{{LASTMOD}}' });
 }
 
-function renderDirectory(pages) {
+function renderDirectory(pages, roster) {
   const sec = pg => {
     const e = pg.primary;
     if (e.kind === 'current') return e.state === 'US' ? '0|Federal administration' : '1|' + (STATE_NAMES[e.state] || e.state || 'Other');
@@ -333,14 +336,25 @@ function renderDirectory(pages) {
     const all = pg.roles.flatMap(r => r.all), sc = scoreOf(pg.roles[0].all);
     return `<li><a href="${esc(pg.slug)}/">${esc(pg.name)}</a>${pg.primary.party ? `<span class="chip p-${partyKey(pg.primary.party)}">${esc(partyLabel(pg.primary.party))}</span>` : ''}<span class="meta">${esc(pg.primary.seat)} · ${all.length} promise${all.length === 1 ? '' : 's'}${sc === null ? '' : ' · score ' + sc}</span></li>`;
   }).join('')}</ul></section>`).join('');
+  // everyone else on the roster: listed by name only, no page until they have publishable promises
+  const rsec = e => (e.state === 'US' ? '0|Federal administration' : '1|' + (STATE_NAMES[e.state] || e.state || 'Other'));
+  const rBy = new Map();
+  roster.forEach(e => { const k = rsec(e); if (!rBy.has(k)) rBy.set(k, []); rBy.get(k).push(e); });
+  const rKeys = [...rBy.keys()].sort((a, b) => a.split('|')[0].localeCompare(b.split('|')[0]) || a.split('|')[1].localeCompare(b.split('|')[1]));
+  const rosterHtml = roster.length ? `
+<h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
+<p class="sub">${roster.length} more current officials are tracked in <a href="../aow-index.html">the interactive tracker</a> and have no promises published on this site yet. A page appears here automatically once an official has promises that meet the sourcing standard.</p>
+${rKeys.map(k => `<section class="dir-sec"><h3>${esc(k.split('|')[1])}</h3><ul class="dir">${rBy.get(k).map(e =>
+    `<li><span>${esc(e.name)}</span>${e.party ? `<span class="chip p-${partyKey(e.party)}">${esc(partyLabel(e.party))}</span>` : ''}<span class="meta">${esc(e.seat)}</span></li>`).join('')}</ul></section>`).join('')}` : '';
   const canonical = SITE + '/officials/';
   const title = 'Officials With Tracked Promises | ActionOverWords';
-  const description = `${pages.length} elected and appointed officials with ${total} sourced promises tracked: what was promised, what happened, and the evidence.`;
+  const description = `${pages.length + roster.length} current and past officials tracked, ${pages.length} with ${total} sourced promises published: what was promised, what happened, and the evidence.`;
   const body = `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="../aow-index.html">Home</a> › Officials</nav>
 <h1>Officials with tracked promises</h1>
-<p class="sub">${pages.length} people, ${total} promises. Every listed promise carries sources from at least three distinct publishers, including at least one primary record. People with no tracked promises yet are not listed here; browse everyone in <a href="../aow-index.html">the interactive tracker</a>.</p>
-${list}`;
+<p class="sub">${pages.length} people have promises published here, ${total} in all. Every published promise carries sources from at least three distinct publishers, including at least one primary record. The rest of the roster is listed further down.</p>
+${list}
+${rosterHtml}`;
   const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, url: canonical };
   return layout({ depth: 1, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}' });
 }
@@ -376,7 +390,7 @@ function main() {
     const lm = stamp(key, raw);
     out.set(`officials/${pg.slug}/index.html`, raw.replace('{{LASTMOD}}', lm));
   });
-  { const raw = renderDirectory(model.pages), lm = stamp('officials/', raw); out.set('officials/index.html', raw.replace('{{LASTMOD}}', lm)); }
+  { const raw = renderDirectory(model.pages, model.roster), lm = stamp('officials/', raw); out.set('officials/index.html', raw.replace('{{LASTMOD}}', lm)); }
 
   // sitemap: honest lastmod for generated pages, the SPA (hash of page + data), and static root pages that exist
   const urls = [];
@@ -405,6 +419,7 @@ Sitemap: ${SITE}/sitemap.xml
     `data files read: ${fileCount}`,
     `officials with a page: ${model.pages.length}`,
     `promises published on pages: ${model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0)}`,
+    `current officials listed by name only (no publishable promises yet): ${model.roster.length}`,
     `promises held back (fewer than ${MIN_PUBLISHERS} distinct publishers, or no primary-record source): ${model.excluded.length}`,
     ...model.excluded.map(x => `  - ${x.id} (${x.member}): ${x.publishers} publisher(s), primary-record source: ${x.primary ? 'yes' : 'no'}`),
     ''
