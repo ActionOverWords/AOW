@@ -2,6 +2,7 @@ AOW static pages report (deterministic; no timestamps)
 data files read: 76
 officials with a page: 29
 promises published on pages: 63
+current officials listed by name only (no publishable promises yet): 707
 promises held back (fewer than 3 distinct publishers, or no primary-record source): 33
   - p27 (Donald Trump): 3 publisher(s), primary-record source: no
   - p44 (Donald Trump): 2 publisher(s), primary-record source: no
