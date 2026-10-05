@@ -1,0 +1,48 @@
+name: Build static pages
+
+# Regenerates officials/, sitemap.xml and robots.txt from the repo's data files.
+# Runs when data changes, nightly as a backstop, and on demand (Actions tab > Run workflow).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data.js'
+      - 'data/**'
+      - 'tools/build-pages.js'
+  schedule:
+    - cron: '23 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Tip: pin these two actions to full commit SHAs once you've confirmed the first run works.
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check
+        run: node --check tools/build-pages.js
+      - name: Build pages (fails safe: refuses empty or sharply shrunken output)
+        run: node tools/build-pages.js
+      - name: Commit changes, if any
+        run: |
+          git add officials sitemap.xml robots.txt tools/pages-manifest.json tools/pages-report.txt
+          if git diff --cached --quiet; then
+            echo "No page changes."
+            exit 0
+          fi
+          git config user.name "aow-pages-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Rebuild static pages from data"
+          git pull --rebase origin main
+          git push origin HEAD:main
