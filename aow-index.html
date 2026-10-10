@@ -2010,7 +2010,7 @@ function pastPersonCardHTML(p){
   return `
   <div class="mcard" onclick="showPastPerson('${p.id}')">
     <div class="mcard-top">
-      <div class="avatar"><div class="avatar-fallback" style="display:flex;">${escAttr(p.initials)}</div></div>
+      ${avatarHTML(p)}
       <div>
         <h3>${escAttr(p.name)}</h3>
         <p class="seat">${escAttr(p.seat)}</p>
@@ -2030,7 +2030,7 @@ function archiveCardHTML(p){
   return `
   <div class="mcard" onclick="showArchivePerson('${p.id}')">
     <div class="mcard-top">
-      <div class="avatar"><div class="avatar-fallback" style="display:flex;">${escAttr(p.initials)}</div></div>
+      ${avatarHTML(p)}
       <div>
         <h3>${escAttr(p.name)}</h3>
         <p class="seat">${escAttr(seatText(p.seat))}</p>
@@ -3059,13 +3059,18 @@ function racePromisesHTML(id){
     return '<div class="race-promise"><span class="rp-text">'+escAttr(p.text)+'</span><span class="pill p-'+p.status+'">'+label+'</span></div>';
   }).join('')+'</div>';
 }
+function raceAvatarHTML(id, e){
+  var pr = id.indexOf('arch-')===0 ? (typeof ARCHIVE!=='undefined' && ARCHIVE ? ARCHIVE.find(function(a){return a.id===id;}) : null) : MEMBERS.find(function(m){return m.id===id;});
+  if(pr) return '<div style="display:flex; justify-content:center; margin-bottom:10px;">'+avatarHTML(pr)+'</div>';
+  return e.initials ? '<div class="avatar" style="margin:0 auto 10px;"><div class="avatar-fallback" style="display:flex;">'+escAttr(e.initials)+'</div></div>' : '';
+}
 function raceSideHTML(id, e){
   if(!e) return '';
   var tier = scoreTier(e.score);
   var link = id.indexOf('arch-')===0 ? "showArchivePerson('"+id+"')" : "showDetail('"+id+"')";
   var bar = e.total ? '<div class="mini-bar" style="margin:10px 0;">'+Object.entries(e.dist).filter(function(x){return x[1]>0;}).map(function(x){return '<span style="width:'+(x[1]/e.total*100)+'%;background:'+STATUS_META[x[0]].color+'"></span>';}).join('')+'</div>' : '';
   return '<div class="compare-side">'
-    + (e.initials ? '<div class="avatar" style="margin:0 auto 10px;"><div class="avatar-fallback" style="display:flex;">'+escAttr(e.initials)+'</div></div>' : '')
+    + raceAvatarHTML(id, e)
     + '<h3>'+escAttr(e.label)+' <a href="#" onclick="'+link+'; return false;" style="font-size:11px; font-weight:600;">View &rarr;</a></h3>'
     + '<p class="seat" style="margin:2px 0 8px;">'+escAttr(e.sub)+(e.party ? ' &middot; <span class="party-dot party-'+escAttr(e.party)+'"></span>'+partyLabel(e.party) : '')+'</p>'
     + '<div class="aow-score aow-score-lg tier-'+tier+'" style="margin:0 auto;"><span class="num">'+(e.score===null?'&mdash;':e.score)+'</span><span class="lbl">Score</span></div>'
