@@ -118,6 +118,9 @@
   .race-dot{width:9px; height:9px; border-radius:50%; border:none; background:var(--border); cursor:pointer; padding:0; transition:background .15s, transform .15s;}
   .race-dot:hover{background:var(--text-faint);}
   .race-dot.active{background:var(--brand); transform:scale(1.3);}
+  .race-click{cursor:pointer; transition:box-shadow .15s ease, transform .15s ease;}
+  .race-click:hover{box-shadow:var(--shadow-md); transform:translateY(-2px);}
+  .race-click:hover h3{color:var(--brand);}
   .race-promises{margin-top:14px; text-align:left; border-top:1px solid var(--border); padding-top:12px; display:flex; flex-direction:column; gap:9px;}
   .race-promise{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
   .race-promise .rp-text{font-size:12.5px; color:var(--text); line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
@@ -3064,14 +3067,15 @@ function raceAvatarHTML(id, e){
   if(pr) return '<div style="display:flex; justify-content:center; margin-bottom:10px;">'+avatarHTML(pr)+'</div>';
   return e.initials ? '<div class="avatar" style="margin:0 auto 10px;"><div class="avatar-fallback" style="display:flex;">'+escAttr(e.initials)+'</div></div>' : '';
 }
+function raceGo(el){ var id=el.getAttribute('data-goto'); if(!id) return; if(id.indexOf('arch-')===0){ showArchivePerson(id); } else { showDetail(id); } }
 function raceSideHTML(id, e){
   if(!e) return '';
   var tier = scoreTier(e.score);
   var link = id.indexOf('arch-')===0 ? "showArchivePerson('"+id+"')" : "showDetail('"+id+"')";
   var bar = e.total ? '<div class="mini-bar" style="margin:10px 0;">'+Object.entries(e.dist).filter(function(x){return x[1]>0;}).map(function(x){return '<span style="width:'+(x[1]/e.total*100)+'%;background:'+STATUS_META[x[0]].color+'"></span>';}).join('')+'</div>' : '';
-  return '<div class="compare-side">'
+  return '<div class="compare-side race-click" data-goto="'+escAttr(id)+'" onclick="raceGo(this)">'
     + raceAvatarHTML(id, e)
-    + '<h3>'+escAttr(e.label)+' <a href="#" onclick="'+link+'; return false;" style="font-size:11px; font-weight:600;">View &rarr;</a></h3>'
+    + '<h3>'+escAttr(e.label)+' <span style="color:var(--brand); font-size:11px; font-weight:600;">View &rarr;</span></h3>'
     + '<p class="seat" style="margin:2px 0 8px;">'+escAttr(e.sub)+(e.party ? ' &middot; <span class="party-dot party-'+escAttr(e.party)+'"></span>'+partyLabel(e.party) : '')+'</p>'
     + '<div class="aow-score aow-score-lg tier-'+tier+'" style="margin:0 auto;"><span class="num">'+(e.score===null?'&mdash;':e.score)+'</span><span class="lbl">Score</span></div>'
     + bar
