@@ -263,10 +263,20 @@ function distBar(dist, total) {
   return `<div class="bar" role="img" aria-label="${esc(label)}">${segs}</div><p class="legend">${esc(label)}</p>`;
 }
 
+// "Senate · Florida" is a U.S. Senate seat; "Florida Senate" is the state's. The data files store the
+// bare "Senate · X" / "House · X" form, so spell out "U.S." (or "State") on the way out. Mirrors seatText()
+// in aow-index.html, which does the same for the interactive site.
+function seatText(seat) {
+  const s = String(seat || '');
+  if (/^(Senate|House)( ·|$)/.test(s)) return 'U.S. ' + s;
+  if (/^Senate President\b/.test(s)) return 'State ' + s;
+  return s;
+}
+
 function roleLabel(e) {
-  if (e.kind === 'current') return 'Current role · ' + e.seat;
-  if (e.kind === 'past') return e.adminLabel + (e.years ? ' (' + e.years + ')' : '') + ' · ' + e.seat;
-  return 'Archive · ' + e.seat + (e.years ? ' (' + e.years + ')' : '');
+  if (e.kind === 'current') return 'Current role · ' + seatText(e.seat);
+  if (e.kind === 'past') return e.adminLabel + (e.years ? ' (' + e.years + ')' : '') + ' · ' + seatText(e.seat);
+  return 'Archive · ' + seatText(e.seat) + (e.years ? ' (' + e.years + ')' : '');
 }
 
 function renderOfficial(pg) {
@@ -275,7 +285,7 @@ function renderOfficial(pg) {
   const allShown = pg.roles.flatMap(r => r.shown);
   const dist = distOf(allShown);
   const bits = Object.keys(STATUS).filter(k => dist[k]).map(k => `${dist[k]} ${STATUS[k].toLowerCase()}`);
-  let desc = `${pg.name}${p0.party ? ' (' + partyLabel(p0.party) + ')' : ''}, ${p0.seat}: ${allShown.length} sourced promise${allShown.length === 1 ? '' : 's'} tracked — ${bits.join(', ')}. See each status, the evidence, and the sources.`;
+  let desc = `${pg.name}${p0.party ? ' (' + partyLabel(p0.party) + ')' : ''}, ${seatText(p0.seat)}: ${allShown.length} sourced promise${allShown.length === 1 ? '' : 's'} tracked — ${bits.join(', ')}. See each status, the evidence, and the sources.`;
   if (desc.length > 300) desc = desc.slice(0, 297) + '...';
   const title = `${pg.name} — Campaign Promise Tracker | ActionOverWords`;
 
@@ -299,18 +309,18 @@ ${cards}
 </section>`;
   }).join('\n');
 
-  const priors = pg.priors.length ? `<h2>Earlier offices</h2><p class="sub">${pg.priors.map(e => esc(e.seat + (e.years ? ' (' + e.years + ')' : ''))).join(' · ')}</p>` : '';
+  const priors = pg.priors.length ? `<h2>Earlier offices</h2><p class="sub">${pg.priors.map(e => esc(seatText(e.seat) + (e.years ? ' (' + e.years + ')' : ''))).join(' · ')}</p>` : '';
   const body = `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="../../aow-index.html">Home</a> › <a href="../">Officials</a> › ${esc(pg.name)}</nav>
 <h1>${esc(pg.name)}${p0.party ? `<span class="chip p-${partyKey(p0.party)}">${esc(partyLabel(p0.party))}</span>` : ''}</h1>
-<p class="sub">${esc(p0.seat)}${p0.termStart && p0.kind === 'current' ? ' · in this role since ' + esc(p0.termStart) : ''}</p>
+<p class="sub">${esc(seatText(p0.seat))}${p0.termStart && p0.kind === 'current' ? ' · in this role since ' + esc(p0.termStart) : ''}</p>
 ${roles}
 ${priors}
 <div class="info"><strong>How to read this page.</strong> Each status is ActionOverWords' assessment based on the sources listed. A listed promise needs sources from at least three distinct publishers, including at least one primary record. The AOW Score averages a person's tracked promises: Completed 100, Compromise 60, In progress 40, Stalled 15, Not started 0, Broken 0. <a href="../../aow-index.html">Full methodology and the interactive tracker</a>.</div>`;
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
-      { '@type': 'Person', name: pg.name, jobTitle: p0.seat, url: canonical },
+      { '@type': 'Person', name: pg.name, jobTitle: seatText(p0.seat), url: canonical },
       { '@type': 'BreadcrumbList', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/aow-index.html' },
         { '@type': 'ListItem', position: 2, name: 'Officials', item: SITE + '/officials/' },
@@ -334,7 +344,7 @@ function renderDirectory(pages, roster) {
   const list = keys.map(k => `
 <section class="dir-sec"><h2>${esc(k.split('|')[1])}</h2><ul class="dir">${bySec.get(k).map(pg => {
     const all = pg.roles.flatMap(r => r.all), sc = scoreOf(pg.roles[0].all);
-    return `<li><a href="${esc(pg.slug)}/">${esc(pg.name)}</a>${pg.primary.party ? `<span class="chip p-${partyKey(pg.primary.party)}">${esc(partyLabel(pg.primary.party))}</span>` : ''}<span class="meta">${esc(pg.primary.seat)} · ${all.length} promise${all.length === 1 ? '' : 's'}${sc === null ? '' : ' · score ' + sc}</span></li>`;
+    return `<li><a href="${esc(pg.slug)}/">${esc(pg.name)}</a>${pg.primary.party ? `<span class="chip p-${partyKey(pg.primary.party)}">${esc(partyLabel(pg.primary.party))}</span>` : ''}<span class="meta">${esc(seatText(pg.primary.seat))} · ${all.length} promise${all.length === 1 ? '' : 's'}${sc === null ? '' : ' · score ' + sc}</span></li>`;
   }).join('')}</ul></section>`).join('');
   // everyone else on the roster: listed by name only, no page until they have publishable promises
   const rsec = e => (e.state === 'US' ? '0|Federal administration' : '1|' + (STATE_NAMES[e.state] || e.state || 'Other'));
@@ -345,7 +355,7 @@ function renderDirectory(pages, roster) {
 <h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
 <p class="sub">${roster.length} more current officials are tracked in <a href="../aow-index.html">the interactive tracker</a> and have no promises published on this site yet. A page appears here automatically once an official has promises that meet the sourcing standard.</p>
 ${rKeys.map(k => `<section class="dir-sec"><h3>${esc(k.split('|')[1])}</h3><ul class="dir">${rBy.get(k).map(e =>
-    `<li><span>${esc(e.name)}</span>${e.party ? `<span class="chip p-${partyKey(e.party)}">${esc(partyLabel(e.party))}</span>` : ''}<span class="meta">${esc(e.seat)}</span></li>`).join('')}</ul></section>`).join('')}` : '';
+    `<li><span>${esc(e.name)}</span>${e.party ? `<span class="chip p-${partyKey(e.party)}">${esc(partyLabel(e.party))}</span>` : ''}<span class="meta">${esc(seatText(e.seat))}</span></li>`).join('')}</ul></section>`).join('')}` : '';
   const canonical = SITE + '/officials/';
   const title = 'Officials With Tracked Promises | ActionOverWords';
   const description = `${pages.length + roster.length} current and past officials tracked, ${pages.length} with ${total} sourced promises published: what was promised, what happened, and the evidence.`;
