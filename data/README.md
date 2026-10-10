@@ -12,6 +12,13 @@ to change.
 
 **Use Ctrl+F / Cmd+F on a person's name below to find which file has their record.**
 
+**Seat labels:** U.S. Congress seats are stored in the short form `Senate · X` / `House · X`, and state
+legislature seats under their full names (`Florida Senate`, `California State Assembly`). Leave the short
+form as is — the site and the generated pages show it as `U.S. Senate · X` / `U.S. House · X` and tag each
+person as *U.S. Congress* or *State Legislature* automatically (see `legislatureOf()` / `seatText()` in
+`aow-index.html`). For a state legislator added as a current official, use level `state` and chamber
+`State Senate` or `State House`.
+
 ## Administration (federal executive branch — President, VP, Cabinet, agency heads)
 
 ### data/members/administration-1.js (15 people)
@@ -965,7 +972,7 @@ prior career stint) can span a current role, a past administration, and a prior 
 at once — there's no single state each entry cleanly belongs to. Kept as a few compact files
 instead of forcing a per-state split:
 
-- `data/archive.js` — Archive (3 entries)
+- `data/archive.js` — Archive (17 entries)
 - `data/person-links.js` — Person links (502 entries)
 - `data/confirmed-no-prior-role.js` — Confirmed no prior role (204 entries)
 - `data/prior-roles/part-1.js` — Prior roles (part 1) (259 entries)
@@ -973,7 +980,10 @@ instead of forcing a per-state split:
 - `data/prior-roles/part-3.js` — Prior roles (part 3) (258 entries)
 
 - `archive.js` — people who don't currently hold a tracked office (former officeholders, losing
-  candidates, historical figures) and their promises. Only 3 people so far, so it's one file.
+  candidates, 2026 candidates, historical figures) and their promises. 17 people so far, so it's one
+  file. The 14 `candidate-2026` entries are the people in the top 2026 races who aren't already in the
+  roster (the incumbents are); each has a one-line `bio` and no promises yet — promises need the
+  three-source check first. After the election, move winners into the roster and relabel losers.
 - `person-links.js` — groups of IDs that are the same real person under different roles (e.g. a
   Cabinet secretary and their prior Senate seat), so their profile page merges into one.
 - `confirmed-no-prior-role.js` — a flat research checklist: IDs specifically verified to have NO
@@ -985,4 +995,4 @@ instead of forcing a per-state split:
 
 - 736 current officials across 67 files (matches the "736 officials tracked" figure in the site footer)
 - 34 people across 2 past-administration files
-- 3 people in the archive
+- 17 people in the archive
