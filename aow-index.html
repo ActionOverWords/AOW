@@ -3071,7 +3071,7 @@ function raceAvatarHTML(id, e){
   if(pr) return '<div style="display:flex; justify-content:center; margin-bottom:10px;">'+avatarHTML(pr)+'</div>';
   return e.initials ? '<div class="avatar" style="margin:0 auto 10px;"><div class="avatar-fallback" style="display:flex;">'+escAttr(e.initials)+'</div></div>' : '';
 }
-function raceGo(el){ var id=el.getAttribute('data-goto'); if(!id) return; if(id.indexOf('arch-')===0){ showArchivePerson(id); } else { showDetail(id); } }
+function raceGo(el){ var id=el.getAttribute('data-goto'); if(!id) return; if(id.indexOf('arch-')===0){ activeTab='archive'; showArchivePerson(id); } else { showDetail(id); } }
 function raceSideHTML(id, e){
   if(!e) return '';
   var tier = scoreTier(e.score);
