@@ -19,6 +19,13 @@
  *   window.AOWConsent.openPreferences()                -> reopens the panel
  *   window.AOWConsent.onChange(fn)                     -> fn(consentObject) on every save/accept
  *
+ * Advertising is NOT controlled by this file. Ads are served by Google AdSense to
+ * signed-out visitors and free accounts only (see maybeLoadAds() in aow-index.html).
+ * Consent Mode v2 starts every ad signal as 'denied', and consent for personalized
+ * ads is collected by Google's certified "Privacy & messaging" tool, which has to be
+ * switched on in the AdSense dashboard. The Advertising row below is informational
+ * on purpose: a toggle here that granted ad consent would bypass that certified flow.
+ *
  * There is no Analytics script wired up anywhere on the site today, so the
  * toggle below currently does nothing but record a preference. If/when
  * privacy-friendly analytics is ever added, gate it like this:
@@ -101,6 +108,8 @@
     + '.aow-cc-row{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;padding:14px 0;border-top:1px solid var(--cc-border);}'
     + '.aow-cc-row-title{font-size:13.5px;font-weight:700;margin:0 0 4px;}'
     + '.aow-cc-row-desc{font-size:12.5px;line-height:1.5;color:var(--cc-muted);margin:0;}'
+    + '.aow-cc-row-desc a{color:var(--cc-brand);font-weight:600;text-decoration:none;}'
+    + '.aow-cc-row-desc a:hover{text-decoration:underline;}'
     + '.aow-cc-locked{flex:none;font-size:11px;font-weight:700;color:var(--cc-muted);background:var(--cc-tint);border-radius:20px;padding:4px 10px;white-space:nowrap;margin-top:2px;}'
     + '.aow-cc-switch{position:relative;flex:none;display:inline-block;width:38px;height:22px;margin-top:2px;}'
     + '.aow-cc-switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}'
@@ -128,7 +137,7 @@
     wrap.className = 'aow-cc';
     wrap.innerHTML =
       '<div class="aow-cc-banner" id="aowCCBanner" role="region" aria-label="Cookie notice" aria-hidden="true">'
-        + '<p class="aow-cc-text">We use only the browser storage that’s strictly necessary to keep you signed in — no ad-tracking, no analytics active today. <a href="cookie-policy.html">Cookie Policy</a></p>'
+        + '<p class="aow-cc-text">We use browser storage to keep you signed in, and no analytics are active today. Signed-out visitors and free accounts may also see ads from Google, which can use cookies; paid members see none. Ad choices are handled by Google — see Manage preferences. <a href="cookie-policy.html">Cookie Policy</a></p>'
         + '<div class="aow-cc-actions">'
           + '<button type="button" class="aow-cc-btn aow-cc-btn-ghost" data-aow-cc="manage">Manage preferences</button>'
           + '<button type="button" class="aow-cc-btn aow-cc-btn-secondary" data-aow-cc="necessary">Necessary only</button>'
@@ -138,7 +147,7 @@
       + '<div class="aow-cc-backdrop" id="aowCCBackdrop">'
         + '<div class="aow-cc-modal" role="dialog" aria-modal="true" aria-labelledby="aowCCModalTitle">'
           + '<h2 id="aowCCModalTitle">Cookie preferences</h2>'
-          + '<p class="aow-cc-intro">This site doesn’t run advertising or ad-tracking of any kind. Here’s exactly what’s in use.</p>'
+          + '<p class="aow-cc-intro">Here’s exactly what’s in use. Signed-out visitors and free accounts may see ads from Google; paid members see none.</p>'
           + '<div class="aow-cc-row">'
             + '<div><p class="aow-cc-row-title">Strictly necessary</p><p class="aow-cc-row-desc">Keeps you signed in on this device and keeps the site secure. The site can’t function without this, so it’s always on.</p></div>'
             + '<span class="aow-cc-locked">Always on</span>'
@@ -146,6 +155,10 @@
           + '<div class="aow-cc-row">'
             + '<div><p class="aow-cc-row-title">Analytics</p><p class="aow-cc-row-desc">Not currently used anywhere on this site. If privacy-friendly analytics is ever added, this is where you’d opt in — nothing loads either way today.</p></div>'
             + '<label class="aow-cc-switch"><input type="checkbox" id="aowCCAnalyticsToggle" aria-describedby="aowCCModalTitle"><span class="aow-cc-slider"></span></label>'
+          + '</div>'
+          + '<div class="aow-cc-row">'
+            + '<div><p class="aow-cc-row-title">Advertising</p><p class="aow-cc-row-desc">Signed-out visitors and free accounts may see ads served by Google AdSense, which can use cookies to deliver and measure them. Ads start in a non-personalized state, and personalization choices are made through Google’s own consent message and <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>, not this panel. Paid members see no ads.</p></div>'
+            + '<span class="aow-cc-locked">Managed by Google</span>'
           + '</div>'
           + '<div class="aow-cc-actions aow-cc-actions-end">'
             + '<button type="button" class="aow-cc-btn aow-cc-btn-secondary" data-aow-cc="necessary">Necessary only</button>'

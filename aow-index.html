@@ -738,7 +738,7 @@ let adsLoaded = false;
 // that; hand-placed <ins> units would need re-inserting and re-initializing on every one
 // of those re-renders.
 function maybeLoadAds(){
-  if(adsLoaded || !ADSENSE_PUBLISHER_ID) return;
+  if(adsLoaded || !/^ca-pub-\d{16}$/.test(ADSENSE_PUBLISHER_ID)) return; // blank, or a mistyped ID, stays a no-op
   if(userHasTier('supporter')) return; // any paid tier — stays ad-free
   adsLoaded = true;
   const s = document.createElement('script');
@@ -1110,6 +1110,10 @@ async function tryLogIn(){
   if(error){ showStatus(error.message || 'Could not log in — try again.', true); return; }
   try { CURRENT_USER = await loadCurrentUser(data.user); }
   catch(e){ showStatus('Logged in, but something went wrong loading your account — try again.', true); return; }
+  // Auto ads can't be unloaded once injected. A visitor who opened this page logged out (ads
+  // loaded) and then logs in to a paid tier would otherwise keep seeing ads until their next
+  // page load, contradicting the "Ad-free" perk. Reload once; the saved session restores them.
+  if(adsLoaded && userHasTier('supporter')){ location.reload(); return; }
   syncAdminState();
   if(isAdmin) await loadSubmissionsForAdmin();
   applyTheme(!!CURRENT_USER.darkMode);
