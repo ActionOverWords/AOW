@@ -73,6 +73,11 @@
   .logo-word .lw-short{display:none;}
   @media (max-width:480px){.logo-word .lw-full{display:none;} .logo-word .lw-short{display:inline;}}
   .beta-tag{font-size:11.5px; font-weight:700; color:var(--brand-fixed); background:var(--brand-tint-fixed); padding:4px 10px; border-radius:20px; letter-spacing:.02em;}
+  .newsite-notice{display:flex; align-items:center; gap:14px; justify-content:center; background:var(--brand-tint); color:var(--text); font-size:13px; line-height:1.4; padding:9px 16px; border-bottom:1px solid var(--border);}
+  .newsite-notice span{max-width:760px;}
+  .newsite-notice a{color:var(--brand); font-weight:600; text-decoration:underline;}
+  .newsite-dismiss{flex:none; background:none; border:none; color:var(--text-muted); font-size:20px; line-height:1; cursor:pointer; padding:0 2px;}
+  .newsite-dismiss:hover{color:var(--text);}
   .account-zone{margin-left:auto; display:flex; align-items:center; gap:6px;}
   .account-btn{font-size:12px; font-weight:700; padding:6px 12px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text-muted); cursor:pointer;}
   .account-btn:hover{background:var(--bg-alt);}
@@ -509,10 +514,15 @@
       <span class="logo-mark">AOW</span>
       <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
     </button>
-    <span class="beta-tag">Prototype</span>
     <div class="account-zone" id="accountZone"></div>
   </div>
 </div>
+
+<div class="newsite-notice" id="newsiteNotice">
+  <span>ActionOverWords is a brand-new site and still finding its feet. If you spot anything wrong, broken, or off, please <a href="#" onclick="selectTab('contact'); return false;">report it here</a> so we can fix it.</span>
+  <button class="newsite-dismiss" onclick="dismissNewsiteNotice()" aria-label="Dismiss this notice" title="Dismiss">&times;</button>
+</div>
+<script>try{if(localStorage.getItem('aow_newsite_dismissed')==='1'){var _n=document.getElementById('newsiteNotice'); if(_n) _n.style.display='none';}}catch(e){}</script>
 
 <div class="hero">
   <div class="wrap">
@@ -906,6 +916,11 @@ function showStatus(msg, isError){
   t.classList.add('show');
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function dismissNewsiteNotice(){
+  var el = document.getElementById('newsiteNotice');
+  if(el) el.style.display='none';
+  try { localStorage.setItem('aow_newsite_dismissed','1'); } catch(e){}
 }
 
 /* ---------- storage backend ----------
@@ -1887,6 +1902,50 @@ function scoreHistoryHTML(memberId){
     </div>
   </div>`;
 }
+function tierColorVar(score){ return score>=70 ? 'var(--completed)' : score>=40 ? 'var(--in_progress)' : 'var(--broken)'; }
+// Group an official's promises by the term they were made in, and score each term on its own.
+function scoresByTerm(memberId, promisesArr){
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && p.term && p.status!=='undetermined');
+  const groups = {};
+  ps.forEach(p=>{ (groups[p.term]=groups[p.term]||[]).push(p); });
+  return Object.keys(groups).map(term=>{
+    const arr=groups[term];
+    const sum=arr.reduce((t,p)=>t+(AOW_WEIGHTS[p.status]??0),0);
+    const start=parseInt((term.match(/\d{4}/)||['0'])[0],10);
+    return {term, start, score:Math.round(sum/arr.length), n:arr.length};
+  }).sort((a,b)=>a.start-b.start);
+}
+// A small SVG: a bar per term (score), with a trend line connecting them once there is
+// more than one term. This is the "score over time, by term" view — it grows as an
+// official serves additional terms and as new promises are dated into them.
+function termScoreGraphHTML(memberId, promisesArr){
+  const data = scoresByTerm(memberId, promisesArr);
+  if(!data.length) return '';
+  const W=640,H=210,padL=32,padR=14,padT=20,padB=48,plotW=W-padL-padR,plotH=H-padT-padB,n=data.length;
+  const cx=i=>padL+(plotW/n)*(i+0.5);
+  const cy=sc=>padT+plotH*(1-sc/100);
+  const bw=Math.min(64,(plotW/n)*0.52);
+  let grid='';
+  [0,25,50,75,100].forEach(v=>{ const y=cy(v).toFixed(1); grid+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border)" stroke-width="1" opacity="0.7"/><text x="${padL-6}" y="${(parseFloat(y)+3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--text-faint)">${v}</text>`; });
+  let bars='',pts='',labels='';
+  data.forEach((d,i)=>{
+    const x=cx(i), y=cy(d.score), col=tierColorVar(d.score), base=cy(0);
+    bars+=`<rect x="${(x-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${(base-y).toFixed(1)}" rx="3" fill="${col}" opacity="0.26"/>`;
+    pts+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${col}"/>`;
+    labels+=`<text x="${x.toFixed(1)}" y="${(y-8).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--text)">${d.score}</text>`;
+    labels+=`<text x="${x.toFixed(1)}" y="${H-padB+16}" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text)">${escAttr(d.term)}</text>`;
+    labels+=`<text x="${x.toFixed(1)}" y="${H-padB+30}" text-anchor="middle" font-size="9" fill="var(--text-muted)">${d.n} promise${d.n===1?'':'s'}</text>`;
+  });
+  let line='';
+  if(n>1){ const poly=data.map((d,i)=>`${cx(i).toFixed(1)},${cy(d.score).toFixed(1)}`).join(' '); line=`<polyline points="${poly}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round"/>`; }
+  const note = n>1 ? 'AOW score for each term served, with the trend across terms.' : 'AOW score for the current term. A term-over-term trend line appears here once a second term is tracked.';
+  return `<div class="score-history term-graph"><h3>Score by term</h3>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;" role="img" aria-label="AOW score by term">
+      ${grid}${line}${bars}${pts}${labels}
+    </svg>
+    <p class="score-note" style="margin:8px 0 0;">${note}</p>
+  </div>`;
+}
 // Headline numbers read like "700+", not "736". Always rounds DOWN to the leading digit so the
 // "+" is never an overstatement (736 → "700+", 88 → "80+", 22 → "20+"; 100 → "100+" on its own
 // once the count gets there). Under 10 it just shows the exact number.
@@ -2186,6 +2245,7 @@ function roleBlockHTML(role){
         <button class="btn-sm" onclick="editOfficial('${role.id}')">Edit official</button>
         <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${role.id}')">Delete official</button>
       </div>` : ''}
+      ${termScoreGraphHTML(role.id, role.promisesArr)}
       ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, canEditThisRole)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
       ${canEditThisRole ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${role.id}',null)">+ Add promise</button>` : ''}
     </div>
@@ -3295,6 +3355,7 @@ function renderDetailView(id){
         <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${m.id}')">Delete official</button>
       </div>` : ''}
     </div>
+    ${termScoreGraphHTML(m.id)}
     ${scoreHistoryHTML(m.id)}
     ${ps.length ? ps.map(p=>promiseCardHTML(p, m.name, isAdmin)).join('') : promiseEmptyCardHTML('No promises logged for this official yet.')}
     ${isAdmin ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${m.id}',null)">+ Add promise</button>` : ''}
