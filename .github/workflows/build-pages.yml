@@ -1,6 +1,8 @@
 name: Build static pages
 
-# Regenerates officials/, sitemap.xml and robots.txt from the repo's data files.
+# Regenerates officials/, methodology/, the hub pages (administration/, congress/, states/), the home page (index.html,
+# once the generated copy has been uploaded), sitemap.xml and robots.txt from the repo's data files.
+# The workflow "Tell IndexNow engines about changed pages" (indexnow.yml) runs after this one.
 # Runs when data changes, nightly as a backstop, and on demand (Actions tab > Run workflow).
 on:
   push:
@@ -38,7 +40,9 @@ jobs:
       - name: Commit changes, if any
         id: commit
         run: |
-          git add officials sitemap.xml robots.txt tools/pages-manifest.json tools/pages-report.txt
+          # -A (not a fixed list): hub pages appear and disappear as the data grows, and `git add <path>`
+          # fails outright when the path doesn't exist yet. The generator only ever writes its own files.
+          git add -A
           if git diff --cached --quiet; then
             echo "No page changes."
             echo "changed=false" >> "$GITHUB_OUTPUT"
