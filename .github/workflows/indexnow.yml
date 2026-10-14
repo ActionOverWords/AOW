@@ -1,0 +1,56 @@
+name: Tell IndexNow engines about changed pages
+
+# After "Build static pages" finishes, send the URLs whose <lastmod> changed to IndexNow, so Bing, Yandex, Naver,
+# Seznam, Yep and Amazon hear about new and updated pages within minutes. Bing's index also feeds Yahoo and
+# DuckDuckGo. Google does not use IndexNow; it learns about changes from sitemap.xml and Search Console.
+#
+# It only reads the repo and sends public page URLs. Nothing here can change the site. To turn it off, delete this
+# file or the <key>.txt file in the repo root. To send every page once (for example right after setup), open
+# Actions > this workflow > Run workflow and tick "all".
+on:
+  workflow_run:
+    workflows: ["Build static pages"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "Send every URL in sitemap.xml"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Tip: pin these two actions to full commit SHAs once you've confirmed the first run works.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check
+        run: node --check tools/indexnow.js
+      - name: List the URLs that changed
+        env:
+          SEND_ALL: ${{ inputs.all && 'true' || 'false' }}
+          BEFORE: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          if [ "$SEND_ALL" = "true" ]; then
+            node tools/indexnow.js prepare --all
+          elif [ -n "$BEFORE" ]; then
+            node tools/indexnow.js prepare --before "$BEFORE"
+          else
+            node tools/indexnow.js prepare --before HEAD~1
+          fi
+      - name: Send them (waits until the live site shows the update)
+        run: node tools/indexnow.js submit --wait
