@@ -648,7 +648,7 @@
       <a href="#" onclick="selectTab('about'); return false;">About &amp; methodology</a>
       <a href="methodology/">Methodology</a>
       <a href="officials/">Officials directory</a>
-      <a href="#" onclick="selectTab('about'); selectedAboutSection='donate'; render(); return false;">Donate</a>
+      <a href="#" onclick="selectTab('about'); selectedAboutSection='donate'; render(); return false;">Leave a tip</a>
     </div>
     <div class="foot-links foot-links-legal">
       <a href="privacy-policy.html">Privacy Policy</a>
@@ -794,7 +794,7 @@ const SRC_TYPE_LABEL = {
   voting_record:'Voting record', official_record:'Official record',
   self_published_report:"Official's own office", news_report:'News report'
 };
-const TAB_LABELS = {featured:'Featured', search:'Search', administration:'Administration', congress:'U.S. Congress', states:'States', tools:'Tools', archive:'Archive', about:'About', contact:'Contact', donate:'Donate'};
+const TAB_LABELS = {featured:'Featured', search:'Search', administration:'Administration', congress:'U.S. Congress', states:'States', tools:'Tools', archive:'Archive', about:'About', contact:'Contact', donate:'Tip'};
 const STATE_NAMES = {
   AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California', CO:'Colorado', CT:'Connecticut',
   DE:'Delaware', DC:'District of Columbia', FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
@@ -1018,7 +1018,7 @@ async function persistPromises(){
 }
 async function persistDonateUrl(){
   try { await Backend.set('aow_donate_url', DONATE_URL); }
-  catch(e){ showStatus('Could not save donation link — try again.', true); }
+  catch(e){ showStatus('Could not save the alternate tip link — try again.', true); }
 }
 async function persistScoreLog(){
   try { await Backend.set('aow_score_log', SCORE_LOG); }
@@ -1560,9 +1560,9 @@ async function openBillingPortal(){
 }
 
 
-/* ---------- donations: one-time, any amount ----------
+/* ---------- tips: one-time, any amount (internal names still say "donate") ----------
    Memberships never send an amount (the browser names a tier; the server owns the price).
-   A donation is the one exception, because the donor picks the number. The rules:
+   A tip is the one exception, because the payer picks the number. The rules:
      - the amount travels as a whole number of cents, never a float or a string;
      - the billing function re-checks it against its own fixed bounds and builds the Stripe
        Checkout session itself, so the only thing this page can influence is that one
@@ -1573,7 +1573,7 @@ async function openBillingPortal(){
    Keep DONATE_MIN_CENTS / DONATE_MAX_CENTS in step with MIN_DONATION_CENTS / MAX_DONATION_CENTS
    in the billing function — this page checks first only so people get a clear message. */
 const DONATE_MIN_CENTS = 100;       // $1.00
-const DONATE_MAX_CENTS = 1000000;   // $10,000.00
+const DONATE_MAX_CENTS = 50000;     // $500.00
 const DONATE_PRESETS = [500, 1000, 2500, 5000, 10000];   // $5  $10  $25  $50  $100
 const DONATE_REDIRECT_HOSTS = ['checkout.stripe.com'];
 
@@ -1586,8 +1586,8 @@ function parseDonationAmount(raw){
   if(!/^(\d{1,3}(,\d{3})+|\d+)(\.\d{1,2})?$/.test(s)) return { cents:null, error:'Enter an amount like 25 or 25.50.' };
   const [whole, frac=''] = s.replace(/,/g, '').split('.');
   const cents = Number(whole) * 100 + Number((frac + '00').slice(0, 2));
-  if(cents < DONATE_MIN_CENTS) return { cents:null, error:'The minimum donation is $1.' };
-  if(cents > DONATE_MAX_CENTS) return { cents:null, error:'Online gifts top out at $10,000 — for a larger gift, please use the Contact tab.' };
+  if(cents < DONATE_MIN_CENTS) return { cents:null, error:'The minimum tip is $1.' };
+  if(cents > DONATE_MAX_CENTS) return { cents:null, error:'Online tips top out at $500 — for a larger amount, please use the Contact tab.' };
   return { cents, error:'' };
 }
 function formatDonationUSD(cents){
@@ -1608,11 +1608,11 @@ function safeCheckoutUrl(raw){
   const href = safeExternalUrl(raw);
   return href && DONATE_REDIRECT_HOSTS.includes(new URL(href).hostname) ? href : '';
 }
-function donateBtnLabel(p){ return p.cents === null ? 'Donate' : 'Donate ' + formatDonationUSD(p.cents); }
+function donateBtnLabel(p){ return p.cents === null ? 'Leave a tip' : 'Leave a ' + formatDonationUSD(p.cents) + ' tip'; }
 function donateHintText(p){
   if(p.error) return p.error;
-  if(p.cents !== null) return 'A one-time gift of ' + formatDonationUSD(p.cents) + ' — you\'ll finish on Stripe\'s secure checkout.';
-  return 'Any amount from $1 to $10,000.';
+  if(p.cents !== null) return 'A one-time tip of ' + formatDonationUSD(p.cents) + ' — you\'ll finish on Stripe\'s secure checkout.';
+  return 'Any amount from $1 to $500.';
 }
 // Repaint only the pieces that depend on the amount, in place. A full render() would rebuild the
 // input mid-keystroke and drop focus, so typing and the preset buttons go through this instead.
@@ -1670,7 +1670,7 @@ async function callDonateFunction(cents){
   }
 }
 function donateErrorMessage(code){
-  if(code === 'invalid_amount') return 'That amount can\'t be accepted online. Please choose between $1 and $10,000.';
+  if(code === 'invalid_amount') return 'That amount can\'t be accepted online. Please choose between $1 and $500.';
   if(code === 'rate_limited') return 'Too many attempts in a short time. Please wait a few minutes and try again.';
   if(code === 'network') return 'Couldn\'t reach the server. Check your connection and try again.';
   return 'Couldn\'t start checkout just now. Please try again in a moment.';
@@ -1680,7 +1680,7 @@ async function donateSubmit(ev){
   if(donateBusy) return;   // a double-click can't start two checkouts
   const p = parseDonationAmount(donateAmountStr);
   if(p.cents === null){
-    showStatus(p.error || 'Enter an amount to donate.', true);
+    showStatus(p.error || 'Enter an amount to tip.', true);
     const el = document.getElementById('donate-amount');
     if(el) el.focus();
     return;
@@ -1692,7 +1692,7 @@ async function donateSubmit(ev){
   const dest = result && !result.error ? safeCheckoutUrl(result.url) : '';
   if(!dest){
     donateBusy = false;
-    donateServerError = donateErrorMessage(result && result.error) + (safeExternalUrl(DONATE_URL) ? ' You can also use the alternate donation link below.' : '');
+    donateServerError = donateErrorMessage(result && result.error) + (safeExternalUrl(DONATE_URL) ? ' You can also use the alternate link below.' : '');
     donateRefresh();
     return;
   }
@@ -2379,7 +2379,7 @@ function renderArchiveDetail(){
 }
 function selectAboutSection(section){ selectedAboutSection = section; render(); window.scrollTo({top:0, behavior:'smooth'}); }
 function renderAboutSection(){
-  const sections = [{id:'about', label:'About'}, {id:'contact', label:'Contact'}, {id:'support', label:'Support Us'}, {id:'donate', label:'Donate'}];
+  const sections = [{id:'about', label:'About'}, {id:'contact', label:'Contact'}, {id:'support', label:'Support Us'}, {id:'donate', label:'Tip'}];
   const selectorHTML = `<div class="term-selector">${sections.map(s=>`<button class="term-btn ${selectedAboutSection===s.id?'active':''}" onclick="selectAboutSection('${s.id}')">${escAttr(s.label)}</button>`).join('')}</div>`;
   let sectionHTML;
   if(selectedAboutSection==='contact') sectionHTML = renderContact();
@@ -2429,8 +2429,11 @@ function renderAbout(){
       <p>736 officials are seeded here. <strong>Federal:</strong> the complete U.S. Congress — 100 senators, all 431 currently-filled voting House seats (4 are vacant), and the 6 non-voting House seats — plus the President, Vice President, the 21-member Cabinet and senior White House officials, and 7 sub-Cabinet law-enforcement and agency heads (FBI, DEA, ATF, U.S. Marshals, CBP, ICE, Secret Service), verified against senate.gov, house.gov, whitehouse.gov, and each agency's own leadership page. Two comparable posts — TSA Administrator and IRS Commissioner — are currently vacant or in genuine legal limbo rather than simply unresearched, so both are omitted rather than assigned a name that wouldn't be accurate.</p>
       <p><strong>State:</strong> every state has its Governor, Lieutenant Governor (or whichever office is actually first in succession — Secretary of State in a few states, Senate President in others), and Attorney General, verified against the National Lieutenant Governors Association and National Association of Attorneys General's own current rosters. Six major states (California, Texas, Florida, New York, Pennsylvania, Illinois) go deeper with their remaining executive offices.</p>
 
+      <h2>Who runs this, and how it's paid for</h2>
+      <p>ActionOverWords Index is run by Action Over Words LLC, an independent company. It's supported by membership plans, optional one-time tips and advertising: signed-out visitors and free accounts may see ads, and paid members see none. None of those changes a promise's status or the AOW Score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p>
+
       <h2>A few honest caveats</h2>
-      <p>Most entries have 1–3 sourced promises; every governor added after the first batch doesn't have promises logged yet — this phase was about getting names, parties, and offices right and correctly organized before layering in promise research. A couple of secondary fields are lower-confidence than the roster itself: governors' exact term-start years are approximate pending a closer pass; the names, offices, and parties are what's verified against official sources. Status calls throughout are a single research pass for demonstration, not a verified editorial record — a production version needs a written, consistent standard applied by more than one reviewer. Data lives in persistent storage attached to this page; admin edits are saved and will still be here next time it loads.</p>
+      <p>Most entries have 1–3 sourced promises; every governor added after the first batch doesn't have promises logged yet — this phase was about getting names, parties, and offices right and correctly organized before layering in promise research. A couple of secondary fields are lower-confidence than the roster itself: governors' exact term-start years are approximate pending a closer pass; the names, offices, and parties are what's verified against official sources. Status calls throughout are our good-faith reading of the sources we've linked, not a verified or audited record. We'd like every call checked by a second reviewer, and that's one of the things more support would help us do. Data lives in persistent storage attached to this page; admin edits are saved and will still be here next time it loads.</p>
 
       <h2>What isn't covered yet</h2>
       <p>County and city government, school boards, and special districts aren't in scope yet — that tier is thousands of people with no single clean national source, unlike the U.S. Congress or the executive branch. State legislatures and judiciaries aren't built out yet. Federal judges (lifetime-appointed, not elected) and independent regulatory boards like the Federal Reserve are a different category — appointed and often deliberately apolitical, with less to track in the same way.</p>
@@ -2445,9 +2448,9 @@ function renderAbout(){
 }
 function editDonateUrl(){
   openModal(`
-    <h3>Alternate donation link</h3>
-    <p style="color:var(--text-faint); font-size:13px; margin:-6px 0 14px;">Optional. The Donate tab already takes donations through Stripe's secure checkout. Paste a link here — a Stripe Payment Link, PayPal.me, Ko-fi, or GiveButter page — to also show it beneath the donate button as another way to give. It has to start with https://. Leave it blank to remove it.</p>
-    <label>Alternate donation URL<input id="f-donate-url" value="${escAttr(safeExternalUrl(DONATE_URL))}" placeholder="https://…"></label>
+    <h3>Alternate tip link</h3>
+    <p style="color:var(--text-faint); font-size:13px; margin:-6px 0 14px;">Optional. The Tip tab already takes tips through Stripe's secure checkout. Leave this blank unless you have a second way to be paid that goes to the same company and is named in the Privacy Policy and Terms. It has to start with https://. Leave it blank to remove it.</p>
+    <label>Alternate tip URL<input id="f-donate-url" value="${escAttr(safeExternalUrl(DONATE_URL))}" placeholder="https://…"></label>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal()">Cancel</button>
       <button class="btn-primary" onclick="saveDonateUrl()">Save</button>
@@ -2463,7 +2466,7 @@ async function saveDonateUrl(){
   DONATE_URL = safe;
   await persistDonateUrl();
   closeModal();
-  showStatus(safe ? 'Alternate donation link saved.' : 'Alternate donation link removed.');
+  showStatus(safe ? 'Alternate tip link saved.' : 'Alternate tip link removed.');
   render();
 }
 const SUBMISSION_TYPES = {message:'General message', suggestion:'Suggested correction', appeal:'Appeal a status'};
@@ -2567,13 +2570,13 @@ function renderSupport(){
       <h2>Why this needs support</h2>
       <p>Building the roster was the easy part. Every status on this site came from real research — finding a promise, sourcing it, checking back on what actually happened. That's not a one-time build, it's ongoing work, the same reason a newsroom like the Nevada Independent or Spotlight PA can keep a tracker current for one governor: they have reporters whose job is to keep watching.</p>
       <p>Scaling this — more states, more legislatures, keeping statuses current as terms progress — takes sustained research time, not just more code.</p>
-      <h2 style="margin-top:22px;">What support funds</h2>
-      <p>Expanding coverage to more states, offices, and legislatures. Keeping existing entries current as terms and circumstances change — Cabinet turnover alone has been significant this year. A second reviewer on every status call, so no rating rests on just one person's read.</p>
-      <h2 style="margin-top:22px;">Give once, any amount</h2>
-      <p>Not looking for a plan? Make a one-time donation of whatever you like — no account needed.</p>
-      <button class="btn-primary" style="margin-top:10px;" onclick="selectAboutSection('donate')">Make a donation</button>
+      <h2 style="margin-top:22px;">What more support would let us do</h2>
+      <p>Expand coverage to more states, offices, and legislatures. Keep existing entries current as terms and circumstances change — Cabinet turnover alone has been significant this year. And, as the project grows, add a second reviewer on every status call, so no rating rests on just one person's read.</p>
+      <h2 style="margin-top:22px;">Tip once, any amount</h2>
+      <p>Not looking for a plan? Leave a one-time tip of whatever you like — no account needed.</p>
+      <button class="btn-primary" style="margin-top:10px;" onclick="selectAboutSection('donate')">Leave a tip</button>
       <h2 style="margin-top:26px;">Membership tiers</h2>
-      <p>Prefer an ongoing plan over a one-time donation? Pick a tier below — you'll need an account so we know which plan to apply.</p>
+      <p>Prefer an ongoing plan over a one-time tip? Pick a tier below — you'll need an account so we know which plan to apply.</p>
       ${renderTierTableHTML()}
     </div>
   `;
@@ -2585,15 +2588,15 @@ function renderDonate(){
     `<button type="button" class="donate-preset" data-cents="${c}" aria-pressed="${p.cents===c?'true':'false'}" onclick="donateChoose(${c})"${donateBusy?' disabled':''}>${formatDonationUSD(c)}</button>`
   ).join('');
   const altHTML = alt
-    ? `<p class="donate-alt">Prefer another way to give? <a href="${escAttr(alt)}" target="_blank" rel="noopener noreferrer">Use our alternate donation link ↗</a></p>`
+    ? `<p class="donate-alt">Prefer another way to tip? <a href="${escAttr(alt)}" target="_blank" rel="noopener noreferrer">Use our alternate tip link ↗</a></p>`
     : '';
   const editBtn = isAdmin
-    ? `<button class="btn-secondary" style="margin-top:14px;" onclick="editDonateUrl()">${alt ? 'Edit' : 'Set'} alternate donation link</button>`
+    ? `<button class="btn-secondary" style="margin-top:14px;" onclick="editDonateUrl()">${alt ? 'Edit' : 'Set'} alternate tip link</button>`
     : '';
   return `
     <div class="about-page">
-      <h2>Make a donation</h2>
-      <p>Give any amount you choose, one time. No account needed, and nothing renews. You finish on Stripe's secure checkout page, so your card details never touch this site.</p>
+      <h2>Leave a tip</h2>
+      <p>Browsing the Index is free. If it's been useful, you can leave a one-time tip of any amount you choose. No account needed, and nothing renews. You finish on Stripe's secure checkout page, so your card details never touch this site.</p>
       <form class="donate-card" onsubmit="donateSubmit(event); return false;" novalidate>
         <span class="donate-label" id="donate-presets-label">Choose an amount</span>
         <div class="donate-presets" role="group" aria-labelledby="donate-presets-label">${presets}</div>
@@ -2605,12 +2608,13 @@ function renderDonate(){
         <p class="donate-hint${p.error?' err':''}" id="donate-hint" role="status">${escAttr(donateHintText(p))}</p>
         <button type="submit" class="btn-primary donate-submit" id="donate-btn"${(donateBusy||p.cents===null)?' disabled':''}>${escAttr(donateBusy ? 'Opening secure checkout…' : donateBtnLabel(p))}</button>
         <p class="donate-hint err" id="donate-error" role="alert"${donateServerError?'':' hidden'}>${escAttr(donateServerError)}</p>
-        <p class="donate-fine">Payments are handled by Stripe. We never see or store your card details. The <a href="terms-of-service.html#membership-donations" target="_blank" rel="noopener">Terms of Service</a> explain how donations are handled, including refunds. Questions about a gift? Use the <a href="#" onclick="selectAboutSection('contact'); return false;">Contact</a> tab.</p>
+        <p class="donate-fine">Payments are handled by Stripe. We never see or store your card details. The <a href="terms-of-service.html#membership-donations" target="_blank" rel="noopener">Terms of Service</a> explain how tips are handled, including refunds. Questions about a tip? Use the <a href="#" onclick="selectAboutSection('contact'); return false;">Contact</a> tab.</p>
       </form>
       ${altHTML}
       ${editBtn}
-      <h2 style="margin-top:26px;">Where it goes</h2>
-      <p>Donations pay for research time: finding promises, sourcing them, and checking back on what actually happened. <a href="#" onclick="selectAboutSection('support'); return false;">Support Us</a> has the details, and the monthly membership plans if you'd rather give on a schedule.</p>
+      <h2 style="margin-top:26px;">Where your tip goes</h2>
+      <p>Tips go to Action Over Words LLC, the company that runs the Index. They help cover the costs of keeping the Index current and help us add more officials, states and legislatures faster. <a href="#" onclick="selectAboutSection('support'); return false;">Support Us</a> has the monthly membership plans if you'd rather support it on a schedule.</p>
+      <p>Action Over Words LLC isn't a nonprofit, so tips aren't tax-deductible. We don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs, and no tip, membership or ad ever changes a promise's status or the AOW Score.</p>
     </div>
   `;
 }
