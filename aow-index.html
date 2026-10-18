@@ -6,6 +6,7 @@
 <title>ActionOverWords Index — Federal & State Promise Tracker</title>
 <meta name="description" content="See what elected officials promised and what happened. Promises are rated from Completed to Broken, with sources. 700+ federal and state officials.">
 <link rel="canonical" href="https://action-over-words.com/aow-index.html">
+<meta name="google-adsense-account" content="ca-pub-2415928011419150">
 <meta name="theme-color" content="#0D4A43">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -110,6 +111,7 @@
   html[data-theme="dark"][data-accent="amber"]{--brand:#D9A93F; --brand-dark:#BF8F28; --brand-tint:#332A16; --brand-tint-hover:#42371E;}
   html[data-theme="dark"][data-accent="slate"]{--brand:#9AA3B2; --brand-dark:#7C8698; --brand-tint:#262B33; --brand-tint-hover:#323945;}
   *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%; text-size-adjust:100%;} /* stop phones from inflating text when turned sideways */
   body{margin:0; background:var(--bg-alt); color:var(--text); font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;}
   .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
   a{color:var(--brand);}
@@ -280,7 +282,16 @@
   /* ---------- grid ---------- */
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px;}
   .mcard{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px; cursor:pointer; transition:box-shadow .15s ease, transform .15s ease; position:relative;}
-  .watch-star{position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:var(--bg); color:var(--text-faint); font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  /* The follow star and the score ring share one column on the right of the card, star on top. They used
+     to be positioned separately (star pinned to the card's corner, ring centered in the row), which put
+     the star on top of the ring's edge on every card, on desktop and phone alike. Stacked in a column
+     they can't touch, whatever the card's width or the length of the name. */
+  .mcard-side{margin-left:auto; display:flex; flex-direction:column; align-items:center; gap:6px; flex:none;}
+  .mcard-id{min-width:0; overflow-wrap:anywhere;}
+  .watch-star{position:relative; flex:none; width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:var(--bg); color:var(--text-faint); font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
+  /* Invisible extra hit area around the star so it's easy to tap without changing how it looks. It stops
+     short of the score ring below it (the gap between the two is 6px), so it never steals a tap meant for the card. */
+  .watch-star::after{content:''; position:absolute; inset:-6px;}
   .watch-star:hover{border-color:var(--brand);}
   .watch-star.on{color:var(--watch-on); border-color:var(--watch-on); background:var(--watch-on-bg);}
   .mcard:hover{box-shadow:var(--shadow-md); transform:translateY(-2px);}
@@ -435,7 +446,7 @@
   footer{background:var(--bg); border-top:1px solid var(--border); padding:28px 0 40px;}
   footer h2{font-size:15.5px; margin:0 0 8px;}
   footer p{font-size:13.5px; line-height:1.6; color:var(--text-muted); max-width:70ch; margin:0 0 10px;}
-  footer .foot-links{display:flex; gap:16px; margin-top:14px;}
+  footer .foot-links{display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:14px;}
   footer .foot-links a{font-size:13px; font-weight:600; color:var(--brand); text-decoration:none;}
   footer .foot-links-legal{margin-top:8px; flex-wrap:wrap;}
   footer .foot-links-legal a{color:var(--text-faint); font-weight:500;}
@@ -555,13 +566,107 @@
   @media (max-width:560px){
     .toolbar .count{order:10; margin-left:0;}
   }
+
+  /* ---------- phone layout ----------
+     Everything in this block applies only to narrow screens (phones). Tablets and desktops keep the
+     layout above, untouched.
+       - The row of seven section tabs doesn't fit on a phone, so it is replaced by a menu button at the
+         top left that opens a drawer holding the same seven sections (#menuBtn, #siteMenu in the markup).
+       - The header stays pinned to the top, so the menu button is always within reach. */
+  .menu-btn, .site-menu, .menu-backdrop{display:none;}
+  @media (max-width:767px){
+    /* Keep anything that scrolls into view (a field that gets the cursor, say) out from under the pinned header. */
+    html{scroll-padding-top:76px;}
+    .masthead{position:sticky; top:0; z-index:30;}
+    .masthead-inner{padding:10px 14px; gap:8px;}
+    .menu-btn{display:inline-flex; align-items:center; justify-content:center; flex:none; width:44px; height:44px; margin-left:-8px; padding:0; border:none; border-radius:10px; background:none; color:var(--text); cursor:pointer; -webkit-tap-highlight-color:transparent;}
+    .menu-btn:hover{background:var(--bg-alt);}
+    .menu-btn:focus-visible, .menu-close:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+    /* One row, never wrapped: the wordmark and the buttons keep their natural size, and fitHeader() (in the
+       script) drops the "Hi, name" greeting and then the wordmark when a particular phone is too narrow. */
+    .logo{flex:none; min-height:44px;}
+    .logo-mark{width:42px; height:30px;}
+    .logo-word .lw-full{display:none;}
+    .logo-word .lw-short{display:inline;}
+    .logo-word, .account-btn, .admin-on{white-space:nowrap;}
+    .account-zone{flex:none;}
+    .account-name{max-width:96px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .tabs{display:none;}
+    .hero{padding:26px 0;}
+    #searchBar{margin-top:18px;}
+
+    /* Score ring: a little bigger so the "SCORE" label is readable at phone size. */
+    .aow-score:not(.aow-score-lg){width:46px; height:46px;}
+    .aow-score:not(.aow-score-lg) .num{font-size:15px;}
+    .aow-score:not(.aow-score-lg) .lbl{font-size:8px;}
+
+    /* iPhones zoom the whole page in when a field whose text is smaller than 16px gets the cursor, and then
+       stay zoomed in. On phones the fields use 16px so tapping the search box or the sign-in form doesn't do that. */
+    .toolbar input[type=search], .toolbar select, .compare-pickers input,
+    .modal-card input, .modal-card select, .modal-card textarea,
+    .page-form input, .page-form select, .page-form textarea{font-size:16px;}
+
+    /* The menu drawer. It sits above everything (even the cookie banner, which is a high fixed layer) so that
+       every item stays reachable on short screens while it's open. */
+    .menu-backdrop{display:block; position:fixed; inset:0; z-index:1000020; background:rgba(15,20,28,.55); opacity:0; visibility:hidden; transition:opacity .22s ease, visibility 0s linear .22s;}
+    .site-menu{display:flex; flex-direction:column; position:fixed; top:0; bottom:0; left:0; z-index:1000021; width:min(300px, 86vw); padding-bottom:20px; overflow-y:auto; overscroll-behavior:contain; background:var(--bg); border-right:1px solid var(--border); box-shadow:var(--shadow-md); transform:translateX(-102%); visibility:hidden; transition:transform .22s ease, visibility 0s linear .22s;}
+    body.menu-open{overflow:hidden;}
+    body.menu-open .menu-backdrop{opacity:1; visibility:visible; transition:opacity .22s ease, visibility 0s;}
+    body.menu-open .site-menu{transform:none; visibility:visible; transition:transform .22s ease, visibility 0s;}
+    .site-menu-head{display:flex; align-items:center; gap:10px; padding:12px 10px 12px 18px; margin-bottom:6px; border-bottom:1px solid var(--border);}
+    .site-menu-title{flex:1; min-width:0; font-weight:800; font-size:17px; letter-spacing:-.01em; color:var(--text);}
+    .menu-close{flex:none; display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; padding:0; border:none; border-radius:10px; background:none; color:var(--text-muted); cursor:pointer; -webkit-tap-highlight-color:transparent;}
+    .menu-close:hover{background:var(--bg-alt); color:var(--text);}
+    .menu-item{display:flex; align-items:center; width:100%; min-height:52px; padding:0 22px 0 18px; border:none; border-left:4px solid transparent; background:none; text-align:left; font-size:16px; font-weight:700; color:var(--text); cursor:pointer; -webkit-tap-highlight-color:transparent;}
+    .menu-item:hover{background:var(--bg-alt);}
+    .menu-item.active{background:var(--brand-tint); color:var(--brand-dark); border-left-color:var(--brand);}
+    html[data-theme="dark"] .menu-item.active{color:var(--brand);}
+    .menu-item:focus-visible{outline:2px solid var(--brand); outline-offset:-2px;}
+    @media (prefers-reduced-motion:reduce){
+      .menu-backdrop, .site-menu{transition:none !important;}
+    }
+  }
+  /* Set by fitHeader() when the header doesn't fit on a particular phone. */
+  .masthead-inner.hide-name .account-name{display:none;}
+  .masthead-inner.hide-word .logo-word{display:none;}
+  /* Narrower phones: tighten the header's spacing so the wordmark and both buttons still fit side by side.
+     (fitHeader() in the script drops the wordmark only on screens that are narrower still.) */
+  @media (max-width:389px){
+    .masthead-inner{padding-left:10px; padding-right:10px;}
+    .account-btn{padding-left:10px; padding-right:10px;}
+  }
+  @media (max-width:359px){
+    .masthead-inner{gap:6px;}
+    .account-zone{gap:4px;}
+  }
+  /* The About page's example table has to fit a phone without scrolling sideways. */
+  @media (max-width:560px){
+    .example-table{font-size:12.5px;}
+    .example-table th, .example-table td{padding:8px 6px;}
+    .example-table code{white-space:normal; font-size:11.5px;}
+  }
+  /* Phones with a touch screen: bigger targets for the small controls. Limited to phone width so that tablets
+     and desktops keep exactly the layout above. (Only the real pill buttons: the little "changes logged" tag in
+     an official's score history shares the .term-btn look and must stay small.) */
+  @media (pointer:coarse) and (max-width:767px){
+    .newsite-dismiss{padding:12px 14px; margin:-12px -14px -12px -4px;}
+    .account-btn, .admin-btn, .btn-sm, .tier-pick-btn{min-height:38px;}
+    button.term-btn{min-height:38px; padding:8px 15px;}
+    .race-rotnav-btn{width:40px; height:40px;}
+    .race-dot{position:relative; width:11px; height:11px;}
+    .race-dot::after{content:''; position:absolute; inset:-14px -3px;}
+    footer .foot-links a{display:inline-block; padding:6px 0;}
+  }
 </style>
 </head>
 <body>
 
 <div class="masthead">
   <div class="masthead-inner">
-    <button class="logo" onclick="selectTab('featured')">
+    <button class="menu-btn" id="menuBtn" type="button" onclick="toggleMenu()" aria-label="Menu" aria-expanded="false" aria-controls="siteMenu">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3 5.5h16M3 11h16M3 16.5h16"/></svg>
+    </button>
+    <button class="logo" onclick="selectTab('featured'); window.scrollTo({top:0, behavior:'smooth'});">
       <span class="logo-mark">AOW</span>
       <span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span>
     </button>
@@ -569,8 +674,28 @@
   </div>
 </div>
 
+<!-- Phone menu: the same seven sections as the tab row below, in a drawer that slides in from the left.
+     Only shown on phone-width screens (see the "phone layout" block in the stylesheet). -->
+<div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
+<nav class="site-menu" id="siteMenu" aria-label="Sections">
+  <div class="site-menu-head">
+    <span class="logo-mark">AOW</span>
+    <span class="site-menu-title">AOW Index</span>
+    <button class="menu-close" type="button" onclick="closeMenu()" aria-label="Close menu">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3 3l10 10M13 3L3 13"/></svg>
+    </button>
+  </div>
+  <button class="menu-item" type="button" data-tab="featured" onclick="menuGo('featured')">Featured</button>
+  <button class="menu-item" type="button" data-tab="administration" onclick="menuGo('administration')">Administration</button>
+  <button class="menu-item" type="button" data-tab="congress" onclick="menuGo('congress')">U.S. Congress</button>
+  <button class="menu-item" type="button" data-tab="states" onclick="menuGo('states')">States</button>
+  <button class="menu-item" type="button" data-tab="tools" onclick="menuGo('tools')">Tools</button>
+  <button class="menu-item" type="button" data-tab="archive" onclick="menuGo('archive')">Archive</button>
+  <button class="menu-item" type="button" data-tab="about" onclick="menuGo('about')">About</button>
+</nav>
+
 <div class="newsite-notice" id="newsiteNotice">
-  <span>ActionOverWords is a brand-new site and still finding its feet. If you spot anything wrong, broken, or off, please <a href="#" onclick="selectTab('contact'); return false;">report it here</a> so we can fix it.</span>
+  <span>ActionOverWords is a brand-new site and still finding its feet. If you spot anything wrong, broken, or off, please <a href="#" onclick="selectTab('about'); selectAboutSection('contact'); return false;">report it here</a> so we can fix it.</span>
   <button class="newsite-dismiss" onclick="dismissNewsiteNotice()" aria-label="Dismiss this notice" title="Dismiss">&times;</button>
 </div>
 <script>try{if(localStorage.getItem('aow_newsite_dismissed')==='1'){var _n=document.getElementById('newsiteNotice'); if(_n) _n.style.display='none';}}catch(e){}</script>
@@ -858,7 +983,7 @@ gtag('consent', 'default', {
 // below is a no-op until this is filled in, so nothing about page load changes before
 // then. Format once you have it: 'ca-pub-XXXXXXXXXXXXXXXX', from the AdSense dashboard
 // (a different service and a different ID than anything Stripe-related).
-const ADSENSE_PUBLISHER_ID = '';
+const ADSENSE_PUBLISHER_ID = 'ca-pub-2415928011419150';
 let adsLoaded = false;
 // Injected as a dynamic script tag, not static markup, and only once a member's tier is
 // actually known — a Plus/Premium/Supporter member never even briefly sees an ad before
@@ -1199,6 +1324,7 @@ function renderAccountZone(){
   zone.innerHTML = CURRENT_USER
     ? `${adminTag}<span class="account-name" onclick="showAccountSettings()">Hi, ${escAttr(CURRENT_USER.displayName)}</span>${teamBtn}<button class="account-btn" onclick="showAccountSettings()">Account</button>`
     : `<button class="account-btn" onclick="showAuthModal('login')">Log In</button><button class="account-btn primary" onclick="showAuthModal('signup')">Sign Up</button>`;
+  fitHeader();
 }
 function showAuthModal(mode){
   const isSignup = mode==='signup';
@@ -2033,6 +2159,109 @@ function matchesFilters(m){
   }
   return true;
 }
+/* ---------- phone menu ----------
+   On phones the seven section tabs are replaced by a menu button (top left) that opens a drawer holding
+   the same seven sections. Both call selectTab(), so a section behaves identically whichever way it was
+   reached. The drawer and its button only exist visually below 768px (see the "phone layout" CSS);
+   MENU_MQ is that same breakpoint, used here to skip the banner when jumping to a new view. */
+const MENU_MQ = window.matchMedia('(max-width:767px)');
+function menuIsOpen(){ return document.body.classList.contains('menu-open'); }
+// While the menu is open the rest of the page is switched off for the keyboard and screen readers
+// (the same effect the dimmed backdrop has for a finger).
+function setPageInert(on){
+  document.querySelectorAll('body > .masthead, body > .newsite-notice, body > .hero, body > .wrap, body > footer').forEach(el=>{
+    if(on) el.setAttribute('inert',''); else el.removeAttribute('inert');
+  });
+}
+function openMenu(){
+  if(menuIsOpen() || !MENU_MQ.matches) return; // the menu only exists on phone-width screens
+  // Locking the page's scroll hides its scrollbar, which would make the page jump sideways in a narrow desktop
+  // window; make up the width the same way openModal() does.
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  document.body.classList.add('menu-open');
+  if(scrollbarWidth > 0) document.body.style.paddingRight = scrollbarWidth + 'px';
+  setPageInert(true);
+  document.getElementById('menuBtn').setAttribute('aria-expanded','true');
+  const start = document.querySelector('#siteMenu .menu-item.active') || document.querySelector('#siteMenu .menu-item');
+  if(start) start.focus({preventScroll:true});
+}
+function closeMenu(returnFocus){
+  if(!menuIsOpen()) return;
+  document.body.classList.remove('menu-open');
+  document.body.style.paddingRight = '';
+  setPageInert(false);
+  const btn = document.getElementById('menuBtn');
+  btn.setAttribute('aria-expanded','false');
+  if(returnFocus !== false) btn.focus({preventScroll:true});
+}
+function toggleMenu(){ if(menuIsOpen()) closeMenu(); else openMenu(); }
+function menuGo(tab){ closeMenu(); selectTab(tab); }
+function syncMenuState(){
+  document.querySelectorAll('#siteMenu .menu-item').forEach(btn=>{
+    const on = btn.dataset.tab===activeTab;
+    btn.classList.toggle('active', on);
+    if(on) btn.setAttribute('aria-current','page'); else btn.removeAttribute('aria-current');
+  });
+}
+document.addEventListener('keydown', e=>{
+  if(!menuIsOpen()) return;
+  if(e.key==='Escape'){ e.preventDefault(); closeMenu(); return; }
+  if(e.key!=='Tab') return;
+  // Keep keyboard focus inside the open menu instead of wandering onto the page behind it.
+  const items = [...document.querySelectorAll('#siteMenu button')];
+  if(!items.length) return;
+  const first = items[0], last = items[items.length-1], menu = document.getElementById('siteMenu');
+  if(!menu.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+  else if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+});
+(function(){
+  const onChange = e => { if(!e.matches) closeMenu(false); }; // screen got wider (e.g. a tablet turned sideways)
+  if(MENU_MQ.addEventListener) MENU_MQ.addEventListener('change', onChange); else if(MENU_MQ.addListener) MENU_MQ.addListener(onChange);
+})();
+// Phone header: if the logo and the account buttons don't fit side by side (a narrow screen, a long
+// greeting, a bigger text size, or the extra admin buttons), trim the least important bits instead of
+// letting anything wrap or run off the edge: first the "Hi, name" greeting, then the wordmark.
+function fitHeader(){
+  const inner = document.querySelector('.masthead-inner');
+  const zone = document.getElementById('accountZone');
+  const logo = inner && inner.querySelector('.logo');
+  if(!inner || !zone || !logo) return;
+  inner.classList.remove('hide-name', 'hide-word');
+  if(MENU_MQ.matches){
+    const tooWide = minGap => {
+      const z = zone.getBoundingClientRect(), box = inner.getBoundingClientRect();
+      const padR = parseFloat(getComputedStyle(inner).paddingRight) || 0;
+      return z.left - logo.getBoundingClientRect().right < minGap || z.right > box.right - padR + 0.5;
+    };
+    // The greeting goes while there is still some breathing room left; the wordmark (the site's name) only
+    // goes if the buttons still would not fit without it.
+    if(tooWide(20)) inner.classList.add('hide-name');
+    if(tooWide(8)) inner.classList.add('hide-word');
+  }
+  // With the wordmark hidden, a screen reader would announce the logo as just "AOW": give it its full name.
+  if(inner.classList.contains('hide-word')) logo.setAttribute('aria-label', 'ActionOverWords Index home');
+  else logo.removeAttribute('aria-label');
+}
+(function(){
+  let queued = false;
+  const later = () => { if(queued) return; queued = true; requestAnimationFrame(() => { queued = false; fitHeader(); }); };
+  window.addEventListener('resize', later);
+  window.addEventListener('orientationchange', later);
+  if(document.fonts){ if(document.fonts.ready) document.fonts.ready.then(later); if(document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', later); }
+})();
+// Where the page lands after switching views. Desktop: the very top, as always. Phone: just below the
+// banner (the search bar is the first thing under it), so choosing a section or opening an official puts
+// that view on screen instead of the banner, which would otherwise fill the whole first screen.
+function scrollToContentTop(){
+  let top = 0;
+  if(MENU_MQ.matches){
+    const anchor = document.getElementById('searchBar');
+    const bar = document.querySelector('.masthead');
+    if(anchor) top = anchor.getBoundingClientRect().top + window.pageYOffset - (bar ? bar.offsetHeight : 0) - 10;
+  }
+  window.scrollTo({top:Math.max(0, top), behavior:'smooth'});
+}
 function selectTab(tab){
   activeTab = tab;
   selectedId = null;
@@ -2049,9 +2278,9 @@ function selectTab(tab){
   selectedElectionDate = null;
   selectedRaceIndex = null;
   render();
-  window.scrollTo({top:0, behavior:'smooth'});
+  scrollToContentTop();
 }
-function showDetail(id){ selectedId = id; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function showDetail(id){ selectedId = id; render(); scrollToContentTop(); }
 function backFromDetail(){
   selectedId = null;
   render();
@@ -2103,10 +2332,9 @@ function memberCardHTML(m, noBar, promisesArr){
     .map(([k,c])=>`<span style="width:${(c/total*100)||0}%;background:${STATUS_META[k].color}"></span>`).join('')}</div>`;
   return `
   <div class="mcard" onclick="showDetail('${m.id}')">
-    ${watchStarHTML(m.id)}
     <div class="mcard-top">
       ${avatarHTML(m)}
-      <div>
+      <div class="mcard-id">
         <h3>${escAttr(m.name)}</h3>
         <p class="seat">${escAttr(seatText(m.seat, m))}</p>
         <div class="chip-row">
@@ -2116,7 +2344,7 @@ function memberCardHTML(m, noBar, promisesArr){
           ${m.nonVoting ? `<span class="appointed-tag">Non-voting</span>` : ''}
         </div>
       </div>
-      <div style="margin-left:auto;">${scoreBadgeHTML(m.id, false, promisesArr)}</div>
+      <div class="mcard-side">${watchStarHTML(m.id)}${scoreBadgeHTML(m.id, false, promisesArr)}</div>
     </div>
     ${barHTML}
     <div class="mcard-foot">
@@ -2205,7 +2433,7 @@ function renderCongress(){
   return `${selectorHTML}${gridHTML}`;
 }
 function selectAdminTerm(termId){ selectedAdminTerm = termId; selectedPastPersonId = null; render(); }
-function showPastPerson(personId){ selectedPastPersonId = personId; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function showPastPerson(personId){ selectedPastPersonId = personId; render(); scrollToContentTop(); }
 function backToPastAdminRoster(){ selectedPastPersonId = null; render(); }
 
 function termSelectorHTML(){
@@ -2340,7 +2568,7 @@ function renderPastPersonDetail(){
   `;
 }
 function selectArchiveCategory(cat){ selectedArchiveCategory = cat; selectedArchivePersonId = null; render(); }
-function showArchivePerson(personId){ selectedArchivePersonId = personId; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function showArchivePerson(personId){ selectedArchivePersonId = personId; render(); scrollToContentTop(); }
 function backToArchive(){ selectedArchivePersonId = null; render(); }
 function renderArchive(){
   if(selectedArchivePersonId) return renderArchiveDetail();
@@ -2377,7 +2605,7 @@ function renderArchiveDetail(){
     ${ps.length ? ps.map(x=>promiseCardHTML(x, p.name, false)).join('') : promiseEmptyCardHTML('No promises logged for this person yet.')}
   `;
 }
-function selectAboutSection(section){ selectedAboutSection = section; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function selectAboutSection(section){ selectedAboutSection = section; render(); scrollToContentTop(); }
 function renderAboutSection(){
   const sections = [{id:'about', label:'About'}, {id:'contact', label:'Contact'}, {id:'support', label:'Support Us'}, {id:'donate', label:'Tip'}];
   const selectorHTML = `<div class="term-selector">${sections.map(s=>`<button class="term-btn ${selectedAboutSection===s.id?'active':''}" onclick="selectAboutSection('${s.id}')">${escAttr(s.label)}</button>`).join('')}</div>`;
@@ -2885,10 +3113,10 @@ function calendarNavMonth(delta){
   calendarMonth = {year, month};
   render();
 }
-function selectElectionDate(dateISO){ selectedElectionDate = dateISO; selectedRaceIndex = null; render(); window.scrollTo({top:0,behavior:'smooth'}); }
-function selectRace(idx){ selectedRaceIndex = idx; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function selectElectionDate(dateISO){ selectedElectionDate = dateISO; selectedRaceIndex = null; render(); scrollToContentTop(); }
+function selectRace(idx){ selectedRaceIndex = idx; render(); scrollToContentTop(); }
 function backToCalendar(){ selectedElectionDate = null; selectedRaceIndex = null; render(); }
-function backToRaceList(){ selectedRaceIndex = null; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function backToRaceList(){ selectedRaceIndex = null; render(); scrollToContentTop(); }
 function renderElectionCalendar(){
   if(selectedElectionDate && selectedRaceIndex !== null) return renderRaceDetail();
   if(selectedElectionDate) return renderRaceList();
@@ -3220,7 +3448,10 @@ function startRacesTimer(){ if(racesTimerStarted) return; racesTimerStarted=true
 
 function renderFeatured(){
   startRacesTimer();
-  return `<div class="races-wrap"><div class="section-intro"><h2>2026 races we're tracking</h2><p>Key races on the November 2026 ballot. Hover to pause, use the arrows to step through, or click any candidate for their full profile.</p></div><div class="races-rotator" onmouseenter="racesPaused=true" onmouseleave="racesPaused=false"><div id="races-rotator-body">${raceSlideHTML(featuredRaceIdx)}</div><div class="race-rotnav"><button class="race-rotnav-btn" onclick="raceStep(-1)" aria-label="Previous race">&#8249;</button><div class="race-dots">${RACES_2026.map((r,i)=>`<button class="race-dot ${i===featuredRaceIdx?'active':''}" onclick="jumpRace(${i})" title="${escAttr(r.label)}" aria-label="${escAttr(r.label)}"></button>`).join('')}</div><button class="race-rotnav-btn" onclick="raceStep(1)" aria-label="Next race">&#8250;</button></div></div></div>`;
+  // "Hover" and "click" mean nothing on a touch screen, so those screens get wording that does.
+  const touch = !!(window.matchMedia && window.matchMedia('(hover:none)').matches);
+  const hint = touch ? 'Use the arrows to step through, or tap any candidate for their full profile.' : 'Hover to pause, use the arrows to step through, or click any candidate for their full profile.';
+  return `<div class="races-wrap"><div class="section-intro"><h2>2026 races we're tracking</h2><p>Key races on the November 2026 ballot. ${hint}</p></div><div class="races-rotator" onmouseenter="racesPaused=true" onmouseleave="racesPaused=false"><div id="races-rotator-body">${raceSlideHTML(featuredRaceIdx)}</div><div class="race-rotnav"><button class="race-rotnav-btn" onclick="raceStep(-1)" aria-label="Previous race">&#8249;</button><div class="race-dots">${RACES_2026.map((r,i)=>`<button class="race-dot ${i===featuredRaceIdx?'active':''}" onclick="jumpRace(${i})" title="${escAttr(r.label)}" aria-label="${escAttr(r.label)}"></button>`).join('')}</div><button class="race-rotnav-btn" onclick="raceStep(1)" aria-label="Next race">&#8250;</button></div></div></div>`;
 }
 
 function renderAdministration(){
@@ -3266,7 +3497,7 @@ function stateTileHTML(code, officials){
       </div>
     </div>`;
 }
-function selectState(code){ selectedState = code; selectedId = null; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+function selectState(code){ selectedState = code; selectedId = null; render(); scrollToContentTop(); }
 function backToStatesList(){ selectedState = null; render(); }
 
 function renderStatesPicker(){
@@ -3423,6 +3654,7 @@ function render(){
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.tab===activeTab);
   });
+  syncMenuState();
   const gridTabs = ['congress','states'];
   const showToolbar = !selectedId && gridTabs.includes(activeTab);
   document.getElementById('toolbar').style.display = showToolbar ? 'flex' : 'none';
@@ -3448,6 +3680,7 @@ function render(){
     document.querySelectorAll('.tab-btn').forEach(btn=>{
       btn.classList.toggle('active', btn.dataset.tab===activeTab);
     });
+    syncMenuState();
     html = renderFeatured();
     showStatus('Something went wrong loading that page — back to Featured.', true);
   }
@@ -3476,6 +3709,17 @@ document.getElementById('search-q').addEventListener('input', () => {
   selectedId = null;
   render();
 });
+// The search box's hint is a little long for the narrowest phones and gets cut off mid-word there,
+// so those screens get a shorter one.
+(function(){
+  const el = document.getElementById('search-q');
+  if(!el) return;
+  const full = el.getAttribute('placeholder') || '';
+  const mq = window.matchMedia('(max-width:389px)');
+  const apply = () => el.setAttribute('placeholder', mq.matches ? 'Search by name or state…' : full);
+  apply();
+  if(mq.addEventListener) mq.addEventListener('change', apply); else if(mq.addListener) mq.addListener(apply);
+})();
 
 initData().catch(err => {
   // Last resort — everything reasonably anticipated (a null `sb`, a Supabase outage,
