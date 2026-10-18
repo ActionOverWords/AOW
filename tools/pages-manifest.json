@@ -2,161 +2,157 @@
  "version": 1,
  "officialCount": 29,
  "pages": {
-  "home": {
-   "hash": "4211ecb0540b5362334913e971834a4e36054c2e3ae2a4d24d4cafbe9d95193d",
-   "lastmod": "2026-10-14"
-  },
   "officials/cab-rollins/": {
-   "hash": "9d8cfd66bf775cd34b5b74c48d1d497294a6558231d81de763d12d395196d085",
-   "lastmod": "2026-10-14"
+   "hash": "ec035ade0c4e0a1f4e13a0767afbbb1b512b4d98ecf6554a37cfdc3b1701713f",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-wright/": {
-   "hash": "5a9a46f220d659070ed0fdf29babe571f34d399d94d99e4ce41d58636b52036a",
-   "lastmod": "2026-10-14"
+   "hash": "041db6be3386f5a905eb817d34d15d484fdd81d2511da2ff2112d92e0fcd5b3d",
+   "lastmod": "2026-10-18"
   },
   "officials/trump-pres/": {
-   "hash": "396a8a6f6ab396881c72d40177537d560a19386db69fcb2dabb26205809d99a2",
-   "lastmod": "2026-10-14"
+   "hash": "6337ac68653f30f729f24ebea4160a39e2f8748c3ffbfdcb7a9a921af598fcbb",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-burgum/": {
-   "hash": "88117879042a45bd5b1bf9505be61fe256d6f97847193b85a0258566a536d43e",
-   "lastmod": "2026-10-14"
+   "hash": "98c8d24f8114043f8e0bd9b02cbf36688731412e93c1da22d0722f286538c165",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-collins/": {
-   "hash": "2d92fe9b22d1045b95c40c1dbe7e5da360f9c017a88fdef89d26b210219b8001",
-   "lastmod": "2026-10-14"
+   "hash": "03dcb7434e2e8c8c7348122f0b358d3d46ac7728c8a930e52b070fd67725996b",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-serralta/": {
-   "hash": "b629b1155a4fd76d992391f378c9e4cccf36a7ab5c1d33514024aa35aec4c021",
-   "lastmod": "2026-10-14"
+   "hash": "baacdcee8ed6ea283242619215c47b38da41a424150d2dc3fcaa75dd94e60c1b",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-lutnick/": {
-   "hash": "a2655039996d6cb99d764cd02a490172d23fdce4002336b516253f96261b2abb",
-   "lastmod": "2026-10-14"
+   "hash": "49153264dc77068691ec7e5f5a9b7f56d92d6906138a332ada7a1dcf6465542e",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-greer/": {
-   "hash": "32c4f966bc43a539d293532db41b7b9077ed852ac30471deeba6fa4b60a68897",
-   "lastmod": "2026-10-14"
+   "hash": "2d5f32987aa904b631867684a4efd29f99a1bb680693a68ff04e843910e3c768",
+   "lastmod": "2026-10-18"
   },
   "officials/vance-vp/": {
-   "hash": "591b833fccf8e16ce593b37282d9d79be16796643892c5156e5f984a225a3cfd",
-   "lastmod": "2026-10-14"
+   "hash": "8c57cf918889bd2075db8559be1cb14340eb9f39c954b08d33c167703772b165",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-patel/": {
-   "hash": "a2a5efedc48195fcb9ec2a22411996a294b57356f14b1f9a139f7e427c7fec86",
-   "lastmod": "2026-10-14"
+   "hash": "cd2dce69622c59215f0efacf090dffc2e6c087c745288a9473faef597076f775",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-sonderling/": {
-   "hash": "a079b33c737cf5b0eaf8c7e767aba053f0ba11d8f36bfd33b87ebfd5623b587f",
-   "lastmod": "2026-10-14"
+   "hash": "93a1ad8f48392f0342e0896d17e9e46c6327a4cfc01c71c375045d0e91efbc04",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-loeffler/": {
-   "hash": "dd30b06769aea137f9ef3f8da26557ce1ad807e03a95304a0389808b7bdb7a76",
-   "lastmod": "2026-10-14"
+   "hash": "905153baaebc5c95b1ca578beaebc392eae6ba913ec4bc90e096ab2a612215dd",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-zeldin/": {
-   "hash": "345a1dde3d585a2845bdb12fcc3aa045fdf13a9add8e583a5e5846748f80c869",
-   "lastmod": "2026-10-14"
+   "hash": "98fcdbe7cb0016fcb6f12c7f3897090f359f09348a78a086f54f87a43e3d2b53",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-mcmahon/": {
-   "hash": "405dbfd18567c21bd73d3b278086c90f24b972e33c507f896210f3fdf38445d1",
-   "lastmod": "2026-10-14"
+   "hash": "4c82933f98938814277e62eee11dab51ed0134d14173650b4611b3c876f0439a",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-rubio/": {
-   "hash": "37750ebaf2869732e73d53d5353b9a6d257b76b22c262b23bb213b0a5766242a",
-   "lastmod": "2026-10-14"
+   "hash": "fb6ed30e1e9269e452cea31cadd26aed8b4d56b78ffbecc90f3811c5123b0f4e",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-mullin/": {
-   "hash": "f66ac589e711cd8333fd4ce873ca0b66b35d6ff40ac80769b16cb4f55cf3f863",
-   "lastmod": "2026-10-14"
+   "hash": "75c6e6fddc07f2fda711afebca3d4d17d0f0653255cc941c71d238c3c253ffb7",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-hegseth/": {
-   "hash": "9db83f0116973569a733f4a88cbb37f28c4dc7c9994140c8993630cb87126591",
-   "lastmod": "2026-10-14"
+   "hash": "dc0acac5f0043bc02b4b9b3cef21dbc8b3e2f176740e611edd035bed508fc5b6",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-cekada/": {
-   "hash": "af2c6c14d7bc9cfacf68ddec40f1282ba2292e0170b054624faa95d47d7e66b9",
-   "lastmod": "2026-10-14"
+   "hash": "fca515bfd01d0594d436873dd9e7f69a92b7088803cdd3b8c3a659c6a1d16075",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-jr/": {
-   "hash": "789e37310542886a9273a185db3c64c0de439a8ec3a0141ecf63298f599efa43",
-   "lastmod": "2026-10-14"
+   "hash": "58e09d5ea6bc553f1160586ee9ecb609d624edc32f321ad0a3bcaa56c8fc6a14",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-scott/": {
-   "hash": "319e729b5ac2e64f2243b515a9df4683f209e8c0a0724260a42539be24cf8558",
-   "lastmod": "2026-10-14"
+   "hash": "76b44e47028ae929d13b2a3200bf7255e6fb3a9b23fc9d08874dc2c5833422cd",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-vought/": {
-   "hash": "32d09e6f93908ba4729972b2a6bca60f8525f066d5ecad4d215f77d4b7874fe1",
-   "lastmod": "2026-10-14"
+   "hash": "28f6a0f86aa748b6edd74a9dbf0d1357453f0825048e607d94f236839f9e9c45",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-bessent/": {
-   "hash": "24d539086ee8cfd07af85fad7832deba3ead9bc16839948b470bfb3db1bbf71b",
-   "lastmod": "2026-10-14"
+   "hash": "f8d564f45dd580c63c8914bc30edcc5ac2798488b7c5e7d0462aee54d155d71f",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-turner/": {
-   "hash": "b0106ee9eabc5d7258d738c57f966ad848ea706ed3d9ea31b6d76341a5827c29",
-   "lastmod": "2026-10-14"
+   "hash": "51481f2f75ce954c80c4e46af67c7b2a44a001520b95aa2e76b5f33dd25af75e",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-duffy/": {
-   "hash": "b6ad44d42104c27628dd991059ea3589d89e61c2570c330e31876de3a0816cfe",
-   "lastmod": "2026-10-14"
+   "hash": "c503c769e3802eeadfe24b56f865c1b4b072aa829243106fea3821a68a0cbd8f",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-curran/": {
-   "hash": "93fc51e9ecbb6a865f546712e82db84f9975d89682fadbf75581da0673d460b2",
-   "lastmod": "2026-10-14"
+   "hash": "1c5b17e51a51daad3e62a7ab69652bd9dc7c5b88da50bd52e49e282d654aec64",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-cole/": {
-   "hash": "29ea2835974328e689df8e4eacda53e5bfb7c3c1137af8ae37355c7b431842af",
-   "lastmod": "2026-10-14"
+   "hash": "d6ee151c44734b0ee7d6fb9a368d09180ead29b6012a8b54740032bd209a3cfd",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-blanche/": {
-   "hash": "46524aff830a47475e8d30fec1efefa0fa047c83f8ed7bb31438ae2d446d9809",
-   "lastmod": "2026-10-14"
+   "hash": "069a08863e6f319f2786ba15252fa04de73feb8f520a19168e92f266c91ca9f1",
+   "lastmod": "2026-10-18"
   },
   "officials/agh-lyons/": {
-   "hash": "9b4904c9762231aea7b2092e2cf7ec4f926323d346245f0154bcab5814c47e3d",
-   "lastmod": "2026-10-14"
+   "hash": "0f15299f4a739cfa03cf0578b96d6d0f6ed1ab41f3a3cebb3e0c7fbe48536cb4",
+   "lastmod": "2026-10-18"
   },
   "officials/cab-pulte/": {
-   "hash": "d62d3c143341020c8d19021d8949eff35245bf82b2687d51077df21574dc23fc",
-   "lastmod": "2026-10-14"
+   "hash": "c6da116d43fb24f98d2bec393f88c6cf7f5a06befa91aeaf029c007c89abd4ac",
+   "lastmod": "2026-10-18"
   },
   "officials/": {
-   "hash": "90c798a0a5eb9a06851412a86b7b1ea7f51e8c5c8072811db69b75596c8d20a1",
-   "lastmod": "2026-10-14"
+   "hash": "a711977d42f29f541a8a777ba0fbb6dcaddbafa08f96ff465c51a4be27963115",
+   "lastmod": "2026-10-18"
   },
   "methodology/": {
-   "hash": "a4e628e77d374b29fbfe37819d8ca59b151f42ffe6bbdfb18445f4e5cd60b4fd",
-   "lastmod": "2026-10-14"
+   "hash": "f4874fbf7304954b44d7e3b9a6bb0697598976904e7be790b922af463b5b74cf",
+   "lastmod": "2026-10-18"
   },
   "administration/": {
-   "hash": "99a634e94ff0b2307cc1a5e41fa619df72b1452f7dc3666692c9bdffbcc4935b",
-   "lastmod": "2026-10-14"
+   "hash": "45f7d675a0a7b1fa0c7cfb1bf8e84755951dd422f19315db3303532bd442df9f",
+   "lastmod": "2026-10-18"
   },
   "aow-index.html": {
-   "hash": "eea46a0cf3911b4b77de417b3e91d9d93ea7cfeb8c5e2adfc006a803f68065f1",
-   "lastmod": "2026-10-16"
+   "hash": "ee1e4864f3d5317536dbd81f3b36a2b65e2fd6b9e82a5d3cd3e36ad776e27960",
+   "lastmod": "2026-10-18"
   },
   "privacy-policy.html": {
-   "hash": "015f7e288fb3de8604df2721f328ee94d75439e9a388c4896824758d29b914df",
-   "lastmod": "2026-10-16"
+   "hash": "c1706e190049b53cba5c31c47870171edf79ee2c0f7647f535a6a4689fcb10c5",
+   "lastmod": "2026-10-18"
   },
   "terms-of-service.html": {
-   "hash": "2f0add9898e51766df3c3a8ef1ea54bd3cb04870bb551a73dd79df20274ddb9b",
-   "lastmod": "2026-10-16"
+   "hash": "d84b601ccbc782a428f1f9bea08908c363ccd11b49a2297c419d7b368450e0a0",
+   "lastmod": "2026-10-18"
   },
   "cookie-policy.html": {
-   "hash": "e25ba4ae6c831b62801fdc45865751b499313fb0dac3de4abd10cf31149579fc",
-   "lastmod": "2026-10-16"
+   "hash": "305f0eeeb0f896398b3a2ea7d64f6df03667522d53c44dd2564938bd2f6edc7f",
+   "lastmod": "2026-10-18"
   },
   "dmca-policy.html": {
    "hash": "dba02c9b8049f8d417e750ad209e4795badc9876d35ea65089e9ec989b585a68",
    "lastmod": "2026-10-05"
   },
   "faq.html": {
-   "hash": "f6cf6cf80c6e35c3077de0654450577efb7c4ad5b80396cc01cc7ce4209e64e7",
-   "lastmod": "2026-10-14"
+   "hash": "db7ce3485b1c3e727b82d2aeb36fd6cb8e17ac399bfbf54954bf760c3bdd8b17",
+   "lastmod": "2026-10-18"
   }
  }
 }
