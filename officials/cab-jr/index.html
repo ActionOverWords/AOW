@@ -38,7 +38,9 @@
 a{color:var(--brand)}.wrap{max-width:860px;margin:0 auto;padding:0 20px}
 .masthead{background:var(--bg);border-bottom:1px solid var(--border)}.masthead .wrap{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}.logo-mark{width:46px;height:32px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em}.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px}
+.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap}.logo-word .lw-short{display:none}
+.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px;white-space:nowrap}
+@media (max-width:480px){.logo-word .lw-full{display:none}.logo-word .lw-short{display:inline}}
 nav.crumbs{font-size:13px;color:var(--text-muted);padding:16px 0 0}nav.crumbs a{color:var(--text-muted)}
 h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{font-size:20px;letter-spacing:-.01em;margin:30px 0 10px}h3{font-size:16.5px;line-height:1.4;margin:10px 0 8px}
 .sub{color:var(--text-muted);margin:0 0 6px}.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;vertical-align:middle;margin-left:6px}
@@ -63,7 +65,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;back
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://action-over-words.com/officials/cab-jr/#webpage","url":"https://action-over-words.com/officials/cab-jr/","name":"Robert F. Kennedy Jr. — Campaign Promise Tracker | ActionOverWords","dateModified":"2026-10-18","inLanguage":"en-US","about":{"@id":"https://action-over-words.com/officials/cab-jr/#person"}},{"@type":"Person","@id":"https://action-over-words.com/officials/cab-jr/#person","name":"Robert F. Kennedy Jr.","jobTitle":"Secretary of Health and Human Services · United States","url":"https://action-over-words.com/officials/cab-jr/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://action-over-words.com/aow-index.html"},{"@type":"ListItem","position":2,"name":"Officials","item":"https://action-over-words.com/officials/"},{"@type":"ListItem","position":3,"name":"Robert F. Kennedy Jr.","item":"https://action-over-words.com/officials/cab-jr/"}]}]}</script>
 </head>
 <body>
-<header class="masthead"><div class="wrap"><a class="logo" href="../../aow-index.html"><span class="logo-mark">AOW</span><span class="logo-word">ActionOverWords Index</span></a><a class="cta" href="../../aow-index.html">Open the tracker</a></div></header>
+<header class="masthead"><div class="wrap"><a class="logo" href="../../aow-index.html"><span class="logo-mark">AOW</span><span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span></a><a class="cta" href="../../aow-index.html">Open the tracker</a></div></header>
 <main class="wrap">
 
 <nav class="crumbs" aria-label="Breadcrumb"><a href="../../aow-index.html">Home</a> › <a href="../">Officials</a> › Robert F. Kennedy Jr.</nav>
@@ -93,6 +95,6 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;back
 </section>
 <div class="info"><strong>How to read this page.</strong> Each status is ActionOverWords' assessment based on the sources listed. A listed promise needs sources from at least three distinct publishers, including at least one primary record. The AOW Score averages a person's tracked promises: Completed 100, Compromise 60, In progress 40, Stalled 15, Not started 0, Broken 0. <a href="../../methodology/">Full methodology</a> and the <a href="../../aow-index.html">interactive tracker</a>.</div>
 </main>
-<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by elected officials. Last updated 2026-10-18. Spot an error? <a style="margin:0" href="mailto:info@action-over-words.com">info@action-over-words.com</a></p><div><a href="../../methodology/">Methodology</a><a href="../../privacy-policy.html">Privacy Policy</a><a href="../../terms-of-service.html">Terms of Service</a><a href="../../cookie-policy.html">Cookie Policy</a><a href="../../dmca-policy.html">Copyright / DMCA</a><a href="../../faq.html">FAQ</a></div></div></footer>
+<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated 2026-10-18. Spot an error? <a style="margin:0" href="mailto:info@action-over-words.com">info@action-over-words.com</a></p><div><a href="../../methodology/">Methodology</a><a href="../../privacy-policy.html">Privacy Policy</a><a href="../../terms-of-service.html">Terms of Service</a><a href="../../cookie-policy.html">Cookie Policy</a><a href="../../dmca-policy.html">Copyright / DMCA</a><a href="../../faq.html">FAQ</a></div></div></footer>
 </body>
 </html>

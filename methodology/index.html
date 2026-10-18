@@ -38,7 +38,9 @@
 a{color:var(--brand)}.wrap{max-width:860px;margin:0 auto;padding:0 20px}
 .masthead{background:var(--bg);border-bottom:1px solid var(--border)}.masthead .wrap{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}.logo-mark{width:46px;height:32px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em}.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px}
+.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap}.logo-word .lw-short{display:none}
+.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px;white-space:nowrap}
+@media (max-width:480px){.logo-word .lw-full{display:none}.logo-word .lw-short{display:inline}}
 nav.crumbs{font-size:13px;color:var(--text-muted);padding:16px 0 0}nav.crumbs a{color:var(--text-muted)}
 h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{font-size:20px;letter-spacing:-.01em;margin:30px 0 10px}h3{font-size:16.5px;line-height:1.4;margin:10px 0 8px}
 .sub{color:var(--text-muted);margin:0 0 6px}.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;vertical-align:middle;margin-left:6px}
@@ -63,7 +65,7 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;back
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://action-over-words.com/methodology/#webpage","url":"https://action-over-words.com/methodology/","name":"Methodology: Sources, Statuses and AOW Score | ActionOverWords","description":"How ActionOverWords Index sources each promise, what the six statuses mean, how the 0–100 AOW Score is calculated, and how the tracker stays nonpartisan.","dateModified":"2026-10-18","inLanguage":"en-US"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://action-over-words.com/aow-index.html"},{"@type":"ListItem","position":2,"name":"Methodology","item":"https://action-over-words.com/methodology/"}]}]}</script>
 </head>
 <body>
-<header class="masthead"><div class="wrap"><a class="logo" href="../aow-index.html"><span class="logo-mark">AOW</span><span class="logo-word">ActionOverWords Index</span></a><a class="cta" href="../aow-index.html">Open the tracker</a></div></header>
+<header class="masthead"><div class="wrap"><a class="logo" href="../aow-index.html"><span class="logo-mark">AOW</span><span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span></a><a class="cta" href="../aow-index.html">Open the tracker</a></div></header>
 <main class="wrap">
 
 <nav class="crumbs" aria-label="Breadcrumb"><a href="../aow-index.html">Home</a> › Methodology</nav>
@@ -72,11 +74,13 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;back
 <div class="prose">
 
 <h2 id="what-this-tracks">What this tracks</h2>
-<p>ActionOverWords Index tracks specific promises made by elected officials, federal and state, and shows whether each one has been kept, broken, or something in between. Most political coverage tracks what officials say. This tracks what actually happened to what they said.</p>
+<p>ActionOverWords Index tracks specific promises made by U.S. officials, federal and state, and shows whether each one has been kept, broken, or something in between. Most political coverage tracks what officials say. This tracks what actually happened to what they said.</p>
 <p>The same standard applies whether a promise came from a Democrat or a Republican, because accountability that only works for one side isn't accountability. Officials who were appointed rather than elected, such as Cabinet secretaries and senior agency heads, are included and are marked Appointed in the interactive tracker.</p>
 
 <h2 id="sourcing">How each promise is sourced</h2>
-<p>Every promise is checked against three sources before a status is set: one official government source (a vote record, a signed bill, an agency filing, or similar primary record), one mainstream/left-leaning news source, and one right-leaning news source. A status only gets applied once it holds up across all three, not just one outlet's version of events. The three-source rule exists so that a status can never rest on reporting from only one side of the aisle.</p>
+<p>Our standard is three kinds of sources for each promise: one official government source (a vote record, a signed bill, an agency filing, or similar primary record), one mainstream/left-leaning news source, and one right-leaning news source. A status is meant to hold up across all three, not just one outlet's version of events. The three-source standard exists so that a status doesn't rest on reporting from only one side of the aisle.</p>
+<p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. For other promises, such as a policy goal or a campaign commitment, the standard is all three kinds of sources.</p>
+<p>This is a new dataset, and sourcing is still being completed for many entries. Many of those entries carry a <strong>Still finding sources</strong> tag in the interactive tracker instead of being presented as fully verified. A status is our good-faith reading of the sources linked on the entry, not an audited record, and every call is open to appeal (see Corrections and appeals below).</p>
 <p>Every source is linked on the promise and labeled by type: campaign statement, interview, voting record, official record, the official's own office, or news report. A campaign statement and an independently reported outcome are not presented as equally strong evidence, and the reader weighs the sources rather than being told what to think.</p>
 <p>A promise is listed on the pages of this site only when its sources come from at least three distinct publishers and at least one of them is a primary record: an official record, a voting record, or the official's own office. Promises that do not yet meet that standard stay in the interactive tracker, and an official's page says when some of their tracked promises are not listed yet.</p>
 
@@ -118,9 +122,9 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;back
 <ul>
 <li><strong>Party is a fact, not a verdict.</strong> A party badge is colored the way an election map colors it, and that is the only role color plays. Status colors are earned by outcome, not by party: the same six categories, checked against the same standard, for every official.</li>
 <li><strong>Party isn't assumed from context.</strong> Serving under a Republican administration doesn't automatically get someone tagged Republican, and serving under a Democratic one doesn't make someone a Democrat.</li>
-<li><strong>Sourcing is shown, not summarized into a conclusion.</strong> Every promise links to where it came from, so the evidence can be checked rather than taken on trust.</li>
+<li><strong>Sourcing is shown, not summarized into a conclusion.</strong> Each entry links to the sources found for it, so the evidence can be checked rather than taken on trust.</li>
 <li><strong>The score is a fixed formula.</strong> Nobody adjusts it case by case.</li>
-<li><strong>Lists are never ranked by party or score.</strong> The directory and the administration, Senate, House and state pages group officials by where they serve and list them alphabetically.</li>
+<li><strong>Lists on these pages are never ranked by party or score.</strong> The directory and the administration, Senate, House and state pages group officials by where they serve and list them alphabetically.</li>
 </ul>
 <p>No dataset is perfect, and this one is still growing. What these choices are meant to do is make any bias that does creep in visible and checkable, instead of buried behind a "trust the editors" black box.</p>
 
@@ -135,6 +139,6 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;back
 <p>See also: <a href="../officials/">Officials directory</a> · <a href="../aow-index.html">Interactive tracker</a> · <a href="../faq.html">FAQ</a></p>
 </div>
 </main>
-<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by elected officials. Last updated 2026-10-18. Spot an error? <a style="margin:0" href="mailto:info@action-over-words.com">info@action-over-words.com</a></p><div><a href="../methodology/">Methodology</a><a href="../privacy-policy.html">Privacy Policy</a><a href="../terms-of-service.html">Terms of Service</a><a href="../cookie-policy.html">Cookie Policy</a><a href="../dmca-policy.html">Copyright / DMCA</a><a href="../faq.html">FAQ</a></div></div></footer>
+<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated 2026-10-18. Spot an error? <a style="margin:0" href="mailto:info@action-over-words.com">info@action-over-words.com</a></p><div><a href="../methodology/">Methodology</a><a href="../privacy-policy.html">Privacy Policy</a><a href="../terms-of-service.html">Terms of Service</a><a href="../cookie-policy.html">Cookie Policy</a><a href="../dmca-policy.html">Copyright / DMCA</a><a href="../faq.html">FAQ</a></div></div></footer>
 </body>
 </html>
