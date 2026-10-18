@@ -558,6 +558,53 @@
   .about-page .donate-fine{font-size:12px; line-height:1.55; color:var(--text-muted); margin:14px 0 0;}
   .about-page .donate-alt{margin:14px 0 0;}
 
+  /* ---------- member tools: lists, notes, Find Officials, alerts ---------- */
+  .member-tools{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+  .member-tools .btn-sm.is-on{border-color:var(--brand); color:var(--brand-dark); background:var(--brand-tint);}
+  html[data-theme="dark"] .member-tools .btn-sm.is-on{color:var(--brand);}
+  .note-card{background:var(--watch-on-bg); border:1px solid var(--border); border-left:3px solid var(--watch-on); border-radius:var(--radius); padding:14px 16px; margin-top:12px;}
+  .note-card-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted);}
+  .note-card-head .score-note{text-transform:none; letter-spacing:0; font-weight:500; margin:0;}
+  .note-text{white-space:pre-wrap; overflow-wrap:anywhere; font-size:14px; line-height:1.55; color:var(--text); margin:8px 0 10px;}
+  .list-pick{display:flex; flex-direction:column; border:1px solid var(--border); border-radius:var(--radius-sm); margin:0 0 14px; max-height:260px; overflow-y:auto;}
+  .modal-card .list-pick-row{display:flex; align-items:center; gap:10px; padding:9px 12px; margin:0; border-bottom:1px solid var(--border); font-size:13.5px; font-weight:600; color:var(--text); cursor:pointer;}
+  .modal-card .list-pick-row:last-child{border-bottom:none;}
+  .modal-card .list-pick-row input{width:auto; margin:0; flex:none;}
+  .list-pick-name{flex:1; min-width:0; overflow-wrap:anywhere;}
+  .list-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;}
+  .list-card-head h3{margin:0; font-size:16px; overflow-wrap:anywhere;}
+  .list-card-actions{display:flex; gap:6px; flex-wrap:wrap;}
+  .chip-x{border:none; background:none; color:var(--text-faint); font-size:15px; line-height:1; padding:0 2px 0 4px; cursor:pointer; font-family:inherit;}
+  .chip-x:hover{color:var(--broken);}
+  .chip-x.confirming{color:var(--broken); font-size:11.5px; font-weight:700;}
+  .note-row{padding:12px 0; border-bottom:1px solid var(--border);}
+  .note-row:first-child{padding-top:0;}
+  .note-row:last-child{border-bottom:none; padding-bottom:0;}
+  .note-row-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; font-weight:700; font-size:14px;}
+  .finder-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0 14px;}
+  .finder-actions{display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;}
+  .saved-views{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:14px 0 0;}
+  .view-chip{display:inline-flex; align-items:center; border:1.5px solid var(--border); border-radius:20px; background:var(--bg); padding:2px 8px 2px 2px;}
+  .view-chip-name{border:none; background:none; font-family:inherit; font-weight:700; font-size:12.5px; color:var(--brand); cursor:pointer; padding:4px 6px 4px 10px;}
+  .finder-summary{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:18px 0 12px; font-size:13.5px; color:var(--text-muted);}
+  .finder-export{display:flex; gap:6px; flex-wrap:wrap;}
+  .alert-opts{display:flex; flex-direction:column; gap:10px;}
+  .modal-card .alert-opt{display:flex; align-items:flex-start; gap:10px; margin:0; font-weight:400; font-size:13.5px; color:var(--text); cursor:pointer;}
+  .modal-card .alert-opt input{width:auto; margin:3px 0 0; flex:none;}
+  .modal-card .alert-opt.locked{opacity:.55; cursor:not-allowed;}
+  .acct-tabs{overflow-x:auto;}
+  @media (max-width:420px){ .acct-tabs .tab-btn{padding:8px 6px; font-size:12px;} }
+  /* Phones with a touch screen (same breakpoint as the "phone layout" block): the small x buttons get an
+     invisible bigger tap area, and list rows and alert choices get finger-sized rows. */
+  @media (pointer:coarse) and (max-width:767px){
+    .chip-x{position:relative;}
+    .chip-x::after{content:''; position:absolute; inset:-10px -8px;}
+    .view-chip-name{min-height:36px;}
+    .modal-card .list-pick-row{min-height:46px;}
+    .modal-card .alert-opt{padding:6px 0;}
+    .modal-card .alert-opt input, .modal-card .list-pick-row input{width:20px; height:20px;}
+  }
+
   /* ---------- toast ---------- */
   .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(120px); background:var(--text); color:#fff; padding:11px 20px; border-radius:8px; font-size:13.5px; font-weight:600; box-shadow:var(--shadow-md); transition:transform .25s ease; z-index:100;}
   .toast.show{transform:translateX(-50%) translateY(0);}
@@ -1056,7 +1103,7 @@ let compareIds = ['', ''];
 let selectedPastPersonId = null;
 let selectedCongressChamber = 'senate';
 let selectedTool = 'compare';
-let selectedAcctTab = 'profile'; // which tab is open in the account panel: profile | appearance | plan | team
+let selectedAcctTab = 'profile'; // which tab is open in the account panel: profile | appearance | alerts | plan
 let selectedOrgChartLevel = 'federal';
 let calendarMonth = null; // {year, month} 0-indexed, lazily set to today's month on first render
 let selectedElectionDate = null; // 'YYYY-MM-DD' once a marked date is clicked
@@ -1088,13 +1135,13 @@ function escJsAttr(s){
 function genId(prefix){ return prefix + Date.now().toString(36) + Math.floor(Math.random()*1000); }
 function partyLabel(p){ return p==='D' ? 'Democrat' : p==='R' ? 'Republican' : p==='NP' ? 'Nonpartisan' : 'Independent'; }
 
-function showStatus(msg, isError){
+function showStatus(msg, isError, ms){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.toggle('error', !!isError);
   t.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), ms || 2200);
 }
 function dismissNewsiteNotice(){
   var el = document.getElementById('newsiteNotice');
@@ -1165,6 +1212,12 @@ async function loadCurrentUser(authUser){
   if(dataErr) throw dataErr;
   if(billingErr) throw billingErr;
   const byKey = {}; (rows||[]).forEach(r=>{ byKey[r.key] = r.value; });
+  // Alert settings are an extra: if they can't be read, logging in still works.
+  const alerts = { frequency: null, failed: false };
+  try {
+    const { data: ds, error: dsErr } = await sb.from('digest_settings').select('frequency').eq('user_id', authUser.id).maybeSingle();
+    if(dsErr) alerts.failed = true; else alerts.frequency = ds ? ds.frequency : null;
+  } catch(e){ alerts.failed = true; }
   return {
     id: authUser.id,
     email: authUser.email,
@@ -1172,8 +1225,13 @@ async function loadCurrentUser(authUser){
     tier: profile.tier,
     isAdminAccount: profile.is_admin_account,
     joinedAt: (profile.joined_at || '').slice(0, 10), // Postgres returns a full timestamp; only the date is shown
-    watchlist: byKey.watchlist || [],
+    watchlist: Array.isArray(byKey.watchlist) ? byKey.watchlist : [],
     darkMode: !!byKey.dark_mode,
+    savedLists: normalizeLists(byKey.saved_lists),
+    notes: normalizeNotes(byKey.private_notes),
+    savedViews: normalizeViews(byKey.saved_views),
+    alertFrequency: alerts.frequency,
+    alertsLoadFailed: alerts.failed,
     subscriptionStatus: billing ? billing.subscription_status : null,
     currentPeriodEnd: billing ? billing.current_period_end : null,
     cancelAtPeriodEnd: billing ? billing.cancel_at_period_end : false
@@ -1234,6 +1292,7 @@ async function initData(){
   renderAccountZone();
   render();
   maybeLoadAds();
+  handleLinkHash(); // links from alert emails: #official=…, #alerts, #unsubscribe=…
 }
 
 /* ---------- admin state (derived from the logged-in account, see user accounts below) ---------- */
@@ -1249,17 +1308,20 @@ const TIERS = [
   {id:'patron', label:'Supporter', price:'$39.99/mo'}
 ];
 function tierLabel(id){ return (TIERS.find(t=>t.id===id) || {}).label || id; }
+// Every row here is a working feature. Keep it that way: add a row only once the feature ships.
+// Limits match PLAN_LIMITS (member tools section) and the send-digests email function.
 const TIER_FEATURES = [
-  {label:'Follow officials + basic alerts', free:'Browse only', supporter:'✓', sustainer:'✓', patron:'✓'},
+  {label:'Follow officials', free:'–', supporter:'Up to 5', sustainer:'Unlimited', patron:'Unlimited'},
+  {label:'Email alerts when their promises change', free:'–', supporter:'Weekly', sustainer:'Daily or weekly', patron:'Hourly, daily or weekly'},
+  {label:'Alerts also cover your lists + new promises', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
+  {label:'Saved lists of officials', free:'–', supporter:'1 list of 10', sustainer:'25 lists of 200', patron:'25 lists of 200'},
+  {label:'Private notes on officials', free:'–', supporter:'Up to 10', sustainer:'Up to 200', patron:'Up to 200'},
   {label:'Ad-free', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
   {label:'Dark mode', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
-  {label:'Saved lists + private notes', free:'–', supporter:'Limited', sustainer:'✓', patron:'✓'},
-  {label:'Advanced filters + saved views', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
+  {label:'Find Officials: advanced filters + saved views', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
   {label:'Comparison tools', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
   {label:'CSV export', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
-  {label:'Personalized digests', free:'–', supporter:'Basic', sustainer:'Full', patron:'Full + early'},
-  {label:'Priority suggestion review', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
-  {label:'Early features', free:'–', supporter:'–', sustainer:'–', patron:'✓'}
+  {label:'Priority suggestion review', free:'–', supporter:'–', sustainer:'✓', patron:'✓'}
 ];
 function userTierRank(user){
   const idx = TIERS.findIndex(t=>t.id===(user ? user.tier : 'free'));
@@ -1274,12 +1336,14 @@ function applyTheme(dark){
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 }
 // Personal, per-member data — RLS on "user_data" already restricts every row to its
-// own owner, so this one upsert covers both the watchlist and the dark-mode keys.
+// own owner, so this one upsert covers the watchlist, dark mode, saved lists, private notes
+// and saved views. Returns true once saved, so callers can undo a change that didn't stick.
 async function persistUserData(key, value){
   try {
     const { error } = await sb.from('user_data').upsert({ user_id: CURRENT_USER.id, key, value }, { onConflict: 'user_id,key' });
     if(error) throw error;
-  } catch(e){ showStatus('Could not save that — try again.', true); }
+    return true;
+  } catch(e){ showStatus('Could not save that — try again.', true); return false; }
 }
 async function toggleDarkMode(){
   if(!CURRENT_USER){ showAuthModal('signup'); showStatus(`Create a free account, then upgrade to ${tierLabel('supporter')} to unlock dark mode.`); return; }
@@ -1518,6 +1582,7 @@ async function showAccountSettings(){
   const tabs = [
     {id:'profile', label:'Profile'},
     {id:'appearance', label:'Appearance'},
+    {id:'alerts', label:'Alerts'},
     {id:'plan', label:'Plan'},
   ];
 
@@ -1569,6 +1634,8 @@ async function showAccountSettings(){
         </div>
       </div>
     `;
+  } else if(selectedAcctTab==='alerts'){
+    tabContent = renderAlertsTab();
   } else if(selectedAcctTab==='plan'){
     tabContent = `
       <div class="acct-row">
@@ -1827,6 +1894,756 @@ async function donateSubmit(ev){
 // Coming back with the browser's Back button can restore this page frozen mid-hand-off (button
 // disabled, "Opening secure checkout…"). Unfreeze it.
 window.addEventListener('pageshow', e => { if(e.persisted && donateBusy){ donateBusy = false; donateRefresh(); } });
+
+/* ---------- member tools: saved lists, private notes, advanced filters, saved views, CSV export, alerts ----------
+   Everything personal lives in the member's own "user_data" rows (row-level security: owner only):
+     saved_lists   [{id, name, ids:[officialId, …]}]
+     private_notes {officialId: {text, updatedAt}}
+     saved_views   [{id, name, filters:{…}}]
+   Alert emails are sent server-side by the send-digests function. This page only stores the
+   member's chosen frequency in "digest_settings". PLAN_LIMITS below is what this page enforces;
+   the email function enforces its own rules (follow cap, frequency, lists) on the server, so
+   nothing a browser saves can get anyone more than their plan includes. */
+const PLAN_LIMITS = {
+  free:      {lists:0,  listSize:0,   notes:0,   views:0},
+  supporter: {lists:1,  listSize:10,  notes:10,  views:0},
+  sustainer: {lists:25, listSize:200, notes:200, views:25},
+  patron:    {lists:25, listSize:200, notes:200, views:25}
+};
+const NOTE_MAX_CHARS = 1000;
+const NAME_MAX_CHARS = 60;
+const CSV_NOTE = 'CSV exports are for your own research. If you publish from one, please cite ActionOverWords Index (action-over-words.com).';
+const ICON_BELL = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5a4 4 0 018 0c0 3.5 1.5 4.5 1.5 4.5h-11S4 10 4 6.5z"/><path d="M6.8 13.5a1.3 1.3 0 002.4 0"/></svg>';
+
+function planLimits(){ return PLAN_LIMITS[CURRENT_USER ? CURRENT_USER.tier : 'free'] || PLAN_LIMITS.free; }
+function memberById(id){ return MEMBERS.find(m=>m.id===id) || null; }
+function normalizeLists(v){
+  return (Array.isArray(v) ? v : [])
+    .filter(l => l && typeof l.id==='string' && /^[a-z0-9]{1,40}$/i.test(l.id) && typeof l.name==='string' && Array.isArray(l.ids))
+    .map(l => ({id:l.id, name:l.name.slice(0, NAME_MAX_CHARS), ids:[...new Set(l.ids.filter(x=>typeof x==='string'))]}));
+}
+function normalizeNotes(v){
+  const out = {};
+  if(v && typeof v==='object' && !Array.isArray(v)){
+    Object.keys(v).forEach(k => {
+      const n = v[k];
+      if(n && typeof n.text==='string' && n.text.trim()) out[k] = {text:n.text.slice(0, NOTE_MAX_CHARS), updatedAt:String(n.updatedAt||'')};
+    });
+  }
+  return out;
+}
+function normalizeViews(v){
+  return (Array.isArray(v) ? v : [])
+    .filter(x => x && typeof x.id==='string' && /^[a-z0-9]{1,40}$/i.test(x.id) && typeof x.name==='string' && x.filters && typeof x.filters==='object')
+    .map(x => ({id:x.id, name:x.name.slice(0, NAME_MAX_CHARS), filters:cleanFinderFilters(x.filters)}));
+}
+function fmtShortDate(iso){
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'});
+}
+function goToPlans(){ closeModal(); selectTab('about'); selectedAboutSection = 'support'; render(); }
+// One wording for every "this needs a plan" moment.
+function requireTier(minTier, what){
+  if(!CURRENT_USER){ showAuthModal('signup'); showStatus(`${what} comes with the ${tierLabel(minTier)} plan and up. Create a free account first.`); return false; }
+  if(!userHasTier(minTier)){ showStatus(`${what} comes with the ${tierLabel(minTier)} plan and up — see Support Us to upgrade.`, true); return false; }
+  return true;
+}
+function lockedPanelHTML(title, intro, minTier){
+  const cta = !CURRENT_USER
+    ? `<button class="btn-primary" onclick="showAuthModal('signup')">Sign Up</button>`
+    : `<button class="btn-primary" onclick="goToPlans()">See plans</button>`;
+  return `
+    <div class="section-intro"><h2>${escAttr(title)}</h2><p>${escAttr(intro)}</p></div>
+    <div class="pcard"><p class="pnote" style="margin:0 0 12px;">${escAttr(title)} comes with the ${escAttr(tierLabel(minTier))} plan and up.${CURRENT_USER ? '' : ' Create a free account, then pick a plan.'}</p>${cta}</div>
+  `;
+}
+// Two clicks for anything that deletes, same as the admin delete buttons — no browser dialogs.
+function confirmClick(btn, idleLabel, action, armedLabel){
+  if(btn.dataset.confirm==='1'){ action(); return; }
+  btn.dataset.confirm = '1'; btn.textContent = armedLabel || 'Click again to delete'; btn.classList.add('confirming');
+  setTimeout(()=>{ if(btn.isConnected){ btn.dataset.confirm = '0'; btn.textContent = idleLabel; btn.classList.remove('confirming'); } }, 3000);
+}
+
+/* ----- per-official tools row (Follow / list / note / export), shown on every current official's page ----- */
+function listsContaining(id){ return CURRENT_USER ? (CURRENT_USER.savedLists||[]).filter(l=>l.ids.includes(id)) : []; }
+function memberToolsHTML(id){
+  const following = isWatching(id);
+  const inLists = listsContaining(id).length;
+  const hasNote = !!(CURRENT_USER && CURRENT_USER.notes && CURRENT_USER.notes[id]);
+  const jsId = escJsAttr(id);
+  return `
+    <div class="member-tools" role="group" aria-label="Your tools for this official">
+      <button class="btn-sm${following?' is-on':''}" aria-pressed="${following?'true':'false'}" onclick="toggleWatch('${jsId}', event)">${following?'★ Following':'☆ Follow'}</button>
+      <button class="btn-sm${inLists?' is-on':''}" onclick="openListPicker('${jsId}')">${inLists ? `☰ In ${inLists} list${inLists===1?'':'s'}` : '☰ Add to list'}</button>
+      <button class="btn-sm${hasNote?' is-on':''}" onclick="openNoteEditor('${jsId}')">✎ ${hasNote?'Edit private note':'Private note'}</button>
+      <button class="btn-sm" onclick="exportPromisesCSV(['${jsId}'], '${escJsAttr((memberById(id)||{}).name||id)}')">⇩ Promises CSV</button>
+    </div>`;
+}
+function privateNoteCardHTML(id){
+  const n = CURRENT_USER && CURRENT_USER.notes ? CURRENT_USER.notes[id] : null;
+  if(!n) return '';
+  return `
+    <div class="note-card">
+      <div class="note-card-head"><span>Your private note</span><span class="score-note">Only you can see this${n.updatedAt ? ' · updated ' + escAttr(fmtShortDate(n.updatedAt)) : ''}</span></div>
+      <p class="note-text">${escAttr(n.text)}</p>
+      <button class="btn-sm" onclick="openNoteEditor('${escJsAttr(id)}')">Edit note</button>
+    </div>`;
+}
+
+/* ----- saved lists ----- */
+async function persistLists(){ return persistUserData('saved_lists', CURRENT_USER.savedLists); }
+function openListPicker(officialId){
+  if(!requireTier('supporter', 'Saved lists')) return;
+  const m = memberById(officialId);
+  if(!m) return;
+  const lim = planLimits();
+  const lists = CURRENT_USER.savedLists;
+  const jsId = escJsAttr(officialId);
+  const rows = lists.map(l => `
+    <label class="list-pick-row">
+      <input type="checkbox" ${l.ids.includes(officialId)?'checked':''} onchange="toggleInList(this, '${l.id}', '${jsId}')">
+      <span class="list-pick-name">${escAttr(l.name)}</span>
+      <span class="score-note">${l.ids.length} / ${lim.listSize}</span>
+    </label>`).join('');
+  const canCreate = lists.length < lim.lists;
+  const fullNote = `<p class="score-note">Your ${escAttr(tierLabel(CURRENT_USER.tier))} plan includes ${lim.lists} list${lim.lists===1?'':'s'}${userHasTier('sustainer') ? '' : ` of up to ${lim.listSize} officials. ${escAttr(tierLabel('sustainer'))} includes ${PLAN_LIMITS.sustainer.lists} lists of up to ${PLAN_LIMITS.sustainer.listSize}`}.</p>`;
+  openModal(`
+    <button class="acct-close" onclick="closeModal()" aria-label="Close">${ICON_CLOSE}</button>
+    <h3 style="padding-right:30px;">Save ${escAttr(m.name)} to a list</h3>
+    ${rows ? `<div class="list-pick">${rows}</div>` : `<p class="score-note" style="margin:-6px 0 14px;">No lists yet. Name your first one below.</p>`}
+    ${canCreate ? `
+      <label>New list<input id="new-list-name" maxlength="${NAME_MAX_CHARS}" placeholder="e.g. Oregon delegation" onkeydown="if(event.key==='Enter') createList('${jsId}')"></label>
+      <div class="modal-actions" style="justify-content:flex-start; margin-top:-4px;"><button class="btn-secondary" onclick="createList('${jsId}')">Create list and add</button></div>` : fullNote}
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal()">Done</button></div>
+  `);
+}
+async function toggleInList(box, listId, officialId){
+  const list = CURRENT_USER && CURRENT_USER.savedLists.find(l=>l.id===listId);
+  if(!list) return;
+  const lim = planLimits();
+  if(box.checked){
+    if(list.ids.includes(officialId)) return;
+    if(list.ids.length >= lim.listSize){
+      box.checked = false;
+      showStatus(`That list is full — ${lim.listSize} officials per list on the ${tierLabel(CURRENT_USER.tier)} plan.`, true);
+      return;
+    }
+    list.ids.push(officialId);
+  } else {
+    list.ids = list.ids.filter(x=>x!==officialId);
+  }
+  if(!await persistLists()){
+    if(box.checked) list.ids = list.ids.filter(x=>x!==officialId); else list.ids.push(officialId);
+    box.checked = !box.checked;
+    return;
+  }
+  const count = box.closest('.list-pick-row') && box.closest('.list-pick-row').querySelector('.score-note');
+  if(count) count.textContent = `${list.ids.length} / ${lim.listSize}`;
+  render();
+}
+function openNewListModal(){
+  if(!requireTier('supporter', 'Saved lists')) return;
+  const lim = planLimits();
+  if(CURRENT_USER.savedLists.length >= lim.lists){ showStatus(`Your ${tierLabel(CURRENT_USER.tier)} plan includes ${lim.lists} list${lim.lists===1?'':'s'}.`, true); return; }
+  openModal(`
+    <h3>New list</h3>
+    <label>Name<input id="new-list-name" maxlength="${NAME_MAX_CHARS}" placeholder="e.g. Oregon delegation" onkeydown="if(event.key==='Enter') createList('')"></label>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="createList('')">Create list</button>
+    </div>
+  `);
+  document.getElementById('new-list-name').focus();
+}
+async function createList(officialId){
+  const input = document.getElementById('new-list-name');
+  const name = (input ? input.value : '').trim().slice(0, NAME_MAX_CHARS);
+  if(!name){ showStatus('Give the list a name.', true); return; }
+  const lim = planLimits();
+  if(CURRENT_USER.savedLists.length >= lim.lists){ showStatus(`Your ${tierLabel(CURRENT_USER.tier)} plan includes ${lim.lists} list${lim.lists===1?'':'s'}.`, true); return; }
+  if(CURRENT_USER.savedLists.some(l=>l.name.toLowerCase()===name.toLowerCase())){ showStatus('You already have a list with that name.', true); return; }
+  const list = {id:genId('l'), name, ids: officialId ? [officialId] : []};
+  CURRENT_USER.savedLists.push(list);
+  if(!await persistLists()){ CURRENT_USER.savedLists.pop(); return; }
+  showStatus(officialId ? `Saved to “${name}”.` : `Created “${name}”.`);
+  if(officialId) openListPicker(officialId); else closeModal();
+  render();
+}
+function openRenameList(listId){
+  const list = CURRENT_USER && CURRENT_USER.savedLists.find(l=>l.id===listId);
+  if(!list) return;
+  openModal(`
+    <h3>Rename list</h3>
+    <label>Name<input id="rename-list-name" maxlength="${NAME_MAX_CHARS}" value="${escAttr(list.name)}" onkeydown="if(event.key==='Enter') renameList('${listId}')"></label>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="renameList('${listId}')">Save</button>
+    </div>
+  `);
+  document.getElementById('rename-list-name').focus();
+}
+async function renameList(listId){
+  const list = CURRENT_USER.savedLists.find(l=>l.id===listId);
+  const name = (document.getElementById('rename-list-name').value || '').trim().slice(0, NAME_MAX_CHARS);
+  if(!list || !name){ showStatus('Give the list a name.', true); return; }
+  if(CURRENT_USER.savedLists.some(l=>l.id!==listId && l.name.toLowerCase()===name.toLowerCase())){ showStatus('You already have a list with that name.', true); return; }
+  const prev = list.name;
+  list.name = name;
+  if(!await persistLists()){ list.name = prev; return; }
+  closeModal(); render(); showStatus('Renamed.');
+}
+async function deleteList(listId){
+  const idx = CURRENT_USER.savedLists.findIndex(l=>l.id===listId);
+  if(idx<0) return;
+  const [removed] = CURRENT_USER.savedLists.splice(idx, 1);
+  if(!await persistLists()){ CURRENT_USER.savedLists.splice(idx, 0, removed); return; }
+  render(); showStatus(`Deleted “${removed.name}”.`);
+}
+async function removeFromList(listId, officialId){
+  const list = CURRENT_USER.savedLists.find(l=>l.id===listId);
+  if(!list) return;
+  const prev = list.ids.slice();
+  list.ids = list.ids.filter(x=>x!==officialId);
+  if(!await persistLists()){ list.ids = prev; return; }
+  render();
+}
+function exportList(listId, kind){
+  const list = CURRENT_USER && CURRENT_USER.savedLists.find(l=>l.id===listId);
+  if(!list) return;
+  if(kind==='promises') exportPromisesCSV(list.ids, list.name); else exportOfficialsCSV(list.ids, list.name);
+}
+function listChipHTML(m, listId){
+  return `
+    <div class="leg-chip" onclick="showDetail('${escJsAttr(m.id)}')" title="${partyLabel(m.party)}">
+      <span class="leg-party party-${escAttr(m.party)}">${escAttr(m.party)}</span>
+      <span class="leg-name">${escAttr(m.name)}</span>
+      <span class="leg-district">${escAttr(m.state)}</span>
+      <button class="chip-x" onclick="event.stopPropagation(); removeFromList('${listId}','${escJsAttr(m.id)}')" title="Remove from this list" aria-label="Remove ${escAttr(m.name)} from this list">×</button>
+    </div>`;
+}
+function renderMyLists(){
+  if(!userHasTier('supporter')){
+    return lockedPanelHTML('My Lists', 'Group officials into your own lists — a state delegation, a committee, the races you care about — and keep private notes on anyone you track.', 'supporter');
+  }
+  const lim = planLimits();
+  const lists = CURRENT_USER.savedLists;
+  const notes = CURRENT_USER.notes;
+  const canExport = userHasTier('sustainer');
+  const canCreate = lists.length < lim.lists;
+  const listsHTML = lists.length ? lists.map(l => {
+    const ms = l.ids.map(memberById).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name));
+    const gone = l.ids.length - ms.length;
+    return `
+      <div class="pcard">
+        <div class="list-card-head">
+          <div>
+            <h3>${escAttr(l.name)}</h3>
+            <p class="score-note" style="margin:2px 0 0;">${ms.length} of ${lim.listSize} official${lim.listSize===1?'':'s'}${gone ? ` · ${gone} no longer on the roster` : ''}</p>
+          </div>
+          <div class="list-card-actions">
+            ${canExport && ms.length ? `<button class="btn-sm" onclick="exportList('${l.id}','officials')">⇩ Officials CSV</button><button class="btn-sm" onclick="exportList('${l.id}','promises')">⇩ Promises CSV</button>` : ''}
+            <button class="btn-sm" onclick="openRenameList('${l.id}')">Rename</button>
+            <button class="btn-sm danger" onclick="confirmClick(this, 'Delete', ()=>deleteList('${l.id}'))">Delete</button>
+          </div>
+        </div>
+        ${ms.length
+          ? `<div class="leg-chips" style="margin-top:12px;">${ms.map(m=>listChipHTML(m, l.id)).join('')}</div>`
+          : `<p class="pnote" style="margin:10px 0 0;">Empty for now. Open any official and choose “☰ Add to list”.</p>`}
+      </div>`;
+  }).join('') : `<div class="pcard"><p class="pnote" style="margin:0;">No lists yet. Open any official and choose “☰ Add to list”, or start one here.</p></div>`;
+  const noteIds = Object.keys(notes).sort((a,b)=>((memberById(a)||{}).name||a).localeCompare((memberById(b)||{}).name||b));
+  const notesHTML = noteIds.length ? `<div class="pcard">${noteIds.map(id => {
+    const m = memberById(id), n = notes[id];
+    return `
+      <div class="note-row">
+        <div class="note-row-head">
+          ${m ? `<a href="#" onclick="showDetail('${escJsAttr(id)}'); return false;">${escAttr(m.name)}</a>` : `<span>No longer on the roster</span>`}
+          <span class="score-note" style="margin:0; font-weight:500;">${n.updatedAt ? 'Updated ' + escAttr(fmtShortDate(n.updatedAt)) : ''}</span>
+        </div>
+        <p class="note-text" style="margin:6px 0 8px;">${escAttr(n.text)}</p>
+        ${m ? `<button class="btn-sm" onclick="openNoteEditor('${escJsAttr(id)}')">Edit</button>` : `<button class="btn-sm danger" onclick="confirmClick(this, 'Delete', ()=>deleteNote('${escJsAttr(id)}'))">Delete</button>`}
+      </div>`;
+  }).join('')}</div>` : `<div class="pcard"><p class="pnote" style="margin:0;">No private notes yet. Open any official and choose “✎ Private note”. Only you can see them.</p></div>`;
+  const upsell = !userHasTier('sustainer') ? ` <a href="#" onclick="goToPlans(); return false;">${escAttr(tierLabel('sustainer'))}</a> raises that to ${PLAN_LIMITS.sustainer.lists} lists of ${PLAN_LIMITS.sustainer.listSize} and ${PLAN_LIMITS.sustainer.notes} notes, and adds CSV export.` : '';
+  return `
+    <div class="section-intro">
+      <h2>My Lists</h2>
+      <p>Your own groups of officials and your private notes. Only you can see them.${userHasTier('sustainer') ? ' Officials in your lists are also covered by your alert emails.' : ''}</p>
+    </div>
+    <p class="score-note">${lists.length} of ${lim.lists} list${lim.lists===1?'':'s'} · up to ${lim.listSize} officials each · ${noteIds.length} of ${lim.notes} private notes.${upsell}</p>
+    ${canCreate ? `<button class="btn-primary" style="margin:6px 0 4px;" onclick="openNewListModal()">+ New list</button>` : ''}
+    ${listsHTML}
+    <h2 style="font-size:17px; margin:28px 0 4px;">Private notes</h2>
+    ${notesHTML}
+    ${canExport ? `<p class="score-note" style="margin-top:12px;">${escAttr(CSV_NOTE)}</p>` : ''}
+  `;
+}
+
+/* ----- private notes ----- */
+function openNoteEditor(officialId){
+  if(!requireTier('supporter', 'Private notes')) return;
+  const m = memberById(officialId);
+  if(!m) return;
+  const existing = CURRENT_USER.notes[officialId];
+  const lim = planLimits();
+  if(!existing && Object.keys(CURRENT_USER.notes).length >= lim.notes){
+    showStatus(`You've used all ${lim.notes} private notes on the ${tierLabel(CURRENT_USER.tier)} plan${userHasTier('sustainer') ? '' : ` — ${tierLabel('sustainer')} includes ${PLAN_LIMITS.sustainer.notes}`}.`, true);
+    return;
+  }
+  const jsId = escJsAttr(officialId);
+  const len = existing ? existing.text.length : 0;
+  openModal(`
+    <button class="acct-close" onclick="closeModal()" aria-label="Close">${ICON_CLOSE}</button>
+    <h3 style="padding-right:30px;">Private note: ${escAttr(m.name)}</h3>
+    <p class="score-note" style="margin:-6px 0 12px;">Only you can see this. It's saved to your account and never shown on the site.</p>
+    <textarea id="note-text" rows="7" maxlength="${NOTE_MAX_CHARS}" aria-label="Your private note" oninput="document.getElementById('note-count').textContent = this.value.length + ' / ${NOTE_MAX_CHARS}'">${escAttr(existing ? existing.text : '')}</textarea>
+    <p class="score-note" id="note-count" style="text-align:right; margin:4px 0 10px;">${len} / ${NOTE_MAX_CHARS}</p>
+    <div class="modal-actions">
+      ${existing ? `<button class="btn-sm danger" style="margin-right:auto;" onclick="confirmClick(this, 'Delete note', ()=>deleteNote('${jsId}'))">Delete note</button>` : ''}
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveNote('${jsId}')">Save note</button>
+    </div>
+  `);
+  document.getElementById('note-text').focus();
+}
+async function saveNote(officialId){
+  const el = document.getElementById('note-text');
+  const text = (el ? el.value : '').trim().slice(0, NOTE_MAX_CHARS);
+  if(!text) return deleteNote(officialId);
+  const prev = CURRENT_USER.notes[officialId];
+  if(!prev && Object.keys(CURRENT_USER.notes).length >= planLimits().notes){ showStatus('You have used all your private notes.', true); return; }
+  CURRENT_USER.notes[officialId] = {text, updatedAt:new Date().toISOString()};
+  if(!await persistUserData('private_notes', CURRENT_USER.notes)){
+    if(prev) CURRENT_USER.notes[officialId] = prev; else delete CURRENT_USER.notes[officialId];
+    return;
+  }
+  closeModal(); render(); showStatus('Note saved.');
+}
+async function deleteNote(officialId){
+  const prev = CURRENT_USER.notes[officialId];
+  if(!prev){ closeModal(); return; }
+  delete CURRENT_USER.notes[officialId];
+  if(!await persistUserData('private_notes', CURRENT_USER.notes)){ CURRENT_USER.notes[officialId] = prev; return; }
+  closeModal(); render(); showStatus('Note deleted.');
+}
+
+/* ----- CSV export (Premium and up) ----- */
+// A leading = + - @ (or tab/CR) makes Excel and Sheets treat a cell as a formula, so those cells
+// get a leading apostrophe. Promise text comes from public sources and could start with anything.
+function csvCell(v){
+  let s = v==null ? '' : String(v);
+  if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function slugify(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'export'; }
+function downloadCSV(filename, header, rows){
+  const body = [header, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob(['﻿' + body], {type:'text/csv;charset=utf-8'});   // BOM so Excel reads UTF-8
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+function promisesIndex(){
+  const map = new Map();
+  PROMISES.forEach(p => { let a = map.get(p.memberId); if(!a){ a = []; map.set(p.memberId, a); } a.push(p); });
+  return map;
+}
+// Same formula as computeAOWScore(), from a prebuilt index so a whole roster stays fast.
+function officialStats(m, index){
+  const ps = index.get(m.id) || [];
+  const counts = {}; Object.keys(STATUS_META).forEach(k=>counts[k]=0);
+  let drafts = 0;
+  ps.forEach(p => { counts[p.status] = (counts[p.status]||0) + 1; if(p.draft) drafts++; });
+  const scored = ps.filter(p=>p.status!=='undetermined');
+  const score = scored.length ? Math.round(scored.reduce((t,p)=>t+(AOW_WEIGHTS[p.status]??0), 0) / scored.length) : null;
+  return {ps, counts, drafts, score, total:ps.length};
+}
+function exportOfficialsCSV(ids, label){
+  if(!requireTier('sustainer', 'CSV export')) return;
+  const index = promisesIndex();
+  const keys = Object.keys(STATUS_META);
+  const header = ['Name','Party','Office','Seat','State','Level','Appointed','Serving since','AOW Score','Promises tracked', ...keys.map(k=>STATUS_META[k].label), 'Still finding sources'];
+  const rows = (ids||[]).map(memberById).filter(Boolean).map(m => {
+    const s = officialStats(m, index);
+    return [m.name, partyLabel(m.party), chamberText(m), seatText(m.seat, m), STATE_NAMES[m.state]||m.state, m.level==='state'?'State':'Federal',
+      m.appointed?'Yes':'No', m.termStart||'', s.score===null?'':s.score, s.total, ...keys.map(k=>s.counts[k]||0), s.drafts];
+  });
+  if(!rows.length){ showStatus('Nothing to export.', true); return; }
+  downloadCSV(`aow-officials-${slugify(label)}-${new Date().toISOString().slice(0,10)}.csv`, header, rows);
+  showStatus(`Exported ${rows.length} official${rows.length===1?'':'s'}.`);
+}
+function exportPromisesCSV(ids, label){
+  if(!requireTier('sustainer', 'CSV export')) return;
+  const index = promisesIndex();
+  const header = ['Official','Party','Seat','State','Promise','Category','Status','Still finding sources','Term','Promised on','Note','Sources'];
+  const rows = [];
+  (ids||[]).map(memberById).filter(Boolean).forEach(m => (index.get(m.id)||[]).forEach(p => rows.push([
+    m.name, partyLabel(m.party), seatText(m.seat, m), STATE_NAMES[m.state]||m.state, p.text, p.category,
+    (STATUS_META[p.status]||{}).label || p.status, p.draft?'Yes':'No', p.term||'', p.promisedOn||'', p.note||'',
+    promiseSources(p).map(s => [s.publisher, s.url].filter(Boolean).join(' — ')).join('; ')
+  ])));
+  if(!rows.length){ showStatus('No promises tracked for these officials yet.', true); return; }
+  downloadCSV(`aow-promises-${slugify(label)}-${new Date().toISOString().slice(0,10)}.csv`, header, rows);
+  showStatus(`Exported ${rows.length} promise${rows.length===1?'':'s'}.`);
+}
+
+/* ----- Find Officials: advanced filters + saved views (Premium and up) ----- */
+const FINDER_DEFAULTS = {q:'', level:'', office:'', party:'', state:'', appointed:'', scoreMin:'', scoreMax:'', unscored:'show', minPromises:'', status:'', category:'', sourcing:'', mine:'', sort:'name-asc'};
+let finderFilters = Object.assign({}, FINDER_DEFAULTS);
+let finderShown = 60;
+function cleanFinderFilters(f){
+  const out = Object.assign({}, FINDER_DEFAULTS);
+  Object.keys(FINDER_DEFAULTS).forEach(k => { if(f && typeof f[k]==='string') out[k] = f[k].slice(0, 80); });
+  return out;
+}
+const OFFICE_GROUPS = [
+  {id:'administration', label:'Administration (President, VP, Cabinet)'},
+  {id:'us-senate', label:'U.S. Senate'},
+  {id:'us-house', label:'U.S. House'},
+  {id:'governor', label:'Governor'},
+  {id:'lt-governor', label:'Lieutenant Governor'},
+  {id:'attorney-general', label:'State Attorney General'},
+  {id:'state-legislature', label:'State legislature'},
+  {id:'other-state', label:'Other statewide office'},
+  {id:'other', label:'Other'}
+];
+function officeGroupOf(m){
+  const c = String(m.chamber||'');
+  const federal = m.level!=='state';
+  if(federal && (m.appointed || m.id==='trump-pres' || m.id==='vance-vp')) return 'administration';
+  if(federal && c==='Senate') return 'us-senate';
+  if(federal && c==='House') return 'us-house';
+  if(c==='Governor') return 'governor';
+  if(/Lieutenant Governor/i.test(c)) return 'lt-governor';
+  if(c==='Attorney General' && !federal) return 'attorney-general';
+  if(c==='State Senate' || c==='State House') return 'state-legislature';
+  if(!federal) return 'other-state';
+  return 'other';
+}
+let _topCatsCache = {n:-1, cats:[]};
+function topCategories(limit){
+  if(_topCatsCache.n === PROMISES.length) return _topCatsCache.cats;
+  const counts = new Map();
+  PROMISES.forEach(p => { const c = String(p.category||'').trim(); if(c) counts.set(c, (counts.get(c)||0) + 1); });
+  const cats = [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0, limit).map(e=>e[0]).sort((a,b)=>a.localeCompare(b));
+  _topCatsCache = {n:PROMISES.length, cats};
+  return cats;
+}
+function finderRows(){
+  const f = finderFilters;
+  const index = promisesIndex();
+  const q = f.q.trim().toLowerCase();
+  const cat = f.category.trim().toLowerCase();
+  const num = v => { const n = parseFloat(v); return v==='' || isNaN(n) ? null : n; };
+  const min = num(f.scoreMin), max = num(f.scoreMax), minP = num(f.minPromises) || 0;
+  let pool = null;
+  if(CURRENT_USER && f.mine==='followed') pool = new Set(CURRENT_USER.watchlist||[]);
+  else if(CURRENT_USER && f.mine.startsWith('list:')){
+    const l = CURRENT_USER.savedLists.find(x => 'list:' + x.id === f.mine);
+    if(l) pool = new Set(l.ids);
+  }
+  const rows = [];
+  for(const m of MEMBERS){
+    if(pool && !pool.has(m.id)) continue;
+    if(f.level && (m.level==='state' ? 'state' : 'federal') !== f.level) continue;
+    if(f.office && officeGroupOf(m) !== f.office) continue;
+    if(f.party && m.party !== f.party) continue;
+    if(f.state && m.state !== f.state) continue;
+    if(f.appointed==='appointed' && !m.appointed) continue;
+    if(f.appointed==='elected' && m.appointed) continue;
+    if(q && !(String(m.name).toLowerCase().includes(q) || String(STATE_NAMES[m.state]||m.state||'').toLowerCase().includes(q) || String(m.seat||'').toLowerCase().includes(q))) continue;
+    const s = officialStats(m, index);
+    if(s.total < minP) continue;
+    if(f.unscored==='only'){ if(s.score!==null) continue; }
+    else if(s.score===null){ if(f.unscored==='hide') continue; }
+    else {
+      if(min!==null && s.score < min) continue;
+      if(max!==null && s.score > max) continue;
+    }
+    if(f.status && !s.ps.some(p=>p.status===f.status)) continue;
+    if(cat && !s.ps.some(p=>String(p.category||'').toLowerCase().includes(cat))) continue;
+    if(f.sourcing==='sourced' && !s.ps.some(p=>!p.draft)) continue;
+    if(f.sourcing==='drafts' && !s.drafts) continue;
+    rows.push({m, s});
+  }
+  const byName = (a,b) => a.m.name.localeCompare(b.m.name);
+  const byScore = dir => (a,b) => {
+    if(a.s.score===null && b.s.score===null) return byName(a,b);
+    if(a.s.score===null) return 1;
+    if(b.s.score===null) return -1;
+    return dir * (a.s.score - b.s.score) || byName(a,b);
+  };
+  const sorters = {
+    'name-asc': byName,
+    'name-desc': (a,b) => byName(b,a),
+    'state-asc': (a,b) => String(STATE_NAMES[a.m.state]||a.m.state).localeCompare(String(STATE_NAMES[b.m.state]||b.m.state)) || byName(a,b),
+    'score-desc': byScore(-1),
+    'score-asc': byScore(1),
+    'promises-desc': (a,b) => (b.s.total - a.s.total) || byName(a,b)
+  };
+  return rows.sort(sorters[f.sort] || byName);
+}
+function finderSet(key, value){
+  if(!(key in FINDER_DEFAULTS)) return;
+  finderFilters[key] = String(value==null ? '' : value).slice(0, 80);
+  finderShown = 60;
+  refreshFinder();
+}
+function refreshFinder(){
+  const el = document.getElementById('finder-results');
+  if(el) el.innerHTML = finderResultsHTML();
+}
+function finderReset(){ finderFilters = Object.assign({}, FINDER_DEFAULTS); finderShown = 60; render(); }
+function finderShowMore(){ finderShown += 60; refreshFinder(); }
+function finderResultsHTML(){
+  const rows = finderRows();
+  const shown = rows.slice(0, finderShown);
+  return `
+    <div class="finder-summary">
+      <span><strong style="color:var(--text);">${rows.length.toLocaleString('en-US')}</strong> of ${MEMBERS.length.toLocaleString('en-US')} officials match</span>
+      ${rows.length ? `<span class="finder-export"><button class="btn-sm" onclick="exportFinder('officials')">⇩ Officials CSV</button><button class="btn-sm" onclick="exportFinder('promises')">⇩ Promises CSV</button></span>` : ''}
+    </div>
+    ${rows.length ? `<div class="grid">${shown.map(r=>memberCardHTML(r.m)).join('')}</div>` : `<div class="pcard"><p class="pnote" style="margin:0;">No officials match these filters.</p></div>`}
+    ${rows.length > shown.length ? `<div style="text-align:center; margin-top:16px;"><button class="btn-secondary" onclick="finderShowMore()">Show more (${(rows.length - shown.length).toLocaleString('en-US')} left)</button></div>` : ''}
+    <p class="score-note" style="margin-top:14px;">${escAttr(CSV_NOTE)}</p>
+  `;
+}
+function exportFinder(kind){
+  const ids = finderRows().map(r=>r.m.id);
+  if(kind==='promises') exportPromisesCSV(ids, 'filtered'); else exportOfficialsCSV(ids, 'filtered');
+}
+function renderFinder(){
+  if(!userHasTier('sustainer')){
+    return lockedPanelHTML('Find Officials', `Filter all ${MEMBERS.length.toLocaleString('en-US')} officials by office, state, party, AOW Score, promise status, topic and sourcing, then save the view or export it as CSV.`, 'sustainer');
+  }
+  const f = finderFilters;
+  const sel = (key, opts) => `<select onchange="finderSet('${key}', this.value)">${opts.map(([v,l]) => `<option value="${escAttr(v)}"${f[key]===v ? ' selected' : ''}>${escAttr(l)}</option>`).join('')}</select>`;
+  const states = [...new Set(MEMBERS.map(m=>m.state).filter(Boolean))].sort((a,b)=>String(STATE_NAMES[a]||a).localeCompare(String(STATE_NAMES[b]||b)));
+  const mineOpts = [['','Everyone'], ['followed','Officials I follow'], ...CURRENT_USER.savedLists.map(l => ['list:' + l.id, 'My list: ' + l.name])];
+  const views = CURRENT_USER.savedViews;
+  return `
+    <div class="section-intro">
+      <h2>Find Officials</h2>
+      <p>Filter all ${MEMBERS.length.toLocaleString('en-US')} officials at once. Results update as you change a filter. Save a set of filters as a view to come back to it, or export what you find as CSV.</p>
+    </div>
+    <div class="page-form">
+      <div class="finder-grid">
+        <label>Name, state or seat<input type="search" value="${escAttr(f.q)}" oninput="finderSet('q', this.value)" placeholder="e.g. Ohio or Collins"></label>
+        <label>Level${sel('level', [['','Federal and state'],['federal','Federal'],['state','State']])}</label>
+        <label>Office${sel('office', [['','Any office'], ...OFFICE_GROUPS.map(o=>[o.id, o.label])])}</label>
+        <label>Party${sel('party', [['','Any party'],['D','Democrat'],['R','Republican'],['I','Independent'],['NP','Nonpartisan']])}</label>
+        <label>State${sel('state', [['','Any state'], ...states.map(s=>[s, STATE_NAMES[s]||s])])}</label>
+        <label>Elected or appointed${sel('appointed', [['','Either'],['elected','Elected'],['appointed','Appointed']])}</label>
+        <label>AOW Score from<input type="number" min="0" max="100" inputmode="numeric" value="${escAttr(f.scoreMin)}" oninput="finderSet('scoreMin', this.value)" placeholder="0"></label>
+        <label>AOW Score to<input type="number" min="0" max="100" inputmode="numeric" value="${escAttr(f.scoreMax)}" oninput="finderSet('scoreMax', this.value)" placeholder="100"></label>
+        <label>Officials with no score yet${sel('unscored', [['show','Show them'],['hide','Hide them'],['only','Show only them']])}</label>
+        <label>At least this many promises<input type="number" min="0" inputmode="numeric" value="${escAttr(f.minPromises)}" oninput="finderSet('minPromises', this.value)" placeholder="0"></label>
+        <label>Has a promise that is${sel('status', [['','Any status'], ...Object.entries(STATUS_META).map(([k,m])=>[k, m.label])])}</label>
+        <label>Promise topic<input list="finder-topics" value="${escAttr(f.category)}" oninput="finderSet('category', this.value)" placeholder="e.g. Health care"><datalist id="finder-topics">${topCategories(80).map(c=>`<option value="${escAttr(c)}">`).join('')}</datalist></label>
+        <label>Sourcing${sel('sourcing', [['','Any'],['sourced','Has a fully sourced promise'],['drafts','Has promises still finding sources']])}</label>
+        <label>Whose${sel('mine', mineOpts)}</label>
+        <label>Sort by${sel('sort', [['name-asc','Name (A–Z)'],['name-desc','Name (Z–A)'],['state-asc','State (A–Z)'],['score-desc','AOW Score (high–low)'],['score-asc','AOW Score (low–high)'],['promises-desc','Most promises tracked']])}</label>
+      </div>
+      <div class="finder-actions">
+        <button class="btn-secondary" onclick="finderReset()">Reset filters</button>
+        <button class="btn-primary" onclick="openSaveView()">Save this view</button>
+      </div>
+    </div>
+    ${views.length ? `<div class="saved-views"><span class="score-note" style="margin:0;">Saved views:</span>${views.map(v => `<span class="view-chip"><button class="view-chip-name" onclick="applySavedView('${v.id}')">${escAttr(v.name)}</button><button class="chip-x" onclick="confirmClick(this, '×', ()=>deleteSavedView('${v.id}'), 'Delete?')" title="Delete this view" aria-label="Delete saved view ${escAttr(v.name)}">×</button></span>`).join('')}</div>` : ''}
+    <div id="finder-results">${finderResultsHTML()}</div>
+  `;
+}
+function openSaveView(){
+  if(!requireTier('sustainer', 'Saved views')) return;
+  const lim = planLimits();
+  if(CURRENT_USER.savedViews.length >= lim.views){ showStatus(`You can keep up to ${lim.views} saved views — delete one to save another.`, true); return; }
+  openModal(`
+    <h3>Save this view</h3>
+    <label>Name<input id="view-name" maxlength="${NAME_MAX_CHARS}" placeholder="e.g. Governors with broken promises" onkeydown="if(event.key==='Enter') saveView()"></label>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveView()">Save view</button>
+    </div>
+  `);
+  document.getElementById('view-name').focus();
+}
+async function saveView(){
+  const name = (document.getElementById('view-name').value || '').trim().slice(0, NAME_MAX_CHARS);
+  if(!name){ showStatus('Give the view a name.', true); return; }
+  const existing = CURRENT_USER.savedViews.find(v=>v.name.toLowerCase()===name.toLowerCase());
+  const before = CURRENT_USER.savedViews.map(v=>({...v}));
+  if(existing) existing.filters = cleanFinderFilters(finderFilters);
+  else CURRENT_USER.savedViews.push({id:genId('v'), name, filters:cleanFinderFilters(finderFilters)});
+  if(!await persistUserData('saved_views', CURRENT_USER.savedViews)){ CURRENT_USER.savedViews = before; return; }
+  closeModal(); render(); showStatus(existing ? `Updated “${name}”.` : `Saved “${name}”.`);
+}
+function applySavedView(id){
+  const v = CURRENT_USER && CURRENT_USER.savedViews.find(x=>x.id===id);
+  if(!v) return;
+  finderFilters = cleanFinderFilters(v.filters);
+  finderShown = 60;
+  render();
+  showStatus(`Showing “${v.name}”.`);
+}
+async function deleteSavedView(id){
+  const idx = CURRENT_USER.savedViews.findIndex(v=>v.id===id);
+  if(idx<0) return;
+  const [removed] = CURRENT_USER.savedViews.splice(idx, 1);
+  if(!await persistUserData('saved_views', CURRENT_USER.savedViews)){ CURRENT_USER.savedViews.splice(idx, 0, removed); return; }
+  render();
+}
+
+/* ----- email alerts (settings only; the send-digests function does the sending) ----- */
+const DIGEST_FUNCTION_URL = SUPABASE_URL + '/functions/v1/send-digests';
+const ALERT_OPTIONS = [
+  {id:'weekly', label:'Weekly', hint:'Mondays, around 7am Pacific', minTier:'supporter'},
+  {id:'daily',  label:'Daily',  hint:'Around 7am Pacific', minTier:'sustainer'},
+  {id:'hourly', label:'Hourly', hint:'Within the hour a change is published', minTier:'patron'},
+  {id:'off',    label:'Off',    hint:'No alert emails', minTier:'supporter'}
+];
+// Mirrors the server: a saved frequency the plan doesn't include drops to the next slower one.
+function effectiveAlertFrequency(){
+  const saved = (CURRENT_USER && CURRENT_USER.alertFrequency) || 'weekly';
+  const allowed = ALERT_OPTIONS.filter(o=>userHasTier(o.minTier)).map(o=>o.id);
+  if(allowed.includes(saved)) return saved;
+  const ladder = ['hourly','daily','weekly'];
+  const start = ladder.indexOf(saved);
+  for(const f of ladder.slice(start < 0 ? 2 : start + 1)) if(allowed.includes(f)) return f;
+  return 'weekly';
+}
+function renderAlertsTab(){
+  if(!userHasTier('supporter')){
+    return `
+      <div class="acct-row">
+        <span class="acct-row-icon">${ICON_BELL}</span>
+        <div class="acct-row-body">
+          <div class="acct-row-label">Email alerts</div>
+          <p class="score-note" style="margin:4px 0 12px;">Get an email when a promise changes status for an official you follow. Weekly on ${escAttr(tierLabel('supporter'))}, daily on ${escAttr(tierLabel('sustainer'))}, hourly on ${escAttr(tierLabel('patron'))}.</p>
+          <button class="btn-primary" onclick="goToPlans()">See plans</button>
+        </div>
+      </div>`;
+  }
+  const full = userHasTier('sustainer');
+  const watch = CURRENT_USER.watchlist || [];
+  const followCount = full ? watch.length : Math.min(watch.length, WATCHLIST_SUPPORTER_CAP);
+  const listOnly = full ? [...new Set(CURRENT_USER.savedLists.flatMap(l=>l.ids))].filter(id=>!watch.includes(id)).length : 0;
+  const parts = [];
+  if(followCount) parts.push(`the ${followCount} official${followCount===1?'':'s'} you follow`);
+  if(listOnly) parts.push(followCount ? `${listOnly} more in your saved lists` : `the ${listOnly} official${listOnly===1?'':'s'} in your saved lists`);
+  const who = parts.length ? parts.join(' and ') : (full ? 'officials you follow or save to a list' : 'officials you follow');
+  const coverage = `Covers ${who}: ${full ? 'status changes and newly added promises' : 'status changes'}.`;
+  const freq = effectiveAlertFrequency();
+  const opts = ALERT_OPTIONS.map(o => {
+    const ok = userHasTier(o.minTier);
+    return `<label class="alert-opt${ok?'':' locked'}">
+      <input type="radio" name="alert-freq" value="${o.id}" ${freq===o.id?'checked':''} ${ok?'':'disabled'} onchange="saveAlertFrequency('${o.id}')">
+      <span><strong>${o.label}</strong> <span class="score-note" style="margin:0;">— ${escAttr(o.hint)}${ok ? '' : ` · ${escAttr(tierLabel(o.minTier))} plan`}</span></span>
+    </label>`;
+  }).join('');
+  return `
+    <div class="acct-row">
+      <span class="acct-row-icon">${ICON_BELL}</span>
+      <div class="acct-row-body">
+        <div class="acct-row-label">Email alerts</div>
+        <p class="score-note" style="margin:4px 0 12px;">${escAttr(coverage)} Sent to ${escAttr(CURRENT_USER.email)}. Nothing is sent when nothing changed.</p>
+        ${CURRENT_USER.alertsLoadFailed ? `<p class="score-note" style="color:var(--broken); margin:0 0 10px;">Couldn't load your saved setting. Choosing one below saves it again.</p>` : ''}
+        <div class="alert-opts" role="radiogroup" aria-label="How often to email you">${opts}</div>
+        ${!followCount && !listOnly ? `<p class="score-note" style="margin:12px 0 0;">You're not following anyone yet. Tap ☆ on any official to start.</p>` : ''}
+        <div class="modal-actions" style="justify-content:flex-start; margin-top:14px;"><button class="btn-secondary" id="test-alert-btn" onclick="sendTestAlert()">Email me a test alert</button></div>
+        <p class="score-note" style="margin:8px 0 0;">Every alert email has a link to turn them off.</p>
+      </div>
+    </div>`;
+}
+async function saveAlertFrequency(freq){
+  const opt = ALERT_OPTIONS.find(o=>o.id===freq);
+  if(!CURRENT_USER || !opt || !userHasTier(opt.minTier)) return;
+  const prev = CURRENT_USER.alertFrequency;
+  CURRENT_USER.alertFrequency = freq;
+  const { error } = await sb.from('digest_settings').upsert({ user_id: CURRENT_USER.id, frequency: freq }, { onConflict: 'user_id' });
+  if(error){ CURRENT_USER.alertFrequency = prev; showStatus('Could not save that — try again.', true); showAccountSettings(); return; }
+  CURRENT_USER.alertsLoadFailed = false;
+  showStatus(freq==='off' ? 'Alert emails are off.' : `Alert emails: ${opt.label.toLowerCase()}.`);
+}
+async function sendTestAlert(){
+  if(!CURRENT_USER) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ showStatus('Please log in again.', true); return; }
+  const btn = document.getElementById('test-alert-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+  let ok = false, code = 'unknown';
+  try {
+    const res = await fetch(DIGEST_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'test' })
+    });
+    const body = await res.json().catch(()=>({}));
+    ok = res.ok && body.ok === true;
+    code = body.error || code;
+  } catch(e){ code = 'network'; }
+  if(btn && btn.isConnected){ btn.disabled = false; btn.textContent = 'Email me a test alert'; }
+  if(ok){ showStatus(`Test alert sent to ${CURRENT_USER.email}.`, false, 4000); return; }
+  const msg = {
+    rate_limited: 'You can send one test alert every 10 minutes.',
+    email_not_configured: "Alert emails aren't switched on yet. Your setting is saved and they'll start once they are.",
+    email_not_confirmed: 'Confirm your email address first.',
+    paid_only: 'Alert emails come with a paid plan.',
+    network: "Couldn't reach the server. Check your connection."
+  }[code] || "Couldn't send a test alert just now. Try again in a few minutes.";
+  showStatus(msg, true, 5000);
+}
+async function unsubscribeAlerts(token){
+  try {
+    const res = await fetch(DIGEST_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'unsubscribe', token })
+    });
+    const body = await res.json().catch(()=>({}));
+    if(!(res.ok && body.ok === true)) return false;
+  } catch(e){ return false; }
+  if(CURRENT_USER){
+    try {
+      const { data } = await sb.from('digest_settings').select('frequency').eq('user_id', CURRENT_USER.id).maybeSingle();
+      if(data) CURRENT_USER.alertFrequency = data.frequency;
+    } catch(e){ /* the unsubscribe itself already worked */ }
+  }
+  return true;
+}
+
+/* ----- links from emails: #official=<id>, #alerts, #unsubscribe=<token> ----- */
+async function handleLinkHash(){
+  const h = (location.hash || '').replace(/^#/, '');
+  if(!h) return;
+  const clear = () => { try { history.replaceState(null, '', location.pathname + location.search); } catch(e){ /* old browser: leave it */ } };
+  let match;
+  if((match = h.match(/^official=([A-Za-z0-9_.%~-]{1,120})$/))){
+    let id = '';
+    try { id = decodeURIComponent(match[1]); } catch(e){ id = ''; }
+    clear();
+    if(memberById(id)){
+      activeTab = 'featured'; selectedId = id; render();
+      if(typeof scrollToContentTop === 'function') scrollToContentTop(); else window.scrollTo({top:0});
+    }
+    return;
+  }
+  if(h === 'alerts'){
+    clear();
+    if(CURRENT_USER){ selectedAcctTab = 'alerts'; showAccountSettings(); }
+    else { showAuthModal('login'); showStatus('Log in to change your alert emails.', false, 4000); }
+    return;
+  }
+  if((match = h.match(/^unsubscribe=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/))){
+    clear();
+    const ok = await unsubscribeAlerts(match[1]);
+    showStatus(ok ? "Done. You won't get alert emails anymore. Turn them back on any time under Account → Alerts."
+                  : "That didn't go through. Try the link again, or turn alerts off under Account → Alerts.", !ok, 6000);
+  }
+}
+window.addEventListener('hashchange', () => { handleLinkHash(); });
+
 
 /* ---------- modal ---------- */
 // Every modal in this app (sign-up, edit forms, account settings) goes through these two
@@ -2536,6 +3353,8 @@ function roleBlockHTML(role){
 function renderMultiRoleDetail(clickedId, backLabel, backOnclick){
   const roles = resolveAllRoles(clickedId);
   const primary = roles.find(r=>r.id===clickedId) || roles[0];
+  // Follow / lists / notes attach to the role this person holds now, if any.
+  const currentRole = roles.find(r=>!r.isPast && memberById(r.id));
   return `
     <button class="back-btn" onclick="${backOnclick}">&larr; Back to ${escAttr(backLabel)}</button>
     <div class="detail-head">
@@ -2545,6 +3364,7 @@ function renderMultiRoleDetail(clickedId, backLabel, backOnclick){
         <p class="seat"><span class="party-dot party-${escAttr(primary.party)}"></span>${partyLabel(primary.party)} · ${roles.length} roles tracked on this site, one profile</p>
       </div>
     </div>
+    ${currentRole ? memberToolsHTML(currentRole.id) + privateNoteCardHTML(currentRole.id) : ''}
     ${roles.map(roleBlockHTML).join('')}
   `;
 }
@@ -2986,12 +3806,14 @@ function compareSideHTML(which, entity){
 }
 function selectTool(toolId){ selectedTool = toolId; render(); }
 function renderTools(){
-  const TOOLS = [{id:'compare', label:'Compare'}, {id:'orgchart', label:'Org Chart'}, {id:'watchlist', label:'Watch List'}, {id:'elections', label:'Election Calendar'}];
+  const TOOLS = [{id:'compare', label:'Compare'}, {id:'finder', label:'Find Officials'}, {id:'orgchart', label:'Org Chart'}, {id:'watchlist', label:'Watch List'}, {id:'lists', label:'My Lists'}, {id:'elections', label:'Election Calendar'}];
   const selectorHTML = `<div class="term-selector">${TOOLS.map(t=>`<button class="term-btn ${selectedTool===t.id?'active':''}" onclick="selectTool('${t.id}')">${escAttr(t.label)}</button>`).join('')}</div>`;
   let toolHTML;
   if(selectedTool==='orgchart') toolHTML = renderOrgChart();
   else if(selectedTool==='watchlist') toolHTML = renderWatchList();
   else if(selectedTool==='elections') toolHTML = renderElectionCalendar();
+  else if(selectedTool==='finder') toolHTML = renderFinder();
+  else if(selectedTool==='lists') toolHTML = renderMyLists();
   else toolHTML = renderCompare(); // selectedTool==='compare'
   return `${selectorHTML}${toolHTML}`;
 }
@@ -3013,9 +3835,15 @@ function renderWatchList(){
   const ids = CURRENT_USER.watchlist || [];
   const officials = ids.map(id => MEMBERS.find(m=>m.id===id)).filter(Boolean);
   const capNote = !userHasTier('sustainer') ? `<p class="score-note">${tierLabel('supporter')} plans can follow up to ${WATCHLIST_SUPPORTER_CAP} officials (${ids.length}/${WATCHLIST_SUPPORTER_CAP} used) — upgrade to ${tierLabel('sustainer')} for unlimited.</p>` : '';
+  const alertNote = `<p class="score-note">You get an email when their promises change. <a href="#" onclick="selectedAcctTab='alerts'; showAccountSettings(); return false;">Choose how often</a>.</p>`;
+  const exportRow = userHasTier('sustainer') && officials.length
+    ? `<div class="padmin-row" style="margin:4px 0 14px;"><button class="btn-sm" onclick="exportOfficialsCSV(CURRENT_USER.watchlist, 'following')">⇩ Officials CSV</button><button class="btn-sm" onclick="exportPromisesCSV(CURRENT_USER.watchlist, 'following')">⇩ Promises CSV</button></div>`
+    : '';
   return `
     <div class="section-intro"><h2>Watch List</h2><p>Officials you're following — click the ★ on any card to add or remove them.</p></div>
     ${capNote}
+    ${alertNote}
+    ${exportRow}
     ${officials.length ? `<div class="grid">${officials.map(m=>memberCardHTML(m)).join('')}</div>` : `<div class="pcard"><p class="pnote" style="margin:0;">Nothing followed yet — the ☆ on any official's card adds them here.</p></div>`}
   `;
 }
@@ -3644,6 +4472,8 @@ function renderDetailView(id){
         <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${m.id}')">Delete official</button>
       </div>` : ''}
     </div>
+    ${memberToolsHTML(m.id)}
+    ${privateNoteCardHTML(m.id)}
     ${termScoreGraphHTML(m.id)}
     ${scoreHistoryHTML(m.id)}
     ${ps.length ? ps.map(p=>promiseCardHTML(p, m.name, isAdmin)).join('') : promiseEmptyCardHTML('No promises logged for this official yet.')}
