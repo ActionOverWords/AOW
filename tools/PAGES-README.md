@@ -4,19 +4,24 @@
 anything it didn't generate (every generated file carries an `aow-generated` marker).
 
 ## What gets built
-- `index.html`: **not generated (the home page is off).** The bare domain has no landing page of its own: the
-  root `index.html` is a small hand-written redirect to the tracker (`aow-index.html`) that keeps any `?query` and
-  `#hash`, so campaign links and sign-in links survive. Because it has no `aow-generated` marker, the builder never
-  touches it, every generated page treats the tracker as "Home", and `/` stays out of the sitemap. Jay decided on
-  Oct 16, 2026 that a separate landing page isn't needed.
-  *Switching the landing page back on:* replace the root `index.html` with a file containing the marker comment
-  (the first line of any generated page: `<!-- aow-generated: do not edit by hand; rebuilt by tools/build-pages.js -->`),
-  commit it, and run "Build static pages" (Actions tab > Run workflow). The builder then writes the home page. Its
-  three headline numbers are deliberately **rounded-down claims that stay true**, not live counts: officials is the
-  roster rounded down to its leading digit, states is counted from the roster, and promises comes from
+- `index.html`: the landing page at the bare domain, **generated while the file carries the `aow-generated` marker
+  comment** (the first line of any generated page: `<!-- aow-generated: do not edit by hand; rebuilt by tools/build-pages.js -->`).
+  Plain visits read the page. Visits that carry a `?query` (utm_..., fbclid) or a `key=value` `#hash` (a sign-in or
+  password-reset link) are sent on to the tracker (`aow-index.html`) with both parts intact, by one small inline script
+  that the page's Content-Security-Policy allows by its hash (`HOME_REDIRECT_JS` in `build-pages.js`; change the script and
+  the hash follows). Anchors on the page (`#sourcing`) have no `=`, so they stay put. Because the file is generated, "Home"
+  in every page's breadcrumb and logo means this page, and `/` is in the sitemap.
+  *Switching the landing page off:* replace the root `index.html` with a hand-written file that has no marker (for
+  example a one-line `location.replace('aow-index.html' + location.search + location.hash)` redirect), commit, and
+  run "Build static pages". The builder then leaves it alone and "Home" goes back to meaning the tracker.
+  The landing page's three headline numbers are deliberately **rounded-down claims that stay true**, not live counts:
+  officials is the roster rounded down to its leading digit, states is counted from the roster, and promises comes from
   `PROMISES_FLOOR` near the top of the home section in `build-pages.js` (the repo data files hold only a small
-  hand-entered set of promises, so the builder cannot count the tracker's thousands). Raise `PROMISES_FLOOR` to
-  claim more, and keep it below the tracker's real count
+  hand-entered set of promises, so the builder cannot count the tracker's thousands; the live database held 11,495 on
+  2026-10-18). Raise `PROMISES_FLOOR` to claim more, and keep it below the tracker's real count
+- `about/index.html` and `contact/index.html`: who runs the site, how it is paid for, its limits, and how to reach it.
+  Fixed text that restates the tracker's About tab, the Terms and the methodology; the pages cannot host a form (strict
+  CSP, no scripts), so Contact gives the email address and points to the tracker's own contact form
 - `officials/<id>/index.html`: one page per person (linked roles merged via PERSON_LINKS). Each role opens with one
   plain sentence built from counts and status names ("ActionOverWords Index tracks 3 promises by ... as ...: 2 completed
   and 1 compromise. The AOW Score (0 to 100, based on 3 tracked promises) is ...."), and the page ends with a
@@ -32,6 +37,9 @@ anything it didn't generate (every generated file carries an `aow-generated` mar
 - `tools/pages-manifest.json` and `tools/pages-report.txt`: bookkeeping you commit
 - `tools/indexnow.js`, `.github/workflows/indexnow.yml` and `<key>.txt`: tell Bing and other engines what changed
   (see "IndexNow" below)
+
+Every generated page carries `<meta name="google-adsense-account" content="ca-pub-...">` (`ADSENSE_ACCOUNT` near the top
+of `build-pages.js`), because Google's site verification and re-checks read it from the bare domain's head.
 
 Pages point at `og-image.png`, `favicon.ico`, `favicon.svg` and `apple-touch-icon.png` in the repo root.
 Those files come from the earlier SEO upload; the pages still work if one is missing.
@@ -54,7 +62,11 @@ Scores use ALL tracked promises (same as the tracker); pages say when some are h
 Tune with `--min-publishers`.
 
 ## Hub pages
-Hubs group people by where they serve, never by party or score, and list them alphabetically:
+Hubs group people by where they serve, never by party or score, and list them alphabetically, except
+`administration/` (and the directory's Federal administration section), which follows the official order:
+President, Vice President, the 15 executive departments in their legal order of succession (3 U.S.C. 19),
+then other Cabinet-level officials, then agency heads, by last name within those two. The order comes from
+the office title (`DEPARTMENT_ORDER` in `build-pages.js`; the tracker `aow-index.html` has the same table):
 
 | Hub | Who is in it |
 | --- | --- |

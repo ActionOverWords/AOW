@@ -3263,8 +3263,9 @@ function termSelectorHTML(){
 function renderPastAdminRoster(){
   const admin = PAST_ADMINISTRATIONS.find(a=>a.id===selectedAdminTerm);
   if(!admin){ selectedAdminTerm = 'current'; return renderAdministration(); }
-  const topPeople = admin.people.slice(0,2);
-  const cabinet = admin.people.slice(2);
+  const ordered = admin.people.slice().sort(byAdminPrecedence);
+  const topPeople = ordered.filter(p=>adminRank(p)<=2);
+  const cabinet = ordered.filter(p=>adminRank(p)>2);
   const topHTML = topPeople.length ? `<div class="grid">${topPeople.map(pastPersonCardHTML).join('')}</div>` : '';
   const cabinetHTML = cabinet.length ? `
     <div class="section-intro" style="margin-top:22px;">
@@ -4282,6 +4283,36 @@ function renderFeatured(){
   return `<div class="races-wrap"><div class="section-intro"><h2>2026 races we're tracking</h2><p>Key races on the November 2026 ballot. ${hint}</p></div><div class="races-rotator" onmouseenter="racesPaused=true" onmouseleave="racesPaused=false"><div id="races-rotator-body">${raceSlideHTML(featuredRaceIdx)}</div><div class="race-rotnav"><button class="race-rotnav-btn" onclick="raceStep(-1)" aria-label="Previous race">&#8249;</button><div class="race-dots">${RACES_2026.map((r,i)=>`<button class="race-dot ${i===featuredRaceIdx?'active':''}" onclick="jumpRace(${i})" title="${escAttr(r.label)}" aria-label="${escAttr(r.label)}"></button>`).join('')}</div><button class="race-rotnav-btn" onclick="raceStep(1)" aria-label="Next race">&#8250;</button></div></div></div>`;
 }
 
+// Administration rosters follow the official order: President, Vice President, the 15 executive
+// departments in their legal order of succession (3 U.S.C. 19), then Cabinet-level officials, then the
+// sub-Cabinet agency heads. Ranked by the office (title), never by the person, party or score, so the
+// order stays right as people change. Within the last two groups: last name, A to Z.
+const DEPARTMENT_ORDER = [
+  [/^president\b/i, 1], [/^vice president\b/i, 2],
+  [/^secretary of state\b/i, 10], [/^secretary of the treasury\b/i, 11], [/^secretary of (war|defense)\b/i, 12],
+  [/^attorney general\b/i, 13], [/^secretary of the interior\b/i, 14], [/^secretary of agriculture\b/i, 15],
+  [/^secretary of commerce\b/i, 16], [/^secretary of labor\b/i, 17], [/^secretary of health and human services\b/i, 18],
+  [/^secretary of housing and urban development\b/i, 19], [/^secretary of transportation\b/i, 20],
+  [/^secretary of energy\b/i, 21], [/^secretary of education\b/i, 22], [/^secretary of veterans affairs\b/i, 23],
+  [/^secretary of homeland security\b/i, 24]
+];
+function officeTitleOf(m){
+  const raw = (m.chamber && m.chamber !== 'Executive') ? m.chamber : (m.seat || m.chamber || '');
+  return String(raw).split(' · ')[0].replace(/\s*\(acting\)\s*/i, ' ').trim();
+}
+function adminRank(m){
+  const title = officeTitleOf(m);
+  for(const [re, rank] of DEPARTMENT_ORDER) if(re.test(title)) return rank;
+  if(/^agh-/.test(m.id || '')) return 50;   // sub-Cabinet law-enforcement and agency heads
+  return 30;                                 // Cabinet-level officials (EPA, OMB, DNI, CIA, USTR, SBA ...)
+}
+function lastNameKey(name){
+  const parts = String(name || '').replace(/,/g, ' ').trim().split(/\s+/).filter(w => !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w));
+  return ((parts[parts.length - 1] || '') + ' ' + parts.slice(0, -1).join(' ')).toLowerCase();
+}
+function byAdminPrecedence(a, b){
+  return adminRank(a) - adminRank(b) || lastNameKey(a.name).localeCompare(lastNameKey(b.name)) || String(a.id).localeCompare(String(b.id));
+}
 function renderAdministration(){
   if(selectedPastPersonId) return renderPastPersonDetail();
   if(selectedAdminTerm !== 'current') return renderPastAdminRoster();
@@ -4293,8 +4324,8 @@ function renderAdministration(){
     return `${termSelectorHTML()}<div class="grid"><div class="empty">No officials yet.</div></div>${addBtn}`;
   }
 
-  const topPeople = inScope.filter(m=>m.id==='trump-pres' || m.id==='vance-vp');
-  const cabinet = inScope.filter(m=>m.appointed).sort((a,b)=>a.name.localeCompare(b.name));
+  const topPeople = inScope.filter(m=>m.id==='trump-pres' || m.id==='vance-vp').sort(byAdminPrecedence);
+  const cabinet = inScope.filter(m=>m.appointed && !(m.id==='trump-pres' || m.id==='vance-vp')).sort(byAdminPrecedence);
 
   const topHTML = topPeople.length ? `<div class="grid">${topPeople.map(m=>memberCardHTML(m, true)).join('')}</div>` : '';
   const cabinetHTML = cabinet.length ? `

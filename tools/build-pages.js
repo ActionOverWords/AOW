@@ -43,6 +43,9 @@ const MIN_PUBLISHERS = Number(argv['min-publishers'] === undefined ? 3 : argv['m
 const HUB_MIN = Number(argv['hub-min'] === undefined ? 3 : argv['hub-min']);
 const TODAY = String(argv.today || new Date().toISOString().slice(0, 10));
 const CONTACT = 'info@action-over-words.com';
+// The AdSense publisher account. Google's site verification and its periodic re-checks look for this meta tag in the head of
+// the bare domain, so every generated page carries it (index.html is generated once the landing page is on).
+const ADSENSE_ACCOUNT = 'ca-pub-2415928011419150';
 const MARK = '<!-- aow-generated: do not edit by hand; rebuilt by tools/build-pages.js -->';
 const IN_CI = !!process.env.GITHUB_ACTIONS;
 
@@ -141,6 +144,39 @@ function groupKeysOf(e) {
 // Inside the administration: ids are cab-* (Cabinet and senior White House officials) and agh-*
 // (sub-Cabinet law-enforcement and agency heads); the President and Vice President are 'Executive'.
 function adminGroupOf(e) { return /^agh-/.test(e.id) ? 'agency' : e.chamber === 'Executive' ? 'leadership' : 'cabinet'; }
+
+// Inside the administration people are listed by office, in the official order: President, Vice President,
+// the 15 executive departments in their legal order of succession (3 U.S.C. 19), then the other Cabinet-level
+// officials (EPA, OMB, DNI, CIA, USTR, SBA ...), then the sub-Cabinet agency heads, by last name A to Z
+// within those last two groups. Ranked by the office title, never by person, party or score, so the order
+// stays right as people change. aow-index.html has the same table (DEPARTMENT_ORDER), so the tracker and
+// these pages list the administration the same way.
+const DEPARTMENT_ORDER = [
+  [/^president\b/i, 1], [/^vice president\b/i, 2],
+  [/^secretary of state\b/i, 10], [/^secretary of the treasury\b/i, 11], [/^secretary of (war|defense)\b/i, 12],
+  [/^attorney general\b/i, 13], [/^secretary of the interior\b/i, 14], [/^secretary of agriculture\b/i, 15],
+  [/^secretary of commerce\b/i, 16], [/^secretary of labor\b/i, 17], [/^secretary of health and human services\b/i, 18],
+  [/^secretary of housing and urban development\b/i, 19], [/^secretary of transportation\b/i, 20],
+  [/^secretary of energy\b/i, 21], [/^secretary of education\b/i, 22], [/^secretary of veterans affairs\b/i, 23],
+  [/^secretary of homeland security\b/i, 24]
+];
+function officeTitleOf(e) {
+  const raw = (e.chamber && e.chamber !== 'Executive') ? e.chamber : (e.seat || e.chamber || '');
+  return String(raw).split(' · ')[0].replace(/\s*\(acting\)\s*/i, ' ').trim();
+}
+function adminRank(e) {
+  const title = officeTitleOf(e);
+  for (const [re, rank] of DEPARTMENT_ORDER) if (re.test(title)) return rank;
+  return adminGroupOf(e) === 'agency' ? 50 : 30;
+}
+function lastNameKey(name) {
+  const parts = String(name || '').replace(/,/g, ' ').trim().split(/\s+/).filter(w => !/^(jr|sr|ii|iii|iv|v)\.?$/i.test(w));
+  return ((parts[parts.length - 1] || '') + ' ' + parts.slice(0, -1).join(' ')).toLowerCase();
+}
+function byAdminPrecedence(a, b) {
+  return adminRank(a) - adminRank(b) || lastNameKey(a.name).localeCompare(lastNameKey(b.name)) || String(a.id).localeCompare(String(b.id));
+}
+const ADMIN_ORDER_NOTE = 'People are listed in the official order: the President, the Vice President, the heads of the executive departments in their legal order of succession, then other Cabinet-level officials and agency heads by last name.';
 
 /* ------------------------------ load the dataset ---------------------------- */
 function loadDataset() {
@@ -278,10 +314,12 @@ const LEGAL = [['privacy-policy.html', 'Privacy Policy'], ['terms-of-service.htm
 
 // mainClass: leave undefined for the normal narrow reading column. The home page passes '' because its sections
 // (a full-width hero, then alternating bands) bring their own wrappers.
-function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss, mainClass }) {
+// headExtra: extra markup for the head (the home page's redirect script). csp: replaces the default policy; the home page
+// uses it to allow exactly that one inline script by its hash.
+function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss, mainClass, headExtra, csp }) {
   const up = '../'.repeat(depth);
   const mainOpen = mainClass === undefined ? '<main class="wrap">' : (mainClass ? `<main class="${mainClass}">` : '<main>');
-  const legal = [`<a href="${up}methodology/">Methodology</a>`]
+  const legal = [`<a href="${up}about/">About</a>`, `<a href="${up}contact/">Contact</a>`, `<a href="${up}methodology/">Methodology</a>`]
     .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<a href="${up}${f}">${l}</a>`)).join('');
   return `<!DOCTYPE html>
 ${MARK}
@@ -289,11 +327,12 @@ ${MARK}
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="${esc(CSP)}">
+<meta http-equiv="Content-Security-Policy" content="${esc(csp || CSP)}">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="robots" content="max-image-preview:large">
-<link rel="canonical" href="${esc(canonical)}">
+<meta name="google-adsense-account" content="${ADSENSE_ACCOUNT}">
+${headExtra || ''}<link rel="canonical" href="${esc(canonical)}">
 <meta property="og:site_name" content="ActionOverWords Index">
 <meta property="og:type" content="website">
 <meta property="og:title" content="${esc(title)}">
@@ -358,7 +397,8 @@ function rosterRow(e) {
   return `<li><span>${esc(e.name)}</span>${e.party ? `<span class="chip p-${partyKey(e.party)}">${esc(partyLabel(e.party))}</span>` : ''}<span class="meta">${esc(seatText(e.seat))}</span></li>`;
 }
 
-// "More from ..." on an official's page: the next few people in the same group, in alphabetical order,
+// "More from ..." on an official's page: the next few people in the same group, in the hub's order (by name;
+// by office for the administration),
 // wrapping around, so every page gets the same number of links in. Never chosen by party or score.
 function relatedHtml(pg, ctx) {
   const keys = groupKeysOf(pg.primary);
@@ -460,6 +500,7 @@ function renderDirectory(pages, roster, hubs) {
   };
   const bySec = new Map();
   pages.forEach(pg => { const k = sec(pg); if (!bySec.has(k)) bySec.set(k, []); bySec.get(k).push(pg); });
+  if (bySec.has('0|Federal administration')) bySec.get('0|Federal administration').sort((a, b) => byAdminPrecedence(a.primary, b.primary));
   const keys = [...bySec.keys()].sort((a, b) => a.split('|')[0].localeCompare(b.split('|')[0]) || a.split('|')[1].localeCompare(b.split('|')[1]));
   const total = pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0);
   const hubKeyOf = k => { const [rank, name] = k.split('|'); return rank === '0' ? 'administration' : rank === '1' ? 'states/' + slugOf(name) : null; };
@@ -470,6 +511,7 @@ function renderDirectory(pages, roster, hubs) {
   const rsec = e => (e.state === 'US' ? '0|Federal administration' : '1|' + (STATE_NAMES[e.state] || e.state || 'Other'));
   const rBy = new Map();
   roster.forEach(e => { const k = rsec(e); if (!rBy.has(k)) rBy.set(k, []); rBy.get(k).push(e); });
+  if (rBy.has('0|Federal administration')) rBy.get('0|Federal administration').sort(byAdminPrecedence);
   const rKeys = [...rBy.keys()].sort((a, b) => a.split('|')[0].localeCompare(b.split('|')[0]) || a.split('|')[1].localeCompare(b.split('|')[1]));
   const rosterHtml = roster.length ? `
 <h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
@@ -517,6 +559,9 @@ function buildHubs(model) {
   const push = (m, k, v) => { if (!m.has(k)) m.set(k, []); m.get(k).push(v); };
   model.pages.forEach(pg => groupKeysOf(pg.primary).forEach(k => push(groups, k, pg)));      // model.pages is alphabetical
   model.roster.forEach(e => groupKeysOf(e).forEach(k => push(rosterBy, k, e)));
+  // ...except the administration, which is listed by office (byAdminPrecedence)
+  if (groups.has('administration')) groups.get('administration').sort((a, b) => byAdminPrecedence(a.primary, b.primary));
+  if (rosterBy.has('administration')) rosterBy.get('administration').sort(byAdminPrecedence);
   const hubs = new Map();
   [...groups.keys()].sort().forEach(k => {
     if (groups.get(k).length >= HUB_MIN) hubs.set(k, { key: k, pages: groups.get(k), roster: rosterBy.get(k) || [] });
@@ -532,7 +577,8 @@ function renderHub(h, ctx) {
   const title = `${m.title} | ActionOverWords`;
   const description = `${nOf(h.pages.length, m.one, m.who)} with sourced promises: ${total} in all, each rated kept, broken, or in between, with the evidence behind it.`;
 
-  // sections are structural (office type), listed in a fixed order; people are alphabetical inside each
+  // sections are structural (office type), listed in a fixed order; inside each, people are by name, except the
+  // administration, which is by office (byAdminPrecedence, applied in buildHubs)
   const secs = h.key === 'administration' ? ADMIN_SECS.map(([k, l]) => [l, e => adminGroupOf(e) === k])
     : /^states\//.test(h.key) ? STATE_SECS.map(([k, l]) => [l, e => stateGroupOf(e) === k]) : null;
   const split = (items, entryOf, only) => (secs ? secs.map(([l, test]) => [l, items.filter(x => test(entryOf(x)))]).filter(([, xs]) => xs.length) : [[only, items]]);
@@ -547,7 +593,7 @@ ${rosterSecs.map(([l, xs]) => `<section class="dir-sec">${secs ? `<h3>${esc(l)}<
   const body = `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref(up)}">Home</a> › <a href="${up}officials/">Officials</a> › ${esc(m.label)}</nav>
 <h1>${esc(m.h1)}</h1>
-<p class="sub">${esc(nOf(h.pages.length, m.one, m.who))} ${h.pages.length === 1 ? 'has' : 'have'} promises published here, ${total} in all. Every published promise carries sources from at least three distinct publishers, including at least one primary record. People are listed alphabetically within each group. See the <a href="${up}methodology/">methodology</a> for how sources, statuses and scores work.</p>
+<p class="sub">${esc(nOf(h.pages.length, m.one, m.who))} ${h.pages.length === 1 ? 'has' : 'have'} promises published here, ${total} in all. Every published promise carries sources from at least three distinct publishers, including at least one primary record. ${h.key === 'administration' ? ADMIN_ORDER_NOTE : 'People are listed alphabetically within each group.'} See the <a href="${up}methodology/">methodology</a> for how sources, statuses and scores work.</p>
 ${pageSecs.map(([l, xs]) => `<section class="dir-sec"><h2>${esc(l)}</h2><ul class="dir">${xs.map(pg => dirRow(pg, up + 'officials/')).join('')}</ul></section>`).join('')}
 ${rosterHtml}`;
 
@@ -556,7 +602,7 @@ ${rosterHtml}`;
     '@graph': [
       { '@type': 'CollectionPage', '@id': canonical + '#webpage', url: canonical, name: title, description, dateModified: '{{LASTMOD}}', inLanguage: 'en-US', mainEntity: { '@id': canonical + '#list' } },
       { '@type': 'ItemList', '@id': canonical + '#list', numberOfItems: h.pages.length,
-        itemListElement: h.pages.map((pg, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/officials/${pg.slug}/`, name: pg.name })) },
+        itemListElement: pageSecs.flatMap(([, xs]) => xs).map((pg, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/officials/${pg.slug}/`, name: pg.name })) },
       { '@type': 'BreadcrumbList', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl() },
         { '@type': 'ListItem', position: 2, name: 'Officials', item: SITE + '/officials/' },
@@ -630,7 +676,7 @@ ${example({ completed: 5, in_progress: 3 })}
 <li><strong>Party isn't assumed from context.</strong> Serving under a Republican administration doesn't automatically get someone tagged Republican, and serving under a Democratic one doesn't make someone a Democrat.</li>
 <li><strong>Sourcing is shown, not summarized into a conclusion.</strong> Each entry links to the sources found for it, so the evidence can be checked rather than taken on trust.</li>
 <li><strong>The score is a fixed formula.</strong> Nobody adjusts it case by case.</li>
-<li><strong>Lists on these pages are never ranked by party or score.</strong> The directory and the administration, Senate, House and state pages group officials by where they serve and list them alphabetically.</li>
+<li><strong>Lists on these pages are never ranked by party or score.</strong> The directory and the administration, Senate, House and state pages group officials by where they serve and list them alphabetically, except the administration, which follows the official order: the President, the Vice President, then the Cabinet departments in their legal order of succession.</li>
 </ul>
 <p>No dataset is perfect, and this one is still growing. What these choices are meant to do is make any bias that does creep in visible and checkable, instead of buried behind a "trust the editors" black box.</p>
 
@@ -790,6 +836,13 @@ a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
 @media (max-width:480px){.btns .btn{flex:1 1 100%}.legend-grid li{flex-wrap:wrap;gap:8px}}
 `.trim();
 
+// Plain visits to the bare domain read this page. Visits that carry a query string (utm_..., fbclid, ...) or a key=value
+// hash (a sign-in or password-reset link: #access_token=...) still go straight to the tracker with both parts intact,
+// as the old redirect did. Anchors on this page (#sourcing, #how-it-works) have no "=", so they stay here. The page's
+// CSP allows this one inline script by its hash and nothing else.
+const HOME_REDIRECT_JS = "if(location.search||location.hash.indexOf('=')>-1){location.replace('aow-index.html'+location.search+location.hash)}";
+const HOME_CSP = CSP.replace("default-src 'none';", `default-src 'none'; script-src 'sha256-${crypto.createHash('sha256').update(HOME_REDIRECT_JS).digest('base64')}';`);
+
 function renderHome(ctx) {
   const { model, hubs } = ctx;
   const canonical = SITE + '/';
@@ -804,7 +857,9 @@ function renderHome(ctx) {
   const browse = [`<li><a class="card feature" href="aow-index.html"><h3>The interactive tracker</h3><p>Search officials by name or state, filter by status and read each promise with its sources.</p></a></li>`,
     `<li><a class="card" href="officials/"><h3>Officials directory</h3><p>${esc(nOf(people, 'person', 'people'))} and ${esc(nOf(total, 'promise', 'promises'))}, each promise with sources from at least three distinct publishers, including a primary record.</p></a></li>`]
     .concat([...hubs.values()].map(h => `<li><a class="card" href="${esc(h.key)}/"><h3>${esc(cap(hubMeta(h.key, model).label))}</h3><p>${esc(nOf(h.pages.length, 'person', 'people'))} with promises published here.</p></a></li>`))
-    .concat([`<li><a class="card" href="methodology/"><h3>Methodology</h3><p>Sources, statuses, the AOW Score and how the tracker stays nonpartisan.</p></a></li>`])
+    .concat([`<li><a class="card" href="methodology/"><h3>Methodology</h3><p>Sources, statuses, the AOW Score and how the tracker stays nonpartisan.</p></a></li>`,
+      `<li><a class="card" href="about/"><h3>About</h3><p>Who runs the Index, how it is paid for and what its limits are.</p></a></li>`,
+      `<li><a class="card" href="contact/"><h3>Contact</h3><p>Suggest a correction, appeal a status or ask a question.</p></a></li>`])
     .concat(faq ? [`<li><a class="card" href="faq.html"><h3>Frequently asked questions</h3><p>Straight answers about how the site works.</p></a></li>`] : []);
 
   const body = `
@@ -891,7 +946,7 @@ ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}<
 <ul class="cards two">
 <li class="card">${icon('tag')}<h3>Party is a fact, not a verdict</h3><p>A party badge is shown the way an election map shows one, and party is never assumed from context. Status colors are earned by outcome, never by party.</p></li>
 <li class="card">${icon('check')}<h3>One standard, every official</h3><p>The same six statuses, the same sourcing standard and the same score formula apply to every official, current or former.</p></li>
-<li class="card">${icon('list')}<h3>No ranking by party or score</h3><p>On these pages, officials are grouped by where they serve and listed alphabetically.</p></li>
+<li class="card">${icon('list')}<h3>No ranking by party or score</h3><p>On these pages, officials are grouped by where they serve and listed alphabetically, or for the administration in the official order of office.</p></li>
 <li class="card">${icon('shield')}<h3>Independent and openly funded</h3><p>Run by Action Over Words LLC and supported by memberships, optional tips and advertising. None of those changes a status or a score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p></li>
 </ul>
 </div>
@@ -928,7 +983,7 @@ ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}<
 <section class="sec" id="corrections" aria-labelledby="h-fix">
 <div class="wrap">
 <div class="callout">
-<div><h2 id="h-fix">Spot something wrong?</h2><p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:${CONTACT}">${CONTACT}</a> or use the Contact form in the tracker. Appeals need a named source, the outlet and headline being cited, so they can be checked the same way every other entry is. <a href="methodology/#corrections">How corrections work</a>.</p></div>
+<div><h2 id="h-fix">Spot something wrong?</h2><p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:${CONTACT}">${CONTACT}</a> or use the Contact form in the tracker (details on the <a href="contact/">contact page</a>). Appeals need a named source, the outlet and headline being cited, so they can be checked the same way every other entry is. <a href="methodology/#corrections">How corrections work</a>.</p></div>
 <a class="btn" href="aow-index.html">Open the tracker</a>
 </div>
 </div>
@@ -941,7 +996,115 @@ ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}<
         about: { '@id': SITE + '/#organization' }, dateModified: '{{LASTMOD}}', inLanguage: 'en-US' }
     ])
   };
-  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS, mainClass: '' });
+  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS, mainClass: '', headExtra: `<script>${HOME_REDIRECT_JS}</script>\n`, csp: HOME_CSP });
+}
+
+/* ------------------------------ about and contact ----------------------------- */
+// Static versions of what the tracker's About tab already says about who runs the site, how it is paid for and how to
+// reach it, so a visitor, a search engine or a reviewer can find them at a real address without running scripts. Every
+// sentence restates the About tab, the Terms, the FAQ or the methodology; nothing new is claimed here. The page cannot
+// host a form (the pages ship a strict CSP with no scripts and form-action 'none'), so it points to email and to the
+// tracker's own contact form.
+function renderAbout() {
+  const canonical = SITE + '/about/';
+  const title = 'About ActionOverWords Index: Who Runs It and How It Works';
+  const description = 'ActionOverWords Index tracks specific promises by U.S. officials and what happened to them. Who runs it, how it is paid for, how it stays nonpartisan, and its limits.';
+  const faq = fs.existsSync(path.join(ROOT, 'faq.html')) ? ' · <a href="../faq.html">FAQ</a>' : '';
+  const body = `
+<nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref('../')}">Home</a> › About</nav>
+<h1>About ActionOverWords Index</h1>
+<p class="sub">An independent tracker of what U.S. officials promised and what happened.</p>
+<div class="prose">
+
+<h2 id="why">Why this exists</h2>
+<p>Every election produces thousands of specific promises, and almost no permanent record of which ones were kept. ActionOverWords Index exists to be that record: tracking what federal and state officials actually said, sourcing it, and following up long after the campaign ends. The same standard applies whether a promise came from a Democrat or a Republican, because accountability that only works for one side isn't accountability.</p>
+
+<h2 id="what-it-does">What it does</h2>
+<p>The Index tracks specific promises made by U.S. officials, federal and state, and shows whether each one has been kept, broken, or something in between. Most political coverage tracks what officials say. This tracks what actually happened to what they said.</p>
+<ul>
+<li><strong>One promise at a time.</strong> Each entry is a single, specific promise: a bill to introduce, a policy to carry out, a commitment to keep.</li>
+<li><strong>Sources you can check.</strong> Every source we list is linked and labeled by type. Our standard is three kinds of sources for each promise: a government record, mainstream or left-leaning news, and right-leaning news.</li>
+<li><strong>Six plain statuses.</strong> Not started, In progress, Stalled, Compromise, Completed or Broken, based on what has actually happened, not on intent.</li>
+<li><strong>One score formula.</strong> The AOW Score is a 0 to 100 average of an official's tracked promises, weighted by status. The formula is fixed and published, so anyone can recompute it.</li>
+</ul>
+<p>The details, including how a promise is sourced and how the score is worked out, are on the <a href="../methodology/">methodology page</a>.</p>
+
+<h2 id="who-runs-this">Who runs it, and how it's paid for</h2>
+<p>ActionOverWords Index is run by Action Over Words LLC, an independent company. It's supported by membership plans, optional one-time tips and advertising: signed-out visitors and free accounts may see ads, and paid members see none. None of those changes a promise's status or the AOW Score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p>
+<p>Browsing and the core promise tracker are free to everyone.</p>
+
+<h2 id="nonpartisan">Staying nonpartisan</h2>
+<ul>
+<li><strong>Party is a fact, not a verdict.</strong> A party badge is shown the way an election map shows one, and party is never assumed from context. Status colors are earned by outcome, never by party.</li>
+<li><strong>Sourcing is shown, not summarized into a conclusion.</strong> Every promise links to where it came from, so the evidence can be checked rather than taken on trust.</li>
+<li><strong>The score is a fixed formula.</strong> Nobody adjusts it case by case.</li>
+<li><strong>No ranking by party or score.</strong> On these pages, officials are grouped by where they serve and listed alphabetically, or for the administration in the official order of office.</li>
+</ul>
+<p>More on each point is in the <a href="../methodology/#nonpartisan">methodology</a>.</p>
+
+<h2 id="limits">What to know about its limits</h2>
+<p>This is a new dataset, and sourcing is still being completed for many entries. Many of them carry a <strong>Still finding sources</strong> tag in the interactive tracker instead of being presented as fully verified. A status is our good-faith reading of the sources linked on the entry, not an audited record, and anyone can appeal one with a named source. Some officials have no promises tracked yet. County and city government, state legislatures and judiciaries are not covered yet; the <a href="../methodology/#coverage">methodology page</a> lists what is and isn't.</p>
+
+<h2 id="get-in-touch">Get in touch</h2>
+<p>To report an error, suggest a promise or ask a question, see the <a href="../contact/">contact page</a>, or write to <a href="mailto:${CONTACT}">${CONTACT}</a>.</p>
+
+<p>See also: <a href="../aow-index.html">Interactive tracker</a> · <a href="../officials/">Officials directory</a> · <a href="../methodology/">Methodology</a>${faq}</p>
+</div>`;
+  const ld = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': ['WebPage', 'AboutPage'], '@id': canonical + '#webpage', url: canonical, name: title, description, dateModified: '{{LASTMOD}}', inLanguage: 'en-US',
+        isPartOf: { '@id': SITE + '/#website' }, about: { '@id': SITE + '/#organization' } },
+      { '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl() },
+        { '@type': 'ListItem', position: 2, name: 'About', item: canonical }] }
+    ]
+  };
+  return layout({ depth: 1, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}' });
+}
+
+function renderContact() {
+  const canonical = SITE + '/contact/';
+  const title = 'Contact ActionOverWords Index: Corrections, Appeals and Questions';
+  const description = 'How to reach ActionOverWords Index: email, how to suggest a correction or a new promise, and how to appeal a status with a named source.';
+  const legalLink = (f, label) => (fs.existsSync(path.join(ROOT, f)) ? `<a href="../${f}">${label}</a>` : label);
+  const body = `
+<nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref('../')}">Home</a> › Contact</nav>
+<h1>Contact</h1>
+<p class="sub">How to reach ActionOverWords Index.</p>
+<div class="prose">
+
+<h2 id="email">Email</h2>
+<p>For general questions, corrections, suggestions and anything else: <a href="mailto:${CONTACT}">${CONTACT}</a>.</p>
+
+<h2 id="correction">Suggest a correction or a new promise</h2>
+<p>Tell us which official and which promise, and what you think is wrong or missing. A link, or the name of the outlet and the headline, helps us check it. Every submission is reviewed.</p>
+
+<h2 id="appeal">Appeal a status</h2>
+<p>If you think a promise's status is wrong, tell us which official and which promise, and include a named source: the outlet and headline you're citing. Appeals are checked the same way every other entry is checked, so a named source is what lets us look at it.</p>
+
+<h2 id="form">Prefer a form?</h2>
+<p>The interactive tracker has its own contact form. Open the <a href="../aow-index.html">tracker</a>, choose <em>About</em>, then <em>Contact</em>. You can send a general message, a suggested correction or a status appeal there. Paid members get priority review, but anyone can submit.</p>
+
+<h2 id="more">Other things you may be looking for</h2>
+<ul>
+<li>How promises are sourced, rated and scored: the <a href="../methodology/">methodology page</a> and the ${legalLink('faq.html', 'FAQ')}.</li>
+<li>What happens to messages sent through the form: the ${legalLink('privacy-policy.html', 'Privacy Policy')}.</li>
+<li>A copyright complaint: the ${legalLink('dmca-policy.html', 'Copyright / DMCA policy')}.</li>
+<li>Who runs the site: the <a href="../about/#who-runs-this">About page</a>.</li>
+</ul>
+</div>`;
+  const ld = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': ['WebPage', 'ContactPage'], '@id': canonical + '#webpage', url: canonical, name: title, description, dateModified: '{{LASTMOD}}', inLanguage: 'en-US',
+        isPartOf: { '@id': SITE + '/#website' }, about: { '@id': SITE + '/#organization' } },
+      { '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl() },
+        { '@type': 'ListItem', position: 2, name: 'Contact', item: canonical }] }
+    ]
+  };
+  return layout({ depth: 1, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}' });
 }
 
 /* ---------------------------------- build ---------------------------------- */
@@ -973,6 +1136,8 @@ function main() {
   const guard = f => { if (fs.existsSync(f) && !isOurs(f)) fatal(path.relative(ROOT, f).split(path.sep).join('/') + ' exists and was not generated by this script. Not overwriting.'); };
   guard(path.join(ROOT, 'officials', 'index.html'));
   guard(path.join(ROOT, 'methodology', 'index.html'));
+  guard(path.join(ROOT, 'about', 'index.html'));
+  guard(path.join(ROOT, 'contact', 'index.html'));
   hubs.forEach((_, k) => guard(path.join(ROOT, k, 'index.html')));
   model.pages.forEach(pg => guard(path.join(ROOT, 'officials', pg.slug, 'index.html')));
 
@@ -991,6 +1156,8 @@ function main() {
   model.pages.forEach(pg => emit(`officials/${pg.slug}/`, `officials/${pg.slug}/index.html`, renderOfficial(pg, ctx)));
   emit('officials/', 'officials/index.html', renderDirectory(model.pages, model.roster, hubs));
   emit('methodology/', 'methodology/index.html', renderMethodology());
+  emit('about/', 'about/index.html', renderAbout());
+  emit('contact/', 'contact/index.html', renderContact());
   hubs.forEach((h, k) => emit(`${k}/`, `${k}/index.html`, renderHub(h, ctx)));
 
   // sitemap: honest lastmod for generated pages, the SPA (hash of page + data), and static root pages that exist
@@ -1000,6 +1167,8 @@ function main() {
   if (fs.existsSync(spa)) { stamp('aow-index.html', '', sha(fs.readFileSync(spa, 'utf8')) + dataHash); urls.push(['aow-index.html', next['aow-index.html'].lastmod]); }
   urls.push(['officials/', next['officials/'].lastmod]);
   urls.push(['methodology/', next['methodology/'].lastmod]);
+  urls.push(['about/', next['about/'].lastmod]);
+  urls.push(['contact/', next['contact/'].lastmod]);
   hubs.forEach((_, k) => urls.push([`${k}/`, next[`${k}/`].lastmod]));
   model.pages.forEach(pg => urls.push([`officials/${pg.slug}/`, next[`officials/${pg.slug}/`].lastmod]));
   LEGAL.forEach(([f]) => { const fp = path.join(ROOT, f); if (fs.existsSync(fp)) { stamp(f, '', fs.readFileSync(fp, 'utf8')); urls.push([f, next[f].lastmod]); } });
@@ -1070,6 +1239,6 @@ Sitemap: ${SITE}/sitemap.xml
   if (writeIfChanged(manifestFile, JSON.stringify(manifest, null, 1) + '\n')) changed++;
   if (writeIfChanged(path.join(ROOT, 'tools', 'pages-report.txt'), report)) changed++;
 
-  console.log(`Built ${model.pages.length} official pages + directory + methodology + ${hubs.size} hub page${hubs.size === 1 ? '' : 's'}${HOME_LANDING ? ' + home page' : ''}; ${model.excluded.length} promises held back; ${changed} files changed, ${removed} stale pages removed, ${warnings.length} warnings.`);
+  console.log(`Built ${model.pages.length} official pages + directory + methodology + about + contact + ${hubs.size} hub page${hubs.size === 1 ? '' : 's'}${HOME_LANDING ? ' + home page' : ''}; ${model.excluded.length} promises held back; ${changed} files changed, ${removed} stale pages removed, ${warnings.length} warnings.`);
 }
 main();

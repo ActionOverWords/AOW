@@ -1,46 +1,307 @@
 <!DOCTYPE html>
+<!-- aow-generated: do not edit by hand; rebuilt by tools/build-pages.js -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!--
-  The bare domain has no landing page of its own: this file sends visitors straight to the tracker.
-  It is hand-written on purpose. The page builder (tools/build-pages.js) leaves it alone because it does not
-  carry the builder's marker comment.
-  The script keeps the ?query and #hash, so campaign links (utm_..., fbclid) and sign-in or password-reset
-  links that land here still arrive intact. The meta refresh only runs when scripts are off.
--->
-<script>location.replace('aow-index.html' + location.search + location.hash);</script>
-<noscript><meta http-equiv="refresh" content="0; url=aow-index.html"></noscript>
-<title>ActionOverWords Index: Federal and State Promise Tracker</title>
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-Ic6x7VH2TthmU7nWJ0lArg/y4mrjYot4DHn+BQHjnZQ=&#39;; style-src &#39;unsafe-inline&#39; https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src &#39;self&#39; data:; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<title>ActionOverWords Index: Did Officials Keep Their Promises?</title>
 <meta name="description" content="Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.">
-<link rel="canonical" href="https://action-over-words.com/aow-index.html">
+<meta name="robots" content="max-image-preview:large">
 <meta name="google-adsense-account" content="ca-pub-2415928011419150">
-<meta name="theme-color" content="#0D4A43">
-<link rel="icon" href="favicon.ico" sizes="32x32">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>if(location.search||location.hash.indexOf('=')>-1){location.replace('aow-index.html'+location.search+location.hash)}</script>
+<link rel="canonical" href="https://action-over-words.com/">
 <meta property="og:site_name" content="ActionOverWords Index">
 <meta property="og:type" content="website">
-<meta property="og:title" content="ActionOverWords Index: What they said. What happened.">
+<meta property="og:title" content="ActionOverWords Index: Did Officials Keep Their Promises?">
 <meta property="og:description" content="Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.">
-<meta property="og:url" content="https://action-over-words.com/aow-index.html">
+<meta property="og:url" content="https://action-over-words.com/">
 <meta property="og:image" content="https://action-over-words.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="ActionOverWords Index: What they said. What happened.">
 <meta name="twitter:card" content="summary_large_image">
-<style>
-  :root{color-scheme:light dark}
-  body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#fff;color:#171A21}
-  p{margin:0}
-  a{color:#12836F;font-weight:600}
-  .small{font-size:14px;line-height:1.5;color:#5B6472;max-width:46ch}
-  @media (prefers-color-scheme:dark){body{background:#1D222B;color:#E8EAED}a{color:#22A98A}.small{color:#9CA3AF}}
-</style>
+<meta name="theme-color" content="#0D4A43">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>:root{--bg:#FFFFFF;--bg-alt:#F4F6F9;--border:#DFE3E9;--text:#171A21;--text-muted:#5B6472;--text-faint:#8992A3;--brand:#12836F;--brand-dark:#0C6355;--brand-tint:#E1F3EF;
+--not_started:#8A93A3;--in_progress:#C2790F;--stalled:#5D7599;--compromise:#8A5CA8;--completed:#1E8E5A;--broken:#C0392B;
+--not_started-bg:#EEF0F3;--in_progress-bg:#FBF0DF;--stalled-bg:#E9EDF4;--compromise-bg:#F3E9F6;--completed-bg:#E4F5EC;--broken-bg:#FBE7E4;
+--party-d:#2058B0;--party-d-bg:#E7EFFC;--party-r:#B23A2F;--party-r-bg:#FBEAE7;--party-i:#8B5E00;--party-i-bg:#F7EEDA;--party-np:#6B7280;--party-np-bg:#EEF0F2;--radius:10px}
+@media (prefers-color-scheme:dark){:root{--bg:#1D222B;--bg-alt:#14171D;--border:#2B313C;--text:#E8EAED;--text-muted:#9CA3AF;--text-faint:#6B7280;--brand:#22A98A;--brand-dark:#1B8570;--brand-tint:#16332E;
+--not_started:#9AA3B2;--in_progress:#E0993D;--stalled:#7C93C4;--compromise:#B084D1;--completed:#3DBE82;--broken:#E0685A;
+--not_started-bg:#262B33;--in_progress-bg:#3A2E1B;--stalled-bg:#212A38;--compromise-bg:#2E2438;--completed-bg:#1A3327;--broken-bg:#3A2220;
+--party-d:#5B9BF0;--party-d-bg:#1B2A42;--party-r:#F0776A;--party-r-bg:#3A2220;--party-i:#D9A93F;--party-i-bg:#332A16;--party-np:#9AA3B2;--party-np-bg:#262B33}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg-alt);color:var(--text);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--brand)}.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+.masthead{background:var(--bg);border-bottom:1px solid var(--border)}.masthead .wrap{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}.logo-mark{width:46px;height:32px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap}.logo-word .lw-short{display:none}
+.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px;white-space:nowrap}
+@media (max-width:480px){.logo-word .lw-full{display:none}.logo-word .lw-short{display:inline}}
+nav.crumbs{font-size:13px;color:var(--text-muted);padding:16px 0 0}nav.crumbs a{color:var(--text-muted)}
+h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{font-size:20px;letter-spacing:-.01em;margin:30px 0 10px}h3{font-size:16.5px;line-height:1.4;margin:10px 0 8px}
+.sub{color:var(--text-muted);margin:0 0 6px}.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;vertical-align:middle;margin-left:6px}
+.role{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:18px 0}
+.role-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.role-head h2{margin:0;font-size:18px}
+.score{width:64px;height:64px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
+.score b{font-size:22px;line-height:1}.score span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
+.score.tier-high{border-color:var(--completed);color:var(--completed)}.score.tier-mid{border-color:var(--in_progress);color:var(--in_progress)}.score.tier-low{border-color:var(--broken);color:var(--broken)}
+.bar{display:flex;height:9px;border-radius:6px;overflow:hidden;background:var(--border);margin:12px 0 4px}.bar i{display:block;height:100%}
+.legend{font-size:12.5px;color:var(--text-muted);margin:0}
+.promise{border-top:1px solid var(--border);padding:16px 0 4px}.promise:first-of-type{border-top:0}
+.pill{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.cat{font-size:12.5px;color:var(--text-muted);margin-left:8px}.note{margin:0 0 10px;color:var(--text)}
+.sources{list-style:none;margin:6px 0 12px;padding:0;font-size:13.5px}.sources li{padding:3px 0}.stype{display:inline-block;min-width:175px;font-size:11.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
+.info{font-size:13.5px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:18px 0}
+.dir-sec h2,.dir-sec h3{font-size:17px;margin:26px 0 6px}.dir{list-style:none;margin:0;padding:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
+.dir li{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--border);flex-wrap:wrap}.dir li:first-child{border-top:0}.dir .meta{color:var(--text-muted);font-size:13px;margin-left:auto}
+footer{border-top:1px solid var(--border);margin-top:40px;padding:22px 0 40px;font-size:13px;color:var(--text-muted)}footer a{color:var(--text-muted);margin-right:14px}
+.related{margin-top:30px}.related .sub{font-size:14px}.summary{margin:14px 0 4px}
+.prose p{margin:0 0 14px}.prose h2{margin-top:34px}.prose ul{margin:0 0 14px;padding-left:22px}.prose li{margin:0 0 8px}.defs{margin:0 0 14px}.defs dt{margin-top:12px}.defs dd{margin:4px 0 0;color:var(--text-muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;background:var(--bg);border:1px solid var(--border)}th,td{padding:9px 12px;border-top:1px solid var(--border);text-align:left;vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);border-top:0}code{font-size:13px;background:var(--bg-alt);padding:1px 5px;border-radius:5px}.p-d{color:var(--party-d);background:var(--party-d-bg)}.p-r{color:var(--party-r);background:var(--party-r-bg)}.p-i{color:var(--party-i);background:var(--party-i-bg)}.p-np{color:var(--party-np);background:var(--party-np-bg)}.s-not_started{color:var(--not_started);background:var(--not_started-bg)}.b-not_started{background:var(--not_started)}.s-in_progress{color:var(--in_progress);background:var(--in_progress-bg)}.b-in_progress{background:var(--in_progress)}.s-stalled{color:var(--stalled);background:var(--stalled-bg)}.b-stalled{background:var(--stalled)}.s-compromise{color:var(--compromise);background:var(--compromise-bg)}.b-compromise{background:var(--compromise)}.s-completed{color:var(--completed);background:var(--completed-bg)}.b-completed{background:var(--completed)}.s-broken{color:var(--broken);background:var(--broken-bg)}.b-broken{background:var(--broken)}:root{--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);--shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);--on-tint:#0C6355;--hero-top:#0D4A43}
+@media (prefers-color-scheme:dark){:root{--shadow:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);--shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);--on-tint:#6FD6BC;--hero-top:#0A332E}}
+.wrap{max-width:1080px}
+.hero{background:radial-gradient(820px 300px at 90% -10%,rgba(255,255,255,.10),transparent 70%),linear-gradient(180deg,var(--hero-top),#12594F);color:#fff;padding:50px 0 36px}
+.eyebrow{margin:0 0 12px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#B7E0D8}
+.hero h1{margin:0 0 14px;max-width:19ch;font-size:clamp(32px,5.4vw,52px);line-height:1.08;letter-spacing:-.025em;font-weight:800;text-wrap:balance}
+.hero .lede{margin:0 0 26px;max-width:62ch;font-size:clamp(16px,2.1vw,18.5px);line-height:1.55;color:#C9E8E1;text-wrap:pretty}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 20px;border-radius:9px;border:1.5px solid transparent;font-size:15px;font-weight:700;line-height:1.2;text-decoration:none;text-align:center}
+.btn.light{background:#fff;color:#0D4A43}.btn.light:hover{background:#E1F3EF}
+.btn.ghost{color:#fff;border-color:rgba(255,255,255,.55)}.btn.ghost:hover{background:rgba(255,255,255,.12)}
+.hero a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.stat-row{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.18);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-md)}
+.stat-row li{background:#135951;padding:15px 14px}
+.stat-row .n{display:block;font-size:clamp(24px,4.4vw,34px);line-height:1.1;font-weight:800;letter-spacing:-.01em}
+.stat-row .l{display:block;margin-top:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#B7E0D8}
+.hero .fine{margin:10px 0 0;font-size:12.5px;color:#9FCFC5}
+
+.sec{--card-bg:var(--bg);padding:56px 0 16px}
+.sec.white{--card-bg:var(--bg-alt);background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding-bottom:56px;margin-top:40px}
+.sec h2{margin:0 0 8px;font-size:clamp(24px,3.3vw,31px);line-height:1.2;letter-spacing:-.02em}
+.sec h3{margin:0 0 6px;font-size:16.5px;line-height:1.3}
+.sec p{margin:0}
+.sec .lede2{margin:0 0 28px;max-width:66ch;color:var(--text-muted);font-size:16.5px}
+.sec .more{margin-top:22px;font-size:14.5px}
+.sec a:focus-visible,.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:start}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:24px}
+.steps li{counter-increment:s;position:relative;padding-left:54px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:38px;height:38px;border-radius:50%;background:var(--brand-tint);color:var(--on-tint);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.steps p{color:var(--text-muted)}
+
+.home .pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;font-size:11.5px;font-weight:700;letter-spacing:.02em;text-transform:none;white-space:nowrap}
+.home .pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.home .pill.sourcing{background:var(--in_progress-bg);color:var(--in_progress);border:1px dashed currentColor}
+.entries{margin:0;display:grid;gap:14px}
+.entry{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-md)}
+.entry .tag{margin:0 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+.entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px 14px;flex-wrap:wrap}
+.entry-text{flex:1 1 210px;font-size:16px;font-weight:600;line-height:1.4}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.entry-cat{margin-top:8px!important;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint)}
+.entry-src{list-style:none;margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--border);display:grid;gap:7px;font-size:12.5px;color:var(--text-muted)}
+.entry-src li{display:flex;align-items:center;gap:8px}
+.src-type{display:inline-block;min-width:98px;text-align:center;border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-weight:600;color:var(--text-faint)}
+.cap{margin:2px 2px 0;font-size:12.5px;color:var(--text-faint)}
+
+.eq{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr) .95fr;gap:0 34px}
+.eq>li{position:relative;display:block}
+.eq>li+li::before{content:'+';position:absolute;left:-34px;top:50%;width:34px;margin-top:-14px;text-align:center;font-size:22px;font-weight:700;line-height:28px;color:var(--text-faint)}
+.eq>li.result::before{content:'\2192'}
+.eq .result{display:flex;flex-direction:column;justify-content:center;background:var(--brand);color:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md)}
+.eq .result h3{color:#fff;margin:0 0 4px}.eq .result p{color:rgba(255,255,255,.88);font-size:14.5px}
+.notes{list-style:none;margin:34px 0 0;padding:0;display:grid;gap:22px 30px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.notes li{border-left:3px solid var(--brand);padding:2px 0 2px 16px}
+.notes li.amber{border-color:var(--in_progress)}.notes li.slate{border-color:var(--stalled)}
+.notes p{color:var(--text-muted);font-size:15px}
+
+.cards{list-style:none;margin:0;padding:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cards.two{grid-template-columns:repeat(2,1fr)}
+.cards.browse{grid-template-columns:repeat(3,1fr)}
+.cards.browse>li:first-child{grid-column:span 2}
+.cards>li{display:grid}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 17px;box-shadow:var(--shadow)}
+.card p{color:var(--text-muted);font-size:15px}
+.card .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-bottom:10px;border-radius:50%;background:var(--brand-tint);color:var(--on-tint);font-size:14px;font-weight:800}
+.card .ico{display:block;margin-bottom:10px;color:var(--brand)}
+a.card{display:block;color:inherit;text-decoration:none}
+a.card h3{color:var(--brand)}
+a.card:hover{border-color:var(--brand);box-shadow:var(--shadow-md)}
+a.card:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+a.card.feature{background:linear-gradient(180deg,#0D4A43,#12594F);border-color:transparent;color:#fff;padding:22px}
+a.card.feature h3{color:#fff;font-size:19px}a.card.feature p{color:#C9E8E1;font-size:15.5px;max-width:52ch}
+a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
+
+.legend-grid{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.legend-grid li{display:flex;align-items:center;gap:14px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.legend-grid .pill{flex:none;min-width:116px}
+.legend-grid p{color:var(--text-muted);font-size:14.5px;line-height:1.4}
+.fine2{margin-top:18px!important;max-width:70ch;color:var(--text-muted);font-size:14.5px}
+
+.two-col{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+.panel{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.panel h3{margin:0 0 14px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
+.panel ul{list-style:none;margin:0;padding:0;display:grid;gap:13px}
+.panel li{position:relative;padding-left:22px;font-size:15px;line-height:1.5}
+.panel li::before{content:'';position:absolute;left:1px;top:.5em;width:9px;height:9px;border-radius:50%;background:var(--brand)}
+.panel.not li::before{background:transparent;border:2px solid var(--text-faint);box-sizing:border-box}
+.panel.not li{color:var(--text-muted)}
+
+.callout{display:flex;align-items:center;justify-content:space-between;gap:18px 28px;flex-wrap:wrap;background:var(--brand-tint);border:1px solid var(--border);border-radius:var(--radius);padding:24px 26px}
+.callout>div{flex:1 1 420px}
+.callout h2{font-size:22px!important;margin:0 0 6px!important}
+.callout p{color:var(--text);font-size:15.5px}
+.callout .btn{flex:none;background:var(--brand);color:#fff}.callout .btn:hover{background:var(--brand-dark)}
+
+@media (max-width:980px){.eq{grid-template-columns:1fr;gap:34px 0}.eq>li+li::before{left:0;right:0;top:-34px;width:auto;margin-top:0;height:34px;line-height:34px}.eq>li.result::before{content:'\2193'}.cards.browse{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:860px){.split{grid-template-columns:1fr;gap:30px}}
+@media (max-width:700px){.two-col,.cards.two,.cards.browse{grid-template-columns:1fr}.cards.browse>li:first-child{grid-column:auto}.hero{padding:34px 0 26px}.sec{padding-top:40px}.sec.white{padding-bottom:40px;margin-top:28px}.stat-row li{padding:13px 10px}.stat-row .l{font-size:10px;letter-spacing:.04em}.card{padding:16px}.sec .lede2{font-size:16px;margin-bottom:22px}}
+@media (max-width:480px){.btns .btn{flex:1 1 100%}.legend-grid li{flex-wrap:wrap;gap:8px}}</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://action-over-words.com/#website","url":"https://action-over-words.com/","name":"ActionOverWords Index","alternateName":["AOW Index","Action Over Words"],"description":"See what elected officials promised and what happened. Promises are rated from Completed to Broken, with sources. 700+ federal and state officials.","inLanguage":"en-US","publisher":{"@id":"https://action-over-words.com/#organization"}},{"@type":"Organization","@id":"https://action-over-words.com/#organization","name":"ActionOverWords Index","url":"https://action-over-words.com/","logo":{"@type":"ImageObject","url":"https://action-over-words.com/icon-512.png","width":512,"height":512},"email":"info@action-over-words.com"},{"@type":"WebPage","@id":"https://action-over-words.com/#webpage","url":"https://action-over-words.com/","name":"ActionOverWords Index: Did Officials Keep Their Promises?","description":"Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.","isPartOf":{"@id":"https://action-over-words.com/#website"},"about":{"@id":"https://action-over-words.com/#organization"},"dateModified":"2026-10-18","inLanguage":"en-US"}]}</script>
 </head>
 <body>
-  <p>Opening the <a href="aow-index.html">ActionOverWords Index</a>&hellip;</p>
-  <p class="small">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and what happened to each one.</p>
+<header class="masthead"><div class="wrap"><a class="logo" href="./"><span class="logo-mark">AOW</span><span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span></a><a class="cta" href="aow-index.html">Open the tracker</a></div></header>
+<main>
+
+<div class="home">
+<section class="hero" aria-labelledby="top">
+<div class="wrap">
+<p class="eyebrow">What they said. What happened.</p>
+<h1 id="top">Did U.S. officials keep their promises?</h1>
+<p class="lede">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and shows what actually happened to each one: kept, broken, or somewhere in between. Every promise is held to the same standard, whatever the official's party.</p>
+<div class="btns"><a class="btn light" href="aow-index.html">Open the interactive tracker</a><a class="btn ghost" href="#how-it-works">How it works</a></div>
+<ul class="stat-row" aria-label="The size of the tracker">
+<li><b class="n">700+</b><span class="l">Officials</span></li>
+<li><b class="n">7,000+</b><span class="l">Promises</span></li>
+<li><b class="n">50</b><span class="l">States covered</span></li>
+</ul>
+<p class="fine">Counts are rounded down. The interactive tracker has the full, current roster.</p>
+</div>
+</section>
+
+<section class="sec" id="how-it-works" aria-labelledby="h-how">
+<div class="wrap">
+<h2 id="h-how">How it works</h2>
+<p class="lede2">Each entry is one specific promise, rated on what has actually happened, with the sources we found for it shown right on the entry.</p>
+<div class="split">
+<ol class="steps">
+<li><h3>One specific promise at a time</h3><p>Each entry is a single promise an official made: a bill to introduce, a policy to carry out, a commitment to keep.</p></li>
+<li><h3>Checked against sources</h3><p>Our standard is three kinds of sources for each promise: a government record, mainstream or left-leaning news, and right-leaning news. The aim is that a status never rests on one side's account.</p></li>
+<li><h3>Rated on what happened</h3><p>Six statuses, from Not started to Completed or Broken, based on what has actually happened, not on intent.</p></li>
+<li><h3>Scored the same way for everyone</h3><p>The AOW Score is a 0 to 100 average of an official's tracked promises, weighted by status. The formula is fixed and published, so anyone can recompute it.</p></li>
+</ol>
+<figure class="entries" aria-label="Two made-up example entries">
+<div class="entry">
+<p class="tag">Example · fully sourced</p>
+<div class="entry-top"><p class="entry-text">Cut permit wait times for new housing in half</p><span class="pills"><span class="pill s-in_progress">In progress</span></span></div>
+<p class="entry-cat">Housing</p>
+<ul class="entry-src"><li><span class="src-type">Official record</span>Agency filing</li><li><span class="src-type">News report</span>Mainstream outlet</li><li><span class="src-type">News report</span>Right-leaning outlet</li></ul>
+</div>
+<div class="entry">
+<p class="tag">Example · still being sourced</p>
+<div class="entry-top"><p class="entry-text">Bring high-speed internet to every rural county</p><span class="pills"><span class="pill sourcing">Still finding sources</span><span class="pill s-not_started">Not started</span></span></div>
+<p class="entry-cat">Infrastructure</p>
+<ul class="entry-src"><li><span class="src-type">News report</span>One outlet so far</li></ul>
+</div>
+<figcaption class="cap">Made-up examples to show the layout. Real entries link to each source.</figcaption>
+</figure>
+</div>
+</div>
+</section>
+
+<section class="sec white" id="sourcing" aria-labelledby="h-src">
+<div class="wrap">
+<h2 id="h-src">Our sourcing standard</h2>
+<p class="lede2">For each promise we look for three kinds of sources. The standard exists so a status doesn't rest on reporting from only one side of the aisle.</p>
+<ul class="eq">
+<li class="card"><span class="num">1</span><h3>A government record</h3><p>A vote record, a signed bill, an agency filing or a similar primary record.</p></li>
+<li class="card"><span class="num">2</span><h3>Mainstream or left-leaning news</h3><p>At least one outlet from the mainstream or left-leaning press.</p></li>
+<li class="card"><span class="num">3</span><h3>Right-leaning news</h3><p>At least one outlet from the right-leaning press.</p></li>
+<li class="result"><h3>Sources you can check</h3><p>Every source we list is linked and labeled by type.</p></li>
+</ul>
+<ul class="notes">
+<li><h3>When the record is the proof</h3><p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. Many entries in the tracker are of this kind.</p></li>
+<li class="amber"><h3>Still being sourced</h3><p>This is a new dataset, and sourcing is still being completed for many entries. Many of them carry a <span class="pill sourcing">Still finding sources</span> tag in the tracker instead of being presented as fully verified.</p></li>
+<li class="slate"><h3>A good-faith reading, open to appeal</h3><p>A status is our reading of the sources linked on the entry, not an audited record. If you think one is wrong, you can appeal it with a named source.</p></li>
+</ul>
+<p class="more">Read the <a href="methodology/#sourcing">full sourcing rules</a>.</p>
+</div>
+</section>
+
+<section class="sec" id="statuses" aria-labelledby="h-status">
+<div class="wrap">
+<h2 id="h-status">Six statuses</h2>
+<p class="lede2">Every promise gets one of six statuses, based on what has actually happened so far.</p>
+<ul class="legend-grid">
+<li><span class="pill s-not_started">Not started</span><p>Nothing has happened yet.</p></li>
+<li><span class="pill s-in_progress">In progress</span><p>Active movement, not yet resolved.</p></li>
+<li><span class="pill s-stalled">Stalled</span><p>Attempted, but momentum has died.</p></li>
+<li><span class="pill s-compromise">Compromise</span><p>Something was delivered, narrower than promised.</p></li>
+<li><span class="pill s-completed">Completed</span><p>Kept as stated.</p></li>
+<li><span class="pill s-broken">Broken</span><p>Not kept.</p></li>
+</ul>
+<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved.</p>
+</div>
+</section>
+
+<section class="sec white" id="nonpartisan" aria-labelledby="h-fair">
+<div class="wrap">
+<h2 id="h-fair">The same standard for everyone</h2>
+<p class="lede2">How the Index is run, in four commitments.</p>
+<ul class="cards two">
+<li class="card"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="M7 7h.01"/></svg><h3>Party is a fact, not a verdict</h3><p>A party badge is shown the way an election map shows one, and party is never assumed from context. Status colors are earned by outcome, never by party.</p></li>
+<li class="card"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg><h3>One standard, every official</h3><p>The same six statuses, the same sourcing standard and the same score formula apply to every official, current or former.</p></li>
+<li class="card"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><h3>No ranking by party or score</h3><p>On these pages, officials are grouped by where they serve and listed alphabetically, or for the administration in the official order of office.</p></li>
+<li class="card"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><h3>Independent and openly funded</h3><p>Run by Action Over Words LLC and supported by memberships, optional tips and advertising. None of those changes a status or a score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p></li>
+</ul>
+</div>
+</section>
+
+<section class="sec" id="coverage" aria-labelledby="h-cov">
+<div class="wrap">
+<h2 id="h-cov">What is covered</h2>
+<p class="lede2">Federal and state officials. Appointed officials such as Cabinet secretaries are included and marked Appointed in the tracker.</p>
+<div class="two-col">
+<div class="panel"><h3>Covered</h3><ul>
+<li><strong>Federal:</strong> the President, the Vice President, Cabinet and senior White House officials, a set of sub-Cabinet law-enforcement and agency heads, and the U.S. Congress, including its non-voting members.</li>
+<li><strong>State:</strong> in every state, the Governor, the Lieutenant Governor (or whichever office is first in succession) and the Attorney General. Some larger states go deeper into their other executive offices.</li>
+<li><strong>Former officeholders</strong> and candidates who ran and lost are kept in the Archive, and past administrations are kept alongside the current one, under the same statuses and the same sourcing standard.</li>
+</ul></div>
+<div class="panel not"><h3>Not covered yet</h3><ul>
+<li>County and city government, school boards and special districts.</li>
+<li>State legislatures and judiciaries.</li>
+<li>Federal judges and independent regulatory boards such as the Federal Reserve, which are a different category: appointed, often deliberately apolitical, and with less to track in the same way.</li>
+</ul></div>
+</div>
+<p class="more"><a href="methodology/#coverage">What is and is not covered</a> in full.</p>
+</div>
+</section>
+
+<section class="sec white" id="browse" aria-labelledby="h-browse">
+<div class="wrap">
+<h2 id="h-browse">Browse</h2>
+<p class="lede2">Start in the interactive tracker, or browse the pages published here.</p>
+<ul class="cards browse"><li><a class="card feature" href="aow-index.html"><h3>The interactive tracker</h3><p>Search officials by name or state, filter by status and read each promise with its sources.</p></a></li><li><a class="card" href="officials/"><h3>Officials directory</h3><p>29 people and 63 promises, each promise with sources from at least three distinct publishers, including a primary record.</p></a></li><li><a class="card" href="administration/"><h3>Trump administration</h3><p>29 people with promises published here.</p></a></li><li><a class="card" href="methodology/"><h3>Methodology</h3><p>Sources, statuses, the AOW Score and how the tracker stays nonpartisan.</p></a></li><li><a class="card" href="about/"><h3>About</h3><p>Who runs the Index, how it is paid for and what its limits are.</p></a></li><li><a class="card" href="contact/"><h3>Contact</h3><p>Suggest a correction, appeal a status or ask a question.</p></a></li><li><a class="card" href="faq.html"><h3>Frequently asked questions</h3><p>Straight answers about how the site works.</p></a></li></ul>
+</div>
+</section>
+
+<section class="sec" id="corrections" aria-labelledby="h-fix">
+<div class="wrap">
+<div class="callout">
+<div><h2 id="h-fix">Spot something wrong?</h2><p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:info@action-over-words.com">info@action-over-words.com</a> or use the Contact form in the tracker (details on the <a href="contact/">contact page</a>). Appeals need a named source, the outlet and headline being cited, so they can be checked the same way every other entry is. <a href="methodology/#corrections">How corrections work</a>.</p></div>
+<a class="btn" href="aow-index.html">Open the tracker</a>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated 2026-10-18. Spot an error? <a style="margin:0" href="mailto:info@action-over-words.com">info@action-over-words.com</a></p><div><a href="about/">About</a><a href="contact/">Contact</a><a href="methodology/">Methodology</a><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-service.html">Terms of Service</a><a href="cookie-policy.html">Cookie Policy</a><a href="dmca-policy.html">Copyright / DMCA</a><a href="faq.html">FAQ</a></div></div></footer>
 </body>
 </html>
