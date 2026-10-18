@@ -14,11 +14,31 @@ anything it didn't generate (every generated file carries an `aow-generated` mar
   *Switching the landing page off:* replace the root `index.html` with a hand-written file that has no marker (for
   example a one-line `location.replace('aow-index.html' + location.search + location.hash)` redirect), commit, and
   run "Build static pages". The builder then leaves it alone and "Home" goes back to meaning the tracker.
-  The landing page's three headline numbers are deliberately **rounded-down claims that stay true**, not live counts:
-  officials is the roster rounded down to its leading digit, states is counted from the roster, and promises comes from
-  `PROMISES_FLOOR` near the top of the home section in `build-pages.js` (the repo data files hold only a small
+  The landing page's three headline numbers come in two layers. The page is written with **rounded-down claims that stay
+  true**: officials is the roster rounded down to its leading digit, states is counted from the roster, and promises comes
+  from `PROMISES_FLOOR` near the top of the home section in `build-pages.js` (the repo data files hold only a small
   hand-entered set of promises, so the builder cannot count the tracker's thousands; the live database held 11,495 on
-  2026-10-18). Raise `PROMISES_FLOOR` to claim more, and keep it below the tracker's real count
+  2026-10-18). That is what a visitor sees with scripts off, offline, or if the lookup below fails.
+  In a normal browser a second small inline script then swaps in the **exact live counts** (736 officials, 11,495 promises,
+  50 states on 2026-10-18) and changes the note under the numbers to "Live counts from the tracker." It makes one
+  read-only lookup, `GET <project address>/rest/v1/rpc/site_counts` (the browser first sends its own automatic permission
+  check, an `OPTIONS` request, so two small requests go out), to the database function `public.site_counts()`
+  (`tools/site_counts.sql`, run once in the Supabase SQL editor). The function counts the same `aow_officials` and
+  `aow_promises` rows the tracker loads, so the exact figures match the tracker's own (its headline strip rounds them and
+  shows the exact number on hover). The request carries only the publishable key in an `apikey` header (no cookies, no
+  sign-in, nothing stored). The answer is written into the page as plain text, and only if all three values are whole
+  numbers in a sane range; a missing function, an error, bad data, or an answer slower than 8 seconds all leave the
+  rounded-down figures in place. On a visit the redirect script is sending to the tracker (a `?query`, or a `#` holding
+  `=`) the script does nothing at all, so a page that is about to be replaced never makes the request.
+  The project address and the publishable key are read out of `aow-index.html` at build time (nothing is copied into the
+  builder). After rotating the key, start the build by hand (Actions > Build static pages > Run workflow): pushing
+  `aow-index.html` alone does not start it, and the nightly run would only pick the new key up the next morning; until
+  then the old key is refused and the page quietly keeps the rounded-down figures. If either setting cannot be found in the
+  expected shape, or is declared more than once in `aow-index.html`, the page is built without the live script, the build
+  prints a warning, and `tools/pages-report.txt` says "live headline numbers: off" with the reason.
+  The page's Content-Security-Policy names both inline scripts (the redirect and the live counts) by their hashes and adds
+  `connect-src` for that one address, nothing else. Raise `PROMISES_FLOOR` to make the fallback claim more, and keep it
+  below the tracker's real count
 - `about/index.html` and `contact/index.html`: who runs the site, how it is paid for, its limits, and how to reach it.
   Fixed text that restates the tracker's About tab, the Terms and the methodology; the pages cannot host a form (strict
   CSP, no scripts), so Contact gives the email address and points to the tracker's own contact form
@@ -107,7 +127,8 @@ Fails (publishes nothing) if: no publishable promises, official pages would drop
 one run (`--allow-shrink` to override), a promise has an invalid status or empty text, an id
 isn't a safe slug, or a non-generated file sits at a generated path (officials, methodology and
 every hub path are checked; a hand-written `index.html` is simply left alone). Source URLs must be http(s). All text is HTML-escaped. Pages contain
-no JavaScript apart from JSON-LD data blocks and ship a strict CSP.
+no JavaScript apart from JSON-LD data blocks and, on the home page only, two small inline scripts (the redirect and the live
+counts, both allowed by hash), and ship a strict CSP.
 
 ## First run
 1. Copy `tools/` and `.github/` into the repo root.
@@ -120,7 +141,8 @@ no JavaScript apart from JSON-LD data blocks and ship a strict CSP.
 ## Later
 - Supabase: `promises` is currently empty, so the generator reads the data files. When
   promises migrate, the data source gets swapped; the pages, sitemap and workflow stay.
-- Ads: pages currently contain no scripts and a locked-down CSP. When AdSense approves the
+- Ads: apart from the home page's two small inline scripts (the redirect and the live counts, each allowed by hash),
+  pages contain no scripts and have a locked-down CSP. When AdSense approves the
   site, the template gets `ads.js`, the ad box, and a relaxed CSP in one change.
 
 ## Security finding (not changed)

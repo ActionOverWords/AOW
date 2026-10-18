@@ -3,7 +3,8 @@
  * ActionOverWords — static page generator
  * ------------------------------------------------------------------------
  * Reads the SAME data files the live site renders from (data.js + data/**) and
- * writes crawlable, script-free HTML pages:
+ * writes crawlable HTML pages with no JavaScript (apart from JSON-LD data blocks, and the home page's two small inline
+ * scripts: the redirect and the live headline counts, both described in the home page section below):
  *
  *   index.html                  OFF by default. A home page is written here only if the file in the repo root
  *                               already carries the marker. Normally that file is a hand-written redirect to
@@ -717,10 +718,13 @@ function roundedPlus(n) {
   const step = Math.pow(10, String(Math.floor(n)).length - 1);
   return fmtInt(Math.floor(n / step) * step) + '+';
 }
-// The roster and the states are counted from the data files, so they move by themselves. The promise total lives in the
-// live database, not in these files, so it is a stated floor: the tracker held 7,814 promises when this was last checked
-// (2026-10-15). It stays true as the tracker grows. Raise it when you want the page to claim more.
-const PROMISES_FLOOR = 7000;
+// These three figures are what the hero shows when the live lookup (see "live headline numbers" below) is not available:
+// no script, no network, a refused answer. The roster and the states are counted from the data files, so they move by
+// themselves. The promise total lives in the live database, not in these files, so it is a stated floor: the tracker held
+// 11,495 promises when this was last checked (2026-10-18), and its own headline strip rounds that down to "10,000+", the
+// same figure used here. It stays true as the tracker grows. Raise it when you want the fallback to claim more, and keep
+// it below the real count.
+const PROMISES_FLOOR = 10000;
 const NOT_A_STATE = new Set(['DC', 'PR', 'GU', 'AS', 'VI', 'MP']);
 
 // Small line icons (Feather, MIT licence), drawn inline so the page stays script-free and needs no image files.
@@ -841,7 +845,75 @@ a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
 // as the old redirect did. Anchors on this page (#sourcing, #how-it-works) have no "=", so they stay here. The page's
 // CSP allows this one inline script by its hash and nothing else.
 const HOME_REDIRECT_JS = "if(location.search||location.hash.indexOf('=')>-1){location.replace('aow-index.html'+location.search+location.hash)}";
-const HOME_CSP = CSP.replace("default-src 'none';", `default-src 'none'; script-src 'sha256-${crypto.createHash('sha256').update(HOME_REDIRECT_JS).digest('base64')}';`);
+
+// ---- live headline numbers ----
+// The hero's three numbers (Officials, Promises, States covered) are written into the page as the rounded-down figures
+// above, which are always true. In the visitor's browser a second small script then swaps in the exact current counts
+// from the same database the tracker reads, so the page moves as officials and promises are added. It makes one read-only
+// lookup, GET <project address>/rest/v1/rpc/site_counts (the browser adds its own automatic OPTIONS permission check first),
+// to a database function that returns three whole numbers
+// (tools/site_counts.sql holds it). The request carries only the publishable key in an "apikey" header: no cookies, no
+// sign-in, no body, nothing stored, and the answer is written into the page as plain text, never as markup.
+// Nothing depends on it. No script, no network, a refused or malformed answer, a missing function or a slow answer
+// (8 seconds) all leave the rounded-down figures and their note exactly as they were.
+// The project address and the publishable key are public by design (the tracker ships both in aow-index.html), but this
+// file does not copy them: they are read out of aow-index.html at build time, so there is one place to change them and
+// a rotated key reaches this page on the next build (the nightly run, or "Run workflow" by hand: pushing aow-index.html alone
+// does not start the build). If either cannot be found in the strict shape expected, or is declared more than once (a second
+// declaration might be the one the tracker really uses), the page is built without the live script and without the extra
+// Content-Security-Policy source, and the report says so.
+const LIVE_COUNTS_TIMEOUT_MS = 8000;
+let HOME_LIVE_STATE = 'not built yet';   // for tools/pages-report.txt
+
+function liveCountsConfig() {
+  const spa = path.join(ROOT, 'aow-index.html');
+  if (!fs.existsSync(spa)) return { why: 'aow-index.html not found' };
+  const src = fs.readFileSync(spa, 'utf8');
+  // Each setting must be declared exactly once, in any shape (const, let or var), and that one declaration must then have
+  // the strict shape below. Counting every declaration, not only well-formed ones, keeps a stray second copy from being
+  // ignored or believed by mistake.
+  const declared = name => (src.match(new RegExp('^[ \\t]*(?:const|let|var)[ \\t]+' + name + '\\b', 'gm')) || []).length;
+  const nUrl = declared('SUPABASE_URL'), nKey = declared('SUPABASE_PUBLISHABLE_KEY');
+  if (nUrl !== 1) return { why: 'SUPABASE_URL is declared ' + nUrl + ' times in aow-index.html (needs exactly 1)' };
+  if (nKey !== 1) return { why: 'SUPABASE_PUBLISHABLE_KEY is declared ' + nKey + ' times in aow-index.html (needs exactly 1)' };
+  const url = /^[ \t]*const[ \t]+SUPABASE_URL[ \t]*=[ \t]*'(https:\/\/[a-z0-9]{20}\.supabase\.co)'[ \t]*;/m.exec(src);
+  const key = /^[ \t]*const[ \t]+SUPABASE_PUBLISHABLE_KEY[ \t]*=[ \t]*'(sb_publishable_[A-Za-z0-9_-]{16,100})'[ \t]*;/m.exec(src);
+  if (!url) return { why: 'no SUPABASE_URL of the expected shape in aow-index.html' };
+  if (!key) return { why: 'no SUPABASE_PUBLISHABLE_KEY of the expected shape in aow-index.html' };
+  return { origin: url[1], key: key[1] };
+}
+
+// The script text is the exact text the page's Content-Security-Policy hashes, so it is built in one place and used for both.
+// Plain ES5 (no build step, old phones). The only values spliced in are the two strictly validated strings above.
+// Its first line makes it stand down on a visit the redirect script is already sending to the tracker (an address with a
+// ?query, or a # holding "="), so a page that is about to be replaced never fires a request. It must match HOME_REDIRECT_JS.
+function homeLiveJs(cfg) {
+  return [
+    "(function(){",
+    "if(location.search||location.hash.indexOf('=')>-1)return;",
+    "var o=document.getElementById('live-officials'),p=document.getElementById('live-promises'),s=document.getElementById('live-states'),n=document.getElementById('live-note');",
+    "if(!o||!p||!s||!window.fetch)return;",
+    "function ok(v,max){return typeof v==='number'&&isFinite(v)&&Math.floor(v)===v&&v>=1&&v<=max}",
+    "var c=window.AbortController?new AbortController():null,t=setTimeout(function(){if(c)c.abort()}," + LIVE_COUNTS_TIMEOUT_MS + ");",
+    "fetch(" + JSON.stringify(cfg.origin + '/rest/v1/rpc/site_counts') + ",{method:'GET',headers:{apikey:" + JSON.stringify(cfg.key) + ",Accept:'application/json'},credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',signal:c?c.signal:undefined})",
+    ".then(function(r){if(!r.ok)throw 0;return r.json()})",
+    ".then(function(d){",
+    "clearTimeout(t);",
+    "if(!d||!ok(d.officials,100000)||!ok(d.promises,10000000)||!ok(d.states,50))return;",
+    "o.textContent=d.officials.toLocaleString('en-US');p.textContent=d.promises.toLocaleString('en-US');s.textContent=d.states.toLocaleString('en-US');",
+    "if(n){n.style.minHeight=n.getBoundingClientRect().height+'px';n.textContent='Live counts from the tracker.'}",
+    "})",
+    ".catch(function(){clearTimeout(t)});",
+    "})();"
+  ].join('\n');
+}
+
+// The home page's policy: the base policy, plus script-src naming each inline script by its hash (nothing else may run),
+// plus, only when the live script is on, connect-src naming the one address it may call.
+function homeCsp(scripts, connectOrigin) {
+  const hashes = scripts.map(js => `'sha256-${crypto.createHash('sha256').update(js).digest('base64')}'`).join(' ');
+  return CSP.replace("default-src 'none';", `default-src 'none'; script-src ${hashes};${connectOrigin ? ` connect-src ${connectOrigin};` : ''}`);
+}
 
 function renderHome(ctx) {
   const { model, hubs } = ctx;
@@ -853,6 +925,11 @@ function renderHome(ctx) {
   const people = model.pages.length;
   const total = model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0);
   const faq = fs.existsSync(path.join(ROOT, 'faq.html'));
+  const live = liveCountsConfig();
+  const liveJs = live.origin ? homeLiveJs(live) : null;
+  HOME_LIVE_STATE = liveJs ? 'on (exact counts from public.site_counts() replace the rounded-down figures in the browser)' : `off, rounded-down figures only (${live.why})`;
+  if (!liveJs) warn('Home page: live headline numbers are off: ' + live.why + '.');
+  const liveId = k => (liveJs ? ` id="live-${k}"` : '');
 
   const browse = [`<li><a class="card feature" href="aow-index.html"><h3>The interactive tracker</h3><p>Search officials by name or state, filter by status and read each promise with its sources.</p></a></li>`,
     `<li><a class="card" href="officials/"><h3>Officials directory</h3><p>${esc(nOf(people, 'person', 'people'))} and ${esc(nOf(total, 'promise', 'promises'))}, each promise with sources from at least three distinct publishers, including a primary record.</p></a></li>`]
@@ -871,14 +948,14 @@ function renderHome(ctx) {
 <p class="lede">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and shows what actually happened to each one: kept, broken, or somewhere in between. Every promise is held to the same standard, whatever the official's party.</p>
 <div class="btns"><a class="btn light" href="aow-index.html">Open the interactive tracker</a><a class="btn ghost" href="#how-it-works">How it works</a></div>
 <ul class="stat-row" aria-label="The size of the tracker">
-<li><b class="n">${roundedPlus(current.length)}</b><span class="l">Officials</span></li>
-<li><b class="n">${fmtInt(PROMISES_FLOOR)}+</b><span class="l">Promises</span></li>
-<li><b class="n">${states}</b><span class="l">States covered</span></li>
+<li><b class="n"${liveId('officials')}>${roundedPlus(current.length)}</b><span class="l">Officials</span></li>
+<li><b class="n"${liveId('promises')}>${fmtInt(PROMISES_FLOOR)}+</b><span class="l">Promises</span></li>
+<li><b class="n"${liveId('states')}>${states}</b><span class="l">States covered</span></li>
 </ul>
-<p class="fine">Counts are rounded down. The interactive tracker has the full, current roster.</p>
+<p class="fine"${liveId('note')}>Counts are rounded down. The interactive tracker has the full, current roster.</p>
 </div>
 </section>
-
+${liveJs ? `<script>${liveJs}</script>\n` : ''}
 <section class="sec" id="how-it-works" aria-labelledby="h-how">
 <div class="wrap">
 <h2 id="h-how">How it works</h2>
@@ -996,7 +1073,8 @@ ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}<
         about: { '@id': SITE + '/#organization' }, dateModified: '{{LASTMOD}}', inLanguage: 'en-US' }
     ])
   };
-  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS, mainClass: '', headExtra: `<script>${HOME_REDIRECT_JS}</script>\n`, csp: HOME_CSP });
+  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS, mainClass: '', headExtra: `<script>${HOME_REDIRECT_JS}</script>\n`,
+    csp: homeCsp([HOME_REDIRECT_JS].concat(liveJs ? [liveJs] : []), liveJs ? live.origin : null) });
 }
 
 /* ------------------------------ about and contact ----------------------------- */
@@ -1190,7 +1268,7 @@ Sitemap: ${SITE}/sitemap.xml
   const report = [
     'AOW static pages report (deterministic; no timestamps)',
     `data files read: ${fileCount}`,
-    HOME_LANDING ? 'home page (/): generated landing page' : 'home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)',
+    HOME_LANDING ? `home page (/): generated landing page; live headline numbers: ${HOME_LIVE_STATE}` : 'home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)',
     `officials with a page: ${model.pages.length}`,
     `promises published on pages: ${model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0)}`,
     `current officials listed by name only (no publishable promises yet): ${model.roster.length}`,
