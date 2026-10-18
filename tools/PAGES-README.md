@@ -4,10 +4,19 @@
 anything it didn't generate (every generated file carries an `aow-generated` marker).
 
 ## What gets built
-- `index.html`: the home page at the bare domain (what the site is, how it works, live counts, links). It is
-  generated only while the file in the repo root carries the `aow-generated` marker, which the SEO bundle's copy
-  does. A hand-written `index.html` (for example the old redirect stub) is never overwritten: pages then treat the
-  interactive tracker as "Home", and `/` stays out of the sitemap
+- `index.html`: **not generated (the home page is off).** The bare domain has no landing page of its own: the
+  root `index.html` is a small hand-written redirect to the tracker (`aow-index.html`) that keeps any `?query` and
+  `#hash`, so campaign links and sign-in links survive. Because it has no `aow-generated` marker, the builder never
+  touches it, every generated page treats the tracker as "Home", and `/` stays out of the sitemap. Jay decided on
+  Oct 16, 2026 that a separate landing page isn't needed.
+  *Switching the landing page back on:* replace the root `index.html` with a file containing the marker comment
+  (the first line of any generated page: `<!-- aow-generated: do not edit by hand; rebuilt by tools/build-pages.js -->`),
+  commit it, and run "Build static pages" (Actions tab > Run workflow). The builder then writes the home page. Its
+  three headline numbers are deliberately **rounded-down claims that stay true**, not live counts: officials is the
+  roster rounded down to its leading digit, states is counted from the roster, and promises comes from
+  `PROMISES_FLOOR` near the top of the home section in `build-pages.js` (the repo data files hold only a small
+  hand-entered set of promises, so the builder cannot count the tracker's thousands). Raise `PROMISES_FLOOR` to
+  claim more, and keep it below the tracker's real count
 - `officials/<id>/index.html`: one page per person (linked roles merged via PERSON_LINKS). Each role opens with one
   plain sentence built from counts and status names ("ActionOverWords Index tracks 3 promises by ... as ...: 2 completed
   and 1 compromise. The AOW Score (0 to 100, based on 3 tracked promises) is ...."), and the page ends with a

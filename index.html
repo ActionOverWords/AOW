@@ -1,20 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ActionOverWords Index</title>
-<meta http-equiv="refresh" content="0; url=aow-index.html">
-<link rel="canonical" href="aow-index.html">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  The bare domain has no landing page of its own: this file sends visitors straight to the tracker.
+  It is hand-written on purpose. The page builder (tools/build-pages.js) leaves it alone because it does not
+  carry the builder's marker comment.
+  The script keeps the ?query and #hash, so campaign links (utm_..., fbclid) and sign-in or password-reset
+  links that land here still arrive intact. The meta refresh only runs when scripts are off.
+-->
+<script>location.replace('aow-index.html' + location.search + location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url=aow-index.html"></noscript>
+<title>ActionOverWords Index: Federal and State Promise Tracker</title>
+<meta name="description" content="Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.">
+<link rel="canonical" href="https://action-over-words.com/aow-index.html">
+<meta name="theme-color" content="#0D4A43">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:site_name" content="ActionOverWords Index">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ActionOverWords Index: What they said. What happened.">
+<meta property="og:description" content="Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.">
+<meta property="og:url" content="https://action-over-words.com/aow-index.html">
+<meta property="og:image" content="https://action-over-words.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ActionOverWords Index: What they said. What happened.">
+<meta name="twitter:card" content="summary_large_image">
 <style>
-  body{margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:#FFFFFF; color:#171A21;}
-  a{color:#12836F; font-weight:600;}
+  :root{color-scheme:light dark}
+  body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#fff;color:#171A21}
+  p{margin:0}
+  a{color:#12836F;font-weight:600}
+  .small{font-size:14px;line-height:1.5;color:#5B6472;max-width:46ch}
+  @media (prefers-color-scheme:dark){body{background:#1D222B;color:#E8EAED}a{color:#22A98A}.small{color:#9CA3AF}}
 </style>
-<script>location.replace('aow-index.html');</script>
 </head>
 <body>
-  <p>Redirecting to the <a href="aow-index.html">ActionOverWords Index</a>&hellip;</p>
+  <p>Opening the <a href="aow-index.html">ActionOverWords Index</a>&hellip;</p>
+  <p class="small">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and what happened to each one.</p>
 </body>
 </html>

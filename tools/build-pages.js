@@ -5,8 +5,9 @@
  * Reads the SAME data files the live site renders from (data.js + data/**) and
  * writes crawlable, script-free HTML pages:
  *
- *   index.html                  the home page at the bare domain (only once index.html carries the marker;
- *                               until then the existing redirect stub is left alone)
+ *   index.html                  OFF by default. A home page is written here only if the file in the repo root
+ *                               already carries the marker. Normally that file is a hand-written redirect to
+ *                               the tracker (no marker), and this script leaves it alone
  *   officials/<id>/index.html   one page per person with qualifying promises
  *   officials/index.html        directory of those people
  *   methodology/index.html      how promises are sourced, rated and scored (fixed text)
@@ -49,6 +50,11 @@ const STATUS = {
   not_started: 'Not started', in_progress: 'In progress', stalled: 'Stalled',
   compromise: 'Compromise', completed: 'Completed', broken: 'Broken'
 };
+// One definition per status, shared by the methodology page and the home page so they cannot drift apart.
+const STATUS_MEANING = {
+  not_started: 'Nothing has happened yet.', in_progress: 'Active movement, not yet resolved.', stalled: 'Attempted, but momentum has died.',
+  compromise: 'Something was delivered, narrower than promised.', completed: 'Kept as stated.', broken: 'Not kept.'
+};
 const WEIGHTS = { completed: 100, compromise: 60, in_progress: 40, stalled: 15, not_started: 0, broken: 0 };
 const SRC_TYPE = {
   campaign_statement: 'Campaign statement', interview: 'Interview', voting_record: 'Voting record',
@@ -68,8 +74,8 @@ const STATE_NAMES = {
 };
 const RANK = { current: 0, past: 1, archive: 2, prior: 3 };
 
-// "Home" means the landing page at the bare domain once index.html is generated (it carries the marker);
-// until then the bare domain is the old redirect stub and "Home" means the interactive tracker.
+// "Home" means the landing page at the bare domain only if index.html is a generated file (it carries the marker).
+// Normally the bare domain is a hand-written redirect to the tracker, and then "Home" means the interactive tracker.
 let HOME_LANDING = false;
 const homeHref = up => (HOME_LANDING ? (up || './') : up + 'aow-index.html');
 const homeUrl = () => SITE + (HOME_LANDING ? '/' : '/aow-index.html');
@@ -157,7 +163,7 @@ function buildModel(D) {
     if (!e || !e.id) return;
     if (entries.has(e.id)) fatal('Duplicate id in data: ' + e.id);
     entries.set(e.id, Object.assign({ id: e.id, name: e.name, seat: e.seat || '', party: e.party || '', kind, order: entries.size,
-      state: e.state || '', termStart: e.termStart || '', years: e.years || '', chamber: e.chamber || '' }, extra || {}));
+      state: e.state || '', termStart: e.termStart || '', years: e.years || '', chamber: e.chamber || '', level: e.level || '' }, extra || {}));
   };
   D.DEFAULT_MEMBERS.forEach(m => add(m, 'current'));
   D.PAST_ADMINISTRATIONS.forEach(a => (a.people || []).forEach(p => add(p, 'past', { adminLabel: a.label, years: a.years })));
@@ -240,7 +246,9 @@ const CSS = `
 a{color:var(--brand)}.wrap{max-width:860px;margin:0 auto;padding:0 20px}
 .masthead{background:var(--bg);border-bottom:1px solid var(--border)}.masthead .wrap{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}.logo-mark{width:46px;height:32px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em}.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px}
+.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap}.logo-word .lw-short{display:none}
+.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px;white-space:nowrap}
+@media (max-width:480px){.logo-word .lw-full{display:none}.logo-word .lw-short{display:inline}}
 nav.crumbs{font-size:13px;color:var(--text-muted);padding:16px 0 0}nav.crumbs a{color:var(--text-muted)}
 h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{font-size:20px;letter-spacing:-.01em;margin:30px 0 10px}h3{font-size:16.5px;line-height:1.4;margin:10px 0 8px}
 .sub{color:var(--text-muted);margin:0 0 6px}.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;vertical-align:middle;margin-left:6px}
@@ -268,8 +276,11 @@ const PARTY_CSS = ['d', 'r', 'i', 'np'].map(k => `.p-${k}{color:var(--party-${k}
 const CSP = "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'";
 const LEGAL = [['privacy-policy.html', 'Privacy Policy'], ['terms-of-service.html', 'Terms of Service'], ['cookie-policy.html', 'Cookie Policy'], ['dmca-policy.html', 'Copyright / DMCA'], ['faq.html', 'FAQ']];
 
-function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss }) {
+// mainClass: leave undefined for the normal narrow reading column. The home page passes '' because its sections
+// (a full-width hero, then alternating bands) bring their own wrappers.
+function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss, mainClass }) {
   const up = '../'.repeat(depth);
+  const mainOpen = mainClass === undefined ? '<main class="wrap">' : (mainClass ? `<main class="${mainClass}">` : '<main>');
   const legal = [`<a href="${up}methodology/">Methodology</a>`]
     .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<a href="${up}${f}">${l}</a>`)).join('');
   return `<!DOCTYPE html>
@@ -304,11 +315,11 @@ ${MARK}
 ${ld ? `<script type="application/ld+json">${jsonLd(ld)}</script>` : ''}
 </head>
 <body>
-<header class="masthead"><div class="wrap"><a class="logo" href="${homeHref(up)}"><span class="logo-mark">AOW</span><span class="logo-word">ActionOverWords Index</span></a><a class="cta" href="${up}aow-index.html">Open the tracker</a></div></header>
-<main class="wrap">
+<header class="masthead"><div class="wrap"><a class="logo" href="${homeHref(up)}"><span class="logo-mark">AOW</span><span class="logo-word"><span class="lw-full">ActionOverWords Index</span><span class="lw-short">AOW Index</span></span></a><a class="cta" href="${up}aow-index.html">Open the tracker</a></div></header>
+${mainOpen}
 ${body}
 </main>
-<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by elected officials. Last updated ${lastmodToken}. Spot an error? <a style="margin:0" href="mailto:${CONTACT}">${CONTACT}</a></p><div>${legal}</div></div></footer>
+<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated ${lastmodToken}. Spot an error? <a style="margin:0" href="mailto:${CONTACT}">${CONTACT}</a></p><div>${legal}</div></div></footer>
 </body>
 </html>
 `;
@@ -563,10 +574,7 @@ function renderMethodology() {
   const title = 'Methodology: Sources, Statuses and AOW Score | ActionOverWords';
   const description = 'How ActionOverWords Index sources each promise, what the six statuses mean, how the 0–100 AOW Score is calculated, and how the tracker stays nonpartisan.';
   const scoreOrder = ['completed', 'compromise', 'in_progress', 'stalled', 'not_started', 'broken'];
-  const meaning = {
-    not_started: 'Nothing has happened yet.', in_progress: 'Active movement, not yet resolved.', stalled: 'Attempted, but momentum has died.',
-    compromise: 'Something was delivered, narrower than promised.', completed: 'Kept as stated.', broken: 'Not kept.'
-  };
+  const meaning = STATUS_MEANING;
   const example = counts => {
     const list = [];
     scoreOrder.forEach(k => { for (let i = 0; i < (counts[k] || 0); i++) list.push({ status: k }); });
@@ -582,11 +590,13 @@ function renderMethodology() {
 <div class="prose">
 
 <h2 id="what-this-tracks">What this tracks</h2>
-<p>ActionOverWords Index tracks specific promises made by elected officials, federal and state, and shows whether each one has been kept, broken, or something in between. Most political coverage tracks what officials say. This tracks what actually happened to what they said.</p>
+<p>ActionOverWords Index tracks specific promises made by U.S. officials, federal and state, and shows whether each one has been kept, broken, or something in between. Most political coverage tracks what officials say. This tracks what actually happened to what they said.</p>
 <p>The same standard applies whether a promise came from a Democrat or a Republican, because accountability that only works for one side isn't accountability. Officials who were appointed rather than elected, such as Cabinet secretaries and senior agency heads, are included and are marked Appointed in the interactive tracker.</p>
 
 <h2 id="sourcing">How each promise is sourced</h2>
-<p>Every promise is checked against three sources before a status is set: one official government source (a vote record, a signed bill, an agency filing, or similar primary record), one mainstream/left-leaning news source, and one right-leaning news source. A status only gets applied once it holds up across all three, not just one outlet's version of events. The three-source rule exists so that a status can never rest on reporting from only one side of the aisle.</p>
+<p>Our standard is three kinds of sources for each promise: one official government source (a vote record, a signed bill, an agency filing, or similar primary record), one mainstream/left-leaning news source, and one right-leaning news source. A status is meant to hold up across all three, not just one outlet's version of events. The three-source standard exists so that a status doesn't rest on reporting from only one side of the aisle.</p>
+<p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. For other promises, such as a policy goal or a campaign commitment, the standard is all three kinds of sources.</p>
+<p>This is a new dataset, and sourcing is still being completed for many entries. Many of those entries carry a <strong>Still finding sources</strong> tag in the interactive tracker instead of being presented as fully verified. A status is our good-faith reading of the sources linked on the entry, not an audited record, and every call is open to appeal (see Corrections and appeals below).</p>
 <p>Every source is linked on the promise and labeled by type: campaign statement, interview, voting record, official record, the official's own office, or news report. A campaign statement and an independently reported outcome are not presented as equally strong evidence, and the reader weighs the sources rather than being told what to think.</p>
 <p>A promise is listed on the pages of this site only when its sources come from at least three distinct publishers and at least one of them is a primary record: an official record, a voting record, or the official's own office. Promises that do not yet meet that standard stay in the interactive tracker, and an official's page says when some of their tracked promises are not listed yet.</p>
 
@@ -618,9 +628,9 @@ ${example({ completed: 5, in_progress: 3 })}
 <ul>
 <li><strong>Party is a fact, not a verdict.</strong> A party badge is colored the way an election map colors it, and that is the only role color plays. Status colors are earned by outcome, not by party: the same six categories, checked against the same standard, for every official.</li>
 <li><strong>Party isn't assumed from context.</strong> Serving under a Republican administration doesn't automatically get someone tagged Republican, and serving under a Democratic one doesn't make someone a Democrat.</li>
-<li><strong>Sourcing is shown, not summarized into a conclusion.</strong> Every promise links to where it came from, so the evidence can be checked rather than taken on trust.</li>
+<li><strong>Sourcing is shown, not summarized into a conclusion.</strong> Each entry links to the sources found for it, so the evidence can be checked rather than taken on trust.</li>
 <li><strong>The score is a fixed formula.</strong> Nobody adjusts it case by case.</li>
-<li><strong>Lists are never ranked by party or score.</strong> The directory and the administration, Senate, House and state pages group officials by where they serve and list them alphabetically.</li>
+<li><strong>Lists on these pages are never ranked by party or score.</strong> The directory and the administration, Senate, House and state pages group officials by where they serve and list them alphabetically.</li>
 </ul>
 <p>No dataset is perfect, and this one is still growing. What these choices are meant to do is make any bias that does creep in visible and checkable, instead of buried behind a "trust the editors" black box.</p>
 
@@ -647,55 +657,283 @@ ${example({ completed: 5, in_progress: 3 })}
 }
 
 /* ----------------------------------- home ----------------------------------- */
-// The landing page at the bare domain. Fixed explanatory text that restates the FAQ and the methodology, plus counts
-// read from the data. No outcome tallies (nothing like "60% kept"), so the page can never read as a scoreboard for one side.
-const HOME_CSS = `.lede{font-size:18px;line-height:1.55;margin:8px 0 18px}.btns{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 10px}
-.btn{display:inline-block;font-size:15px;font-weight:700;text-decoration:none;padding:10px 16px;border-radius:9px;border:1px solid var(--brand);color:#fff;background:var(--brand)}.btn.alt{background:transparent;color:var(--brand)}
-.stats{list-style:none;margin:0 0 12px;padding:0;display:flex;gap:12px;flex-wrap:wrap}.stats li{flex:1 1 200px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-.stats b{display:block;font-size:28px;line-height:1.1;letter-spacing:-.02em}.stats span{font-size:13.5px;color:var(--text-muted)}.steps{margin:0 0 14px;padding-left:22px}.steps li{margin:0 0 10px}main>h1:first-child{margin-top:30px}`;
+// The landing page at the bare domain. Every sentence on it restates something the live tracker, the FAQ or the
+// methodology already says, and the figures are checked (see PROMISES_FLOOR). It names no party, shows no outcome
+// tallies (nothing like "60% kept") and no scores, so the page can never read as a scoreboard for one side.
+// It never says that every promise has three sources: most entries are bill promises checked against the congressional
+// record, and many others are still being sourced, which the page says in plain words.
+
+// Headline numbers read like "700+", not "736": always rounded DOWN to the leading digit, the same rule the interactive
+// tracker's hero strip uses, so the "+" can never overstate.
+const fmtInt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function roundedPlus(n) {
+  if (n < 10) return String(n);
+  const step = Math.pow(10, String(Math.floor(n)).length - 1);
+  return fmtInt(Math.floor(n / step) * step) + '+';
+}
+// The roster and the states are counted from the data files, so they move by themselves. The promise total lives in the
+// live database, not in these files, so it is a stated floor: the tracker held 7,814 promises when this was last checked
+// (2026-10-15). It stays true as the tracker grows. Raise it when you want the page to claim more.
+const PROMISES_FLOOR = 7000;
+const NOT_A_STATE = new Set(['DC', 'PR', 'GU', 'AS', 'VI', 'MP']);
+
+// Small line icons (Feather, MIT licence), drawn inline so the page stays script-free and needs no image files.
+const ICON = {
+  tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="M7 7h.01"/>',
+  check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
+};
+const icon = k => `<svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[k]}</svg>`;
+
+const HOME_CSS = `
+:root{--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);--shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);--on-tint:#0C6355;--hero-top:#0D4A43}
+@media (prefers-color-scheme:dark){:root{--shadow:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);--shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);--on-tint:#6FD6BC;--hero-top:#0A332E}}
+.wrap{max-width:1080px}
+.hero{background:radial-gradient(820px 300px at 90% -10%,rgba(255,255,255,.10),transparent 70%),linear-gradient(180deg,var(--hero-top),#12594F);color:#fff;padding:50px 0 36px}
+.eyebrow{margin:0 0 12px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#B7E0D8}
+.hero h1{margin:0 0 14px;max-width:19ch;font-size:clamp(32px,5.4vw,52px);line-height:1.08;letter-spacing:-.025em;font-weight:800;text-wrap:balance}
+.hero .lede{margin:0 0 26px;max-width:62ch;font-size:clamp(16px,2.1vw,18.5px);line-height:1.55;color:#C9E8E1;text-wrap:pretty}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 20px;border-radius:9px;border:1.5px solid transparent;font-size:15px;font-weight:700;line-height:1.2;text-decoration:none;text-align:center}
+.btn.light{background:#fff;color:#0D4A43}.btn.light:hover{background:#E1F3EF}
+.btn.ghost{color:#fff;border-color:rgba(255,255,255,.55)}.btn.ghost:hover{background:rgba(255,255,255,.12)}
+.hero a:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.stat-row{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.18);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-md)}
+.stat-row li{background:#135951;padding:15px 14px}
+.stat-row .n{display:block;font-size:clamp(24px,4.4vw,34px);line-height:1.1;font-weight:800;letter-spacing:-.01em}
+.stat-row .l{display:block;margin-top:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#B7E0D8}
+.hero .fine{margin:10px 0 0;font-size:12.5px;color:#9FCFC5}
+
+.sec{--card-bg:var(--bg);padding:56px 0 16px}
+.sec.white{--card-bg:var(--bg-alt);background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding-bottom:56px;margin-top:40px}
+.sec h2{margin:0 0 8px;font-size:clamp(24px,3.3vw,31px);line-height:1.2;letter-spacing:-.02em}
+.sec h3{margin:0 0 6px;font-size:16.5px;line-height:1.3}
+.sec p{margin:0}
+.sec .lede2{margin:0 0 28px;max-width:66ch;color:var(--text-muted);font-size:16.5px}
+.sec .more{margin-top:22px;font-size:14.5px}
+.sec a:focus-visible,.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:start}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:24px}
+.steps li{counter-increment:s;position:relative;padding-left:54px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:38px;height:38px;border-radius:50%;background:var(--brand-tint);color:var(--on-tint);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.steps p{color:var(--text-muted)}
+
+.home .pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;font-size:11.5px;font-weight:700;letter-spacing:.02em;text-transform:none;white-space:nowrap}
+.home .pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.home .pill.sourcing{background:var(--in_progress-bg);color:var(--in_progress);border:1px dashed currentColor}
+.entries{margin:0;display:grid;gap:14px}
+.entry{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-md)}
+.entry .tag{margin:0 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+.entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px 14px;flex-wrap:wrap}
+.entry-text{flex:1 1 210px;font-size:16px;font-weight:600;line-height:1.4}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.entry-cat{margin-top:8px!important;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint)}
+.entry-src{list-style:none;margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--border);display:grid;gap:7px;font-size:12.5px;color:var(--text-muted)}
+.entry-src li{display:flex;align-items:center;gap:8px}
+.src-type{display:inline-block;min-width:98px;text-align:center;border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-weight:600;color:var(--text-faint)}
+.cap{margin:2px 2px 0;font-size:12.5px;color:var(--text-faint)}
+
+.eq{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr) .95fr;gap:0 34px}
+.eq>li{position:relative;display:block}
+.eq>li+li::before{content:'+';position:absolute;left:-34px;top:50%;width:34px;margin-top:-14px;text-align:center;font-size:22px;font-weight:700;line-height:28px;color:var(--text-faint)}
+.eq>li.result::before{content:'\\2192'}
+.eq .result{display:flex;flex-direction:column;justify-content:center;background:var(--brand);color:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md)}
+.eq .result h3{color:#fff;margin:0 0 4px}.eq .result p{color:rgba(255,255,255,.88);font-size:14.5px}
+.notes{list-style:none;margin:34px 0 0;padding:0;display:grid;gap:22px 30px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.notes li{border-left:3px solid var(--brand);padding:2px 0 2px 16px}
+.notes li.amber{border-color:var(--in_progress)}.notes li.slate{border-color:var(--stalled)}
+.notes p{color:var(--text-muted);font-size:15px}
+
+.cards{list-style:none;margin:0;padding:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cards.two{grid-template-columns:repeat(2,1fr)}
+.cards.browse{grid-template-columns:repeat(3,1fr)}
+.cards.browse>li:first-child{grid-column:span 2}
+.cards>li{display:grid}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 17px;box-shadow:var(--shadow)}
+.card p{color:var(--text-muted);font-size:15px}
+.card .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-bottom:10px;border-radius:50%;background:var(--brand-tint);color:var(--on-tint);font-size:14px;font-weight:800}
+.card .ico{display:block;margin-bottom:10px;color:var(--brand)}
+a.card{display:block;color:inherit;text-decoration:none}
+a.card h3{color:var(--brand)}
+a.card:hover{border-color:var(--brand);box-shadow:var(--shadow-md)}
+a.card:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+a.card.feature{background:linear-gradient(180deg,#0D4A43,#12594F);border-color:transparent;color:#fff;padding:22px}
+a.card.feature h3{color:#fff;font-size:19px}a.card.feature p{color:#C9E8E1;font-size:15.5px;max-width:52ch}
+a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
+
+.legend-grid{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.legend-grid li{display:flex;align-items:center;gap:14px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.legend-grid .pill{flex:none;min-width:116px}
+.legend-grid p{color:var(--text-muted);font-size:14.5px;line-height:1.4}
+.fine2{margin-top:18px!important;max-width:70ch;color:var(--text-muted);font-size:14.5px}
+
+.two-col{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+.panel{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.panel h3{margin:0 0 14px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
+.panel ul{list-style:none;margin:0;padding:0;display:grid;gap:13px}
+.panel li{position:relative;padding-left:22px;font-size:15px;line-height:1.5}
+.panel li::before{content:'';position:absolute;left:1px;top:.5em;width:9px;height:9px;border-radius:50%;background:var(--brand)}
+.panel.not li::before{background:transparent;border:2px solid var(--text-faint);box-sizing:border-box}
+.panel.not li{color:var(--text-muted)}
+
+.callout{display:flex;align-items:center;justify-content:space-between;gap:18px 28px;flex-wrap:wrap;background:var(--brand-tint);border:1px solid var(--border);border-radius:var(--radius);padding:24px 26px}
+.callout>div{flex:1 1 420px}
+.callout h2{font-size:22px!important;margin:0 0 6px!important}
+.callout p{color:var(--text);font-size:15.5px}
+.callout .btn{flex:none;background:var(--brand);color:#fff}.callout .btn:hover{background:var(--brand-dark)}
+
+@media (max-width:980px){.eq{grid-template-columns:1fr;gap:34px 0}.eq>li+li::before{left:0;right:0;top:-34px;width:auto;margin-top:0;height:34px;line-height:34px}.eq>li.result::before{content:'\\2193'}.cards.browse{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:860px){.split{grid-template-columns:1fr;gap:30px}}
+@media (max-width:700px){.two-col,.cards.two,.cards.browse{grid-template-columns:1fr}.cards.browse>li:first-child{grid-column:auto}.hero{padding:34px 0 26px}.sec{padding-top:40px}.sec.white{padding-bottom:40px;margin-top:28px}.stat-row li{padding:13px 10px}.stat-row .l{font-size:10px;letter-spacing:.04em}.card{padding:16px}.sec .lede2{font-size:16px;margin-bottom:22px}}
+@media (max-width:480px){.btns .btn{flex:1 1 100%}.legend-grid li{flex-wrap:wrap;gap:8px}}
+`.trim();
 
 function renderHome(ctx) {
   const { model, hubs } = ctx;
   const canonical = SITE + '/';
   const title = 'ActionOverWords Index: Did Officials Keep Their Promises?';
-  const description = 'A nonpartisan tracker of what U.S. officials promised and what happened. Promises are rated from Completed to Broken, with the sources behind them.';
-  const current = [...model.entries.values()].filter(e => e.kind === 'current').length;
+  const description = 'Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.';
+  const current = [...model.entries.values()].filter(e => e.kind === 'current');
+  const states = new Set(current.filter(e => e.level === 'state' && STATE_NAMES[e.state] && !NOT_A_STATE.has(e.state)).map(e => e.state)).size;
   const people = model.pages.length;
   const total = model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0);
   const faq = fs.existsSync(path.join(ROOT, 'faq.html'));
-  const browse = [`<li><a href="officials/">All officials with promises published</a><span class="meta">${esc(nOf(people, 'person', 'people'))} · ${esc(nOf(total, 'promise', 'promises'))}</span></li>`]
-    .concat([...hubs.values()].map(h => `<li><a href="${esc(h.key)}/">${esc(cap(hubMeta(h.key, model).label))}</a><span class="meta">${esc(nOf(h.pages.length, 'person', 'people'))} with promises published</span></li>`))
-    .concat([`<li><a href="methodology/">Methodology</a><span class="meta">Sources, statuses and the AOW Score</span></li>`])
-    .concat(faq ? [`<li><a href="faq.html">Frequently asked questions</a><span class="meta">Straight answers about how the site works</span></li>`] : []);
+
+  const browse = [`<li><a class="card feature" href="aow-index.html"><h3>The interactive tracker</h3><p>Search officials by name or state, filter by status and read each promise with its sources.</p></a></li>`,
+    `<li><a class="card" href="officials/"><h3>Officials directory</h3><p>${esc(nOf(people, 'person', 'people'))} and ${esc(nOf(total, 'promise', 'promises'))}, each promise with sources from at least three distinct publishers, including a primary record.</p></a></li>`]
+    .concat([...hubs.values()].map(h => `<li><a class="card" href="${esc(h.key)}/"><h3>${esc(cap(hubMeta(h.key, model).label))}</h3><p>${esc(nOf(h.pages.length, 'person', 'people'))} with promises published here.</p></a></li>`))
+    .concat([`<li><a class="card" href="methodology/"><h3>Methodology</h3><p>Sources, statuses, the AOW Score and how the tracker stays nonpartisan.</p></a></li>`])
+    .concat(faq ? [`<li><a class="card" href="faq.html"><h3>Frequently asked questions</h3><p>Straight answers about how the site works.</p></a></li>`] : []);
+
   const body = `
-<h1>Did U.S. officials keep their promises?</h1>
-<p class="lede"><strong>ActionOverWords Index</strong> (AOW Index) is an independent tracker of specific promises made by elected officials, federal and state, and what actually happened to them: kept, broken, or somewhere in between. Most political coverage tracks what officials say. This tracks what happened to what they said, with every entry linked back to where it came from.</p>
-<div class="btns"><a class="btn" href="aow-index.html">Open the interactive tracker</a><a class="btn alt" href="officials/">Browse officials with published promises</a></div>
-
-<h2 id="coverage">What is tracked</h2>
-<ul class="stats">
-<li><b>${current}</b><span>current officials on the roster, federal and state</span></li>
-<li><b>${people}</b><span>${people === 1 ? 'person has' : 'people have'} promises published on these pages</span></li>
-<li><b>${total}</b><span>${total === 1 ? 'promise is' : 'promises are'} published with sources</span></li>
+<div class="home">
+<section class="hero" aria-labelledby="top">
+<div class="wrap">
+<p class="eyebrow">What they said. What happened.</p>
+<h1 id="top">Did U.S. officials keep their promises?</h1>
+<p class="lede">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and shows what actually happened to each one: kept, broken, or somewhere in between. Every promise is held to the same standard, whatever the official's party.</p>
+<div class="btns"><a class="btn light" href="aow-index.html">Open the interactive tracker</a><a class="btn ghost" href="#how-it-works">How it works</a></div>
+<ul class="stat-row" aria-label="The size of the tracker">
+<li><b class="n">${roundedPlus(current.length)}</b><span class="l">Officials</span></li>
+<li><b class="n">${fmtInt(PROMISES_FLOOR)}+</b><span class="l">Promises</span></li>
+<li><b class="n">${states}</b><span class="l">States covered</span></li>
 </ul>
-<p class="sub">Every published promise carries sources from at least three distinct publishers, including at least one primary record. Promises still being sourced stay in the interactive tracker, so coverage grows over time.</p>
-<p>Federal officials: the President, the Vice President, Cabinet and senior White House officials, a set of sub-Cabinet agency heads, and members of Congress. State officials: governors, lieutenant governors and attorneys general. <a href="methodology/#coverage">What is and is not covered</a>.</p>
+<p class="fine">Counts are rounded down. The interactive tracker has the full, current roster.</p>
+</div>
+</section>
 
-<h2 id="how-it-works">How it works</h2>
+<section class="sec" id="how-it-works" aria-labelledby="h-how">
+<div class="wrap">
+<h2 id="h-how">How it works</h2>
+<p class="lede2">Each entry is one specific promise, rated on what has actually happened, with the sources we found for it shown right on the entry.</p>
+<div class="split">
 <ol class="steps">
-<li><strong>One specific promise at a time.</strong> Each entry is a specific promise made by an official, with the sources that show what happened to it.</li>
-<li><strong>Three sources before a status is set.</strong> One official government source, one mainstream/left-leaning news source, and one right-leaning news source. A status only gets applied once it holds up across all three, so it can't rest on reporting from only one side of the aisle.</li>
-<li><strong>Six statuses.</strong> Not started, In progress, Stalled, Compromise, Completed or Broken, based on what has actually happened, not on intent.</li>
-<li><strong>A fixed score.</strong> The AOW Score is a 0 to 100 average of an official's tracked promises, weighted by status. The formula is published, so anyone can recompute it.</li>
-<li><strong>The same standard for everyone.</strong> The same statuses, score and sourcing rules apply to every official, regardless of party.</li>
+<li><h3>One specific promise at a time</h3><p>Each entry is a single promise an official made: a bill to introduce, a policy to carry out, a commitment to keep.</p></li>
+<li><h3>Checked against sources</h3><p>Our standard is three kinds of sources for each promise: a government record, mainstream or left-leaning news, and right-leaning news. The aim is that a status never rests on one side's account.</p></li>
+<li><h3>Rated on what happened</h3><p>Six statuses, from Not started to Completed or Broken, based on what has actually happened, not on intent.</p></li>
+<li><h3>Scored the same way for everyone</h3><p>The AOW Score is a 0 to 100 average of an official's tracked promises, weighted by status. The formula is fixed and published, so anyone can recompute it.</p></li>
 </ol>
-<p>Read the <a href="methodology/">full methodology</a>.</p>
+<figure class="entries" aria-label="Two made-up example entries">
+<div class="entry">
+<p class="tag">Example · fully sourced</p>
+<div class="entry-top"><p class="entry-text">Cut permit wait times for new housing in half</p><span class="pills"><span class="pill s-in_progress">In progress</span></span></div>
+<p class="entry-cat">Housing</p>
+<ul class="entry-src"><li><span class="src-type">Official record</span>Agency filing</li><li><span class="src-type">News report</span>Mainstream outlet</li><li><span class="src-type">News report</span>Right-leaning outlet</li></ul>
+</div>
+<div class="entry">
+<p class="tag">Example · still being sourced</p>
+<div class="entry-top"><p class="entry-text">Bring high-speed internet to every rural county</p><span class="pills"><span class="pill sourcing">Still finding sources</span><span class="pill s-not_started">Not started</span></span></div>
+<p class="entry-cat">Infrastructure</p>
+<ul class="entry-src"><li><span class="src-type">News report</span>One outlet so far</li></ul>
+</div>
+<figcaption class="cap">Made-up examples to show the layout. Real entries link to each source.</figcaption>
+</figure>
+</div>
+</div>
+</section>
 
-<h2 id="browse">Browse</h2>
-<ul class="dir">${browse.join('')}</ul>
+<section class="sec white" id="sourcing" aria-labelledby="h-src">
+<div class="wrap">
+<h2 id="h-src">Our sourcing standard</h2>
+<p class="lede2">For each promise we look for three kinds of sources. The standard exists so a status doesn't rest on reporting from only one side of the aisle.</p>
+<ul class="eq">
+<li class="card"><span class="num">1</span><h3>A government record</h3><p>A vote record, a signed bill, an agency filing or a similar primary record.</p></li>
+<li class="card"><span class="num">2</span><h3>Mainstream or left-leaning news</h3><p>At least one outlet from the mainstream or left-leaning press.</p></li>
+<li class="card"><span class="num">3</span><h3>Right-leaning news</h3><p>At least one outlet from the right-leaning press.</p></li>
+<li class="result"><h3>Sources you can check</h3><p>Every source we list is linked and labeled by type.</p></li>
+</ul>
+<ul class="notes">
+<li><h3>When the record is the proof</h3><p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. Many entries in the tracker are of this kind.</p></li>
+<li class="amber"><h3>Still being sourced</h3><p>This is a new dataset, and sourcing is still being completed for many entries. Many of them carry a <span class="pill sourcing">Still finding sources</span> tag in the tracker instead of being presented as fully verified.</p></li>
+<li class="slate"><h3>A good-faith reading, open to appeal</h3><p>A status is our reading of the sources linked on the entry, not an audited record. If you think one is wrong, you can appeal it with a named source.</p></li>
+</ul>
+<p class="more">Read the <a href="methodology/#sourcing">full sourcing rules</a>.</p>
+</div>
+</section>
 
-<h2 id="corrections">Corrections</h2>
-<p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:${CONTACT}">${CONTACT}</a> or use the Contact form in <a href="aow-index.html">the tracker</a>. Appeals need a named source (the outlet and headline being cited), so they can be checked the same way every other entry is. <a href="methodology/#corrections">How corrections work</a>.</p>`;
+<section class="sec" id="statuses" aria-labelledby="h-status">
+<div class="wrap">
+<h2 id="h-status">Six statuses</h2>
+<p class="lede2">Every promise gets one of six statuses, based on what has actually happened so far.</p>
+<ul class="legend-grid">
+${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}</span><p>${esc(STATUS_MEANING[k])}</p></li>`).join('\n')}
+</ul>
+<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved.</p>
+</div>
+</section>
+
+<section class="sec white" id="nonpartisan" aria-labelledby="h-fair">
+<div class="wrap">
+<h2 id="h-fair">The same standard for everyone</h2>
+<p class="lede2">How the Index is run, in four commitments.</p>
+<ul class="cards two">
+<li class="card">${icon('tag')}<h3>Party is a fact, not a verdict</h3><p>A party badge is shown the way an election map shows one, and party is never assumed from context. Status colors are earned by outcome, never by party.</p></li>
+<li class="card">${icon('check')}<h3>One standard, every official</h3><p>The same six statuses, the same sourcing standard and the same score formula apply to every official, current or former.</p></li>
+<li class="card">${icon('list')}<h3>No ranking by party or score</h3><p>On these pages, officials are grouped by where they serve and listed alphabetically.</p></li>
+<li class="card">${icon('shield')}<h3>Independent and openly funded</h3><p>Run by Action Over Words LLC and supported by memberships, optional tips and advertising. None of those changes a status or a score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p></li>
+</ul>
+</div>
+</section>
+
+<section class="sec" id="coverage" aria-labelledby="h-cov">
+<div class="wrap">
+<h2 id="h-cov">What is covered</h2>
+<p class="lede2">Federal and state officials. Appointed officials such as Cabinet secretaries are included and marked Appointed in the tracker.</p>
+<div class="two-col">
+<div class="panel"><h3>Covered</h3><ul>
+<li><strong>Federal:</strong> the President, the Vice President, Cabinet and senior White House officials, a set of sub-Cabinet law-enforcement and agency heads, and the U.S. Congress, including its non-voting members.</li>
+<li><strong>State:</strong> in every state, the Governor, the Lieutenant Governor (or whichever office is first in succession) and the Attorney General. Some larger states go deeper into their other executive offices.</li>
+<li><strong>Former officeholders</strong> and candidates who ran and lost are kept in the Archive, and past administrations are kept alongside the current one, under the same statuses and the same sourcing standard.</li>
+</ul></div>
+<div class="panel not"><h3>Not covered yet</h3><ul>
+<li>County and city government, school boards and special districts.</li>
+<li>State legislatures and judiciaries.</li>
+<li>Federal judges and independent regulatory boards such as the Federal Reserve, which are a different category: appointed, often deliberately apolitical, and with less to track in the same way.</li>
+</ul></div>
+</div>
+<p class="more"><a href="methodology/#coverage">What is and is not covered</a> in full.</p>
+</div>
+</section>
+
+<section class="sec white" id="browse" aria-labelledby="h-browse">
+<div class="wrap">
+<h2 id="h-browse">Browse</h2>
+<p class="lede2">Start in the interactive tracker, or browse the pages published here.</p>
+<ul class="cards browse">${browse.join('')}</ul>
+</div>
+</section>
+
+<section class="sec" id="corrections" aria-labelledby="h-fix">
+<div class="wrap">
+<div class="callout">
+<div><h2 id="h-fix">Spot something wrong?</h2><p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:${CONTACT}">${CONTACT}</a> or use the Contact form in the tracker. Appeals need a named source, the outlet and headline being cited, so they can be checked the same way every other entry is. <a href="methodology/#corrections">How corrections work</a>.</p></div>
+<a class="btn" href="aow-index.html">Open the tracker</a>
+</div>
+</div>
+</section>
+</div>`;
   const ld = {
     '@context': 'https://schema.org',
     '@graph': SITE_LD.concat([
@@ -703,7 +941,7 @@ function renderHome(ctx) {
         about: { '@id': SITE + '/#organization' }, dateModified: '{{LASTMOD}}', inLanguage: 'en-US' }
     ])
   };
-  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS });
+  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS, mainClass: '' });
 }
 
 /* ---------------------------------- build ---------------------------------- */
@@ -716,8 +954,8 @@ function main() {
     if (fs.existsSync(wf) && !/git add (-A|--all|\.)(\s|$)/m.test(fs.readFileSync(wf, 'utf8')))
       fatal('.github/workflows/build-pages.yml is out of date: its commit step must stage new folders with "git add -A". Upload the updated workflow file from the SEO bundle.');
   }
-  // The bare domain is generated only if index.html already carries the marker (the home page was uploaded from the SEO
-  // bundle). The old hand-written redirect stub is never overwritten; until it is replaced, "Home" stays the tracker.
+  // The bare domain is generated only if index.html already carries the marker. A hand-written redirect to the
+  // tracker (the normal state) is never overwritten, and "Home" stays the tracker.
   HOME_LANDING = isOurs(path.join(ROOT, 'index.html'));
   const { D, hash: dataHash, fileCount } = loadDataset();
   const model = buildModel(D);
@@ -783,7 +1021,7 @@ Sitemap: ${SITE}/sitemap.xml
   const report = [
     'AOW static pages report (deterministic; no timestamps)',
     `data files read: ${fileCount}`,
-    HOME_LANDING ? 'home page (/): generated landing page' : 'home page (/): the redirect stub is kept (upload the generated index.html from the SEO bundle to switch to the landing page)',
+    HOME_LANDING ? 'home page (/): generated landing page' : 'home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)',
     `officials with a page: ${model.pages.length}`,
     `promises published on pages: ${model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0)}`,
     `current officials listed by name only (no publishable promises yet): ${model.roster.length}`,
