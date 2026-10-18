@@ -1,6 +1,6 @@
 AOW static pages report (deterministic; no timestamps)
 data files read: 76
-home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)
+home page (/): generated landing page
 officials with a page: 29
 promises published on pages: 63
 current officials listed by name only (no publishable promises yet): 707
