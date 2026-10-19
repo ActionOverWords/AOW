@@ -1,6 +1,6 @@
 AOW static pages report (deterministic; no timestamps)
 data files read: 76
-home page (/): generated landing page; live headline numbers: on (exact counts from public.site_counts() replace the rounded-down figures in the browser)
+home page (/): generated landing page; live headline numbers: on (the browser reads public.site_counts() and shows the live counts rounded down like the tracker)
 officials with a page: 29
 promises published on pages: 63
 current officials listed by name only (no publishable promises yet): 707
