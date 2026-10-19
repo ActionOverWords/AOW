@@ -838,6 +838,7 @@ a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
 @media (max-width:860px){.split{grid-template-columns:1fr;gap:30px}}
 @media (max-width:700px){.two-col,.cards.two,.cards.browse{grid-template-columns:1fr}.cards.browse>li:first-child{grid-column:auto}.hero{padding:34px 0 26px}.sec{padding-top:40px}.sec.white{padding-bottom:40px;margin-top:28px}.stat-row li{padding:13px 10px}.stat-row .l{font-size:10px;letter-spacing:.04em}.card{padding:16px}.sec .lede2{font-size:16px;margin-bottom:22px}}
 @media (max-width:480px){.btns .btn{flex:1 1 100%}.legend-grid li{flex-wrap:wrap;gap:8px}}
+@media (max-width:359px){.stat-row li{padding:13px 6px}.stat-row .n{font-size:21px}}
 `.trim();
 
 // Plain visits to the bare domain read this page. Visits that carry a query string (utm_..., fbclid, ...) or a key=value
@@ -848,14 +849,22 @@ const HOME_REDIRECT_JS = "if(location.search||location.hash.indexOf('=')>-1){loc
 
 // ---- live headline numbers ----
 // The hero's three numbers (Officials, Promises, States covered) are written into the page as the rounded-down figures
-// above, which are always true. In the visitor's browser a second small script then swaps in the exact current counts
-// from the same database the tracker reads, so the page moves as officials and promises are added. It makes one read-only
-// lookup, GET <project address>/rest/v1/rpc/site_counts (the browser adds its own automatic OPTIONS permission check first),
-// to a database function that returns three whole numbers
+// above, which are always true. In the visitor's browser a second small script then reads the current counts from the
+// same database the tracker reads and shows them rounded down by the tracker's own rule (736 officials read "700+", 11,495
+// promises read "10,000+"; the 50 states are shown as they are), with the exact figure one hover away ("Exactly 736"),
+// just like the tracker's headline strip. So the page steps up by itself as officials and promises are added, with no
+// rebuild and nobody having to remember to raise a floor, and it always matches the tracker. The note under the numbers
+// ("Counts are rounded down ...") is left alone: it stays true. The script's rounding function (up) must stay the same
+// rule as roundedPlus() above and the tracker's roundedPlus() in aow-index.html.
+// Layout: the three hero cells were checked from 320 px wide up for officials up to 9,999 ("9,000+") and promises up to
+// 99,999 ("90,000+"); the script's own sanity limits are wider than that, so if the counts ever get past those figures,
+// look at the .stat-row rules in HOME_CSS (the phone sizes are the tight ones).
+// It makes one read-only lookup, GET <project address>/rest/v1/rpc/site_counts (the browser adds its own automatic OPTIONS
+// permission check first), to a database function that returns three whole numbers
 // (tools/site_counts.sql holds it). The request carries only the publishable key in an "apikey" header: no cookies, no
 // sign-in, no body, nothing stored, and the answer is written into the page as plain text, never as markup.
 // Nothing depends on it. No script, no network, a refused or malformed answer, a missing function or a slow answer
-// (8 seconds) all leave the rounded-down figures and their note exactly as they were.
+// (8 seconds) all leave the rounded-down figures exactly as they were.
 // The project address and the publishable key are public by design (the tracker ships both in aow-index.html), but this
 // file does not copy them: they are read out of aow-index.html at build time, so there is one place to change them and
 // a rotated key reaches this page on the next build (the nightly run, or "Run workflow" by hand: pushing aow-index.html alone
@@ -891,17 +900,18 @@ function homeLiveJs(cfg) {
   return [
     "(function(){",
     "if(location.search||location.hash.indexOf('=')>-1)return;",
-    "var o=document.getElementById('live-officials'),p=document.getElementById('live-promises'),s=document.getElementById('live-states'),n=document.getElementById('live-note');",
+    "var o=document.getElementById('live-officials'),p=document.getElementById('live-promises'),s=document.getElementById('live-states');",
     "if(!o||!p||!s||!window.fetch)return;",
     "function ok(v,max){return typeof v==='number'&&isFinite(v)&&Math.floor(v)===v&&v>=1&&v<=max}",
+    "function up(n){if(n<10)return String(n);var m=Math.pow(10,String(n).length-1);return (Math.floor(n/m)*m).toLocaleString('en-US')+'+'}",
     "var c=window.AbortController?new AbortController():null,t=setTimeout(function(){if(c)c.abort()}," + LIVE_COUNTS_TIMEOUT_MS + ");",
     "fetch(" + JSON.stringify(cfg.origin + '/rest/v1/rpc/site_counts') + ",{method:'GET',headers:{apikey:" + JSON.stringify(cfg.key) + ",Accept:'application/json'},credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',signal:c?c.signal:undefined})",
     ".then(function(r){if(!r.ok)throw 0;return r.json()})",
     ".then(function(d){",
     "clearTimeout(t);",
     "if(!d||!ok(d.officials,100000)||!ok(d.promises,10000000)||!ok(d.states,50))return;",
-    "o.textContent=d.officials.toLocaleString('en-US');p.textContent=d.promises.toLocaleString('en-US');s.textContent=d.states.toLocaleString('en-US');",
-    "if(n){n.style.minHeight=n.getBoundingClientRect().height+'px';n.textContent='Live counts from the tracker.'}",
+    "o.textContent=up(d.officials);p.textContent=up(d.promises);s.textContent=String(d.states);",
+    "o.parentNode.title='Exactly '+d.officials.toLocaleString('en-US');p.parentNode.title='Exactly '+d.promises.toLocaleString('en-US');",
     "})",
     ".catch(function(){clearTimeout(t)});",
     "})();"
@@ -927,7 +937,7 @@ function renderHome(ctx) {
   const faq = fs.existsSync(path.join(ROOT, 'faq.html'));
   const live = liveCountsConfig();
   const liveJs = live.origin ? homeLiveJs(live) : null;
-  HOME_LIVE_STATE = liveJs ? 'on (exact counts from public.site_counts() replace the rounded-down figures in the browser)' : `off, rounded-down figures only (${live.why})`;
+  HOME_LIVE_STATE = liveJs ? 'on (the browser reads public.site_counts() and shows the live counts rounded down like the tracker)' : `off, rounded-down figures only (${live.why})`;
   if (!liveJs) warn('Home page: live headline numbers are off: ' + live.why + '.');
   const liveId = k => (liveJs ? ` id="live-${k}"` : '');
 
@@ -952,7 +962,7 @@ function renderHome(ctx) {
 <li><b class="n"${liveId('promises')}>${fmtInt(PROMISES_FLOOR)}+</b><span class="l">Promises</span></li>
 <li><b class="n"${liveId('states')}>${states}</b><span class="l">States covered</span></li>
 </ul>
-<p class="fine"${liveId('note')}>Counts are rounded down. The interactive tracker has the full, current roster.</p>
+<p class="fine">Counts are rounded down. The interactive tracker has the full, current roster.</p>
 </div>
 </section>
 ${liveJs ? `<script>${liveJs}</script>\n` : ''}

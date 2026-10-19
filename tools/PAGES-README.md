@@ -19,17 +19,21 @@ anything it didn't generate (every generated file carries an `aow-generated` mar
   from `PROMISES_FLOOR` near the top of the home section in `build-pages.js` (the repo data files hold only a small
   hand-entered set of promises, so the builder cannot count the tracker's thousands; the live database held 11,495 on
   2026-10-18). That is what a visitor sees with scripts off, offline, or if the lookup below fails.
-  In a normal browser a second small inline script then swaps in the **exact live counts** (736 officials, 11,495 promises,
-  50 states on 2026-10-18) and changes the note under the numbers to "Live counts from the tracker." It makes one
-  read-only lookup, `GET <project address>/rest/v1/rpc/site_counts` (the browser first sends its own automatic permission
-  check, an `OPTIONS` request, so two small requests go out), to the database function `public.site_counts()`
+  In a normal browser a second small inline script then reads the **live counts** (736 officials, 11,495 promises, 50
+  states on 2026-10-18) and shows them **rounded down by the same rule as the tracker's headline strip**: 736 reads
+  "700+", 11,495 reads "10,000+", and the states are shown as they are. The exact figure is one hover away ("Exactly
+  736"), like the tracker. So the page steps up by itself ("800+", "20,000+") as the data grows, without a rebuild, and
+  always matches the tracker. The note under the numbers ("Counts are rounded down ...") is left as it is. The script
+  makes one read-only lookup, `GET <project address>/rest/v1/rpc/site_counts` (the browser first sends its own automatic
+  permission check, an `OPTIONS` request, so two small requests go out), to the database function `public.site_counts()`
   (`tools/site_counts.sql`, run once in the Supabase SQL editor). The function counts the same `aow_officials` and
-  `aow_promises` rows the tracker loads, so the exact figures match the tracker's own (its headline strip rounds them and
-  shows the exact number on hover). The request carries only the publishable key in an `apikey` header (no cookies, no
-  sign-in, nothing stored). The answer is written into the page as plain text, and only if all three values are whole
-  numbers in a sane range; a missing function, an error, bad data, or an answer slower than 8 seconds all leave the
-  rounded-down figures in place. On a visit the redirect script is sending to the tracker (a `?query`, or a `#` holding
-  `=`) the script does nothing at all, so a page that is about to be replaced never makes the request.
+  `aow_promises` rows the tracker loads, so the figures match the tracker's own. The request carries only the publishable
+  key in an `apikey` header (no cookies, no sign-in, nothing stored). The answer is written into the page as plain text,
+  and only if all three values are whole numbers in a sane range; a missing function, an error, bad data, or an answer
+  slower than 8 seconds all leave the rounded-down figures in place. On a visit the redirect script is sending to the
+  tracker (a `?query`, or a `#` holding `=`) the script does nothing at all, so a page that is about to be replaced never
+  makes the request. The script's rounding rule (`up`) must stay the same as `roundedPlus()` in the builder and in
+  `aow-index.html`.
   The project address and the publishable key are read out of `aow-index.html` at build time (nothing is copied into the
   builder). After rotating the key, start the build by hand (Actions > Build static pages > Run workflow): pushing
   `aow-index.html` alone does not start it, and the nightly run would only pick the new key up the next morning; until
@@ -38,7 +42,9 @@ anything it didn't generate (every generated file carries an `aow-generated` mar
   prints a warning, and `tools/pages-report.txt` says "live headline numbers: off" with the reason.
   The page's Content-Security-Policy names both inline scripts (the redirect and the live counts) by their hashes and adds
   `connect-src` for that one address, nothing else. Raise `PROMISES_FLOOR` to make the fallback claim more, and keep it
-  below the tracker's real count
+  below the tracker's real count. The three hero cells were checked from 320 px wide up (including a much wider font)
+  for officials up to 9,999 ("9,000+") and promises up to 99,999 ("90,000+"); the script's own sanity limits are wider,
+  so if the counts ever get past those figures, look at the `.stat-row` rules in `HOME_CSS` (phones are the tight ones)
 - `about/index.html` and `contact/index.html`: who runs the site, how it is paid for, its limits, and how to reach it.
   Fixed text that restates the tracker's About tab, the Terms and the methodology; the pages cannot host a form (strict
   CSP, no scripts), so Contact gives the email address and points to the tracker's own contact form
