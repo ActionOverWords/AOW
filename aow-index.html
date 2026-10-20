@@ -736,6 +736,9 @@
   .nl-done{margin:0; font-size:14px; font-weight:600; line-height:1.5; color:var(--brand-dark);}
   html[data-theme="dark"] .nl-done{color:var(--brand);}
   .modal-card .nl-box{margin:4px 0 0; background:none; border:none; padding:0;}
+  /* One box per screen: the Featured tab already shows the sign-up box under the races, so the footer copy steps aside there.
+     Every other tab (and a person's profile) has no box in the page, so the footer one stays. A browser without :has() just shows both. */
+  body:has(#content .nl-box) footer .nl-box{display:none;}
   .nl-admin-table{border-collapse:collapse; font-size:13px; margin:8px 0 12px; width:100%; max-width:560px;}
   .nl-admin-table th, .nl-admin-table td{border-bottom:1px solid var(--border); padding:6px 8px; text-align:left;}
   .nl-admin-warn{background:var(--bg-alt); border-left:3px solid var(--broken, #B23A2F); padding:8px 12px; font-size:13px; margin:8px 0;}
