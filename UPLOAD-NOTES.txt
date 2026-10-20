@@ -1,0 +1,87 @@
+ACTIONOVERWORDS INDEX: THE NEW LOGO AND BRAND ON THE WEBSITE
+Upload package, made 2026-10-19 (replaces the earlier package from the same evening)
+
+WHAT THIS IS
+  Every file the website needs to carry the Ring logo and the brand pack, at the paths the
+  repository uses. The changed pages were edited one change at a time against the newest live
+  copies: the repository as it stood at commit f885d4c, 2026-10-19 7:33 pm, which is the upload
+  that added the score-over-time chart. No page was rewritten and no old copy was pasted over a
+  newer one. Both of the evening's features are still in place in the copies here: the weekly
+  email (aow-index.html, privacy-policy.html, tools/build-pages.js) and the score-over-time chart
+  (aow-index.html), checked line by line.
+
+  THIS IS THE THIRD AND CURRENT PACKAGE. Delete the two sent earlier the same evening: each was
+  built before one of those features went live, and uploading one would undo it.
+
+  IF YOU SHIP ANYTHING ELSE BEFORE UPLOADING THIS, SAY SO AND IT WILL BE REBUILT. aow-index.html
+  is the file that keeps moving; the rest of the package is not affected by that kind of change.
+
+HOW TO UPLOAD IT
+  1. Copy this whole folder into Desktop\AOW-main\updates\ .
+  2. Upload everything inside it through GitHub the way you do every update. The folders in here
+     mirror the repository, so each file lands beside the one it replaces.
+  3. Upload it all in one go. The pages point at the new brand files, so a half-upload would leave
+     a page asking for a file that is not there yet.
+  4. After the upload, open the Actions tab and watch "Build static pages". Pushing
+     tools/build-pages.js starts it by itself; it rebuilds the 35 generated pages with the new logo
+     and commits them a few minutes later. If it has not started after five minutes, run it by hand
+     (Actions > Build static pages > Run workflow).
+
+WHAT CHANGED, FILE BY FILE
+
+  THE SIX ICON FILES AT THE TOP LEVEL (no code change needed; each replaces the old file of the
+  same name, which still carries the old green AOW tile)
+    favicon.svg            browser tab icon, follows the browser's light and dark setting
+    favicon.ico            16, 32 and 48 px, for browsers that ignore the SVG
+    apple-touch-icon.png   180 x 180, iPhone and iPad home screen
+    icon-192.png           192 x 192, Android and installed app
+    icon-512.png           512 x 512, Android splash; also the logo in the site's search-listing data
+    og-image.png           1200 x 630, the picture shown when a page is shared
+
+  aow-index.html (the tracker)  six changes, nothing else touched
+    - the header logo is now the real logo (symbol plus wordmark) instead of the green AOW tile.
+      It is drawn in the page, so no file has to load. Same height as before (32 px), 232 px wide on
+      a computer, the short "AOW Index" version on phones, as before. The accent-colour picker still
+      never recolours it, and dark mode uses the logo's dark colourway.
+    - the phone menu's own header carries the symbol instead of the tile
+    - install-as-an-app: the manifest and its icons are linked from the head (six lines)
+    - the page's own share picture is now brand/og/og-tracker.png
+    - the "Loading..." placeholder shows the small animated mark above the word
+    - nothing else: no script changed, no layout rule outside the header, no content.
+
+  404.html, faq.html, privacy-policy.html, terms-of-service.html, cookie-policy.html,
+  dmca-policy.html, thank-you-donate.html, thank-you-subscribe.html
+    - the same header logo, in the same place, on each page
+    - 404.html also shows the not-found art above the 404, light or dark to match the device
+    - faq.html also gains its share tags (it had none) and points at brand/og/og-faq.png
+
+  tools/build-pages.js (the page builder)
+    - the generated pages (home, about, contact, methodology, administration, the officials
+      directory and all 29 official pages) get the same header logo
+    - a share picture per section: home, methodology, the officials directory, administration, and
+      the Congress and state hubs when they appear. An individual official's page keeps og-image.png.
+    - the builder was run here against the current data before sending: 37 files changed, 0 warnings,
+      0 pages removed, and nothing changed on those pages except the logo and the share picture.
+
+  manifest.webmanifest and brand\
+    manifest.webmanifest        lets a phone or computer install the site as an app
+    brand\pwa\                  the pinned-tab icon, Windows tile and one-colour icon the manifest uses
+    brand\og\                   the eight share pictures
+    brand\error\                the not-found art (light and dark, SVG and PNG)
+    brand\loader\               the small animated mark
+    brand\email\                logo pictures for the email templates, waiting for the templates
+                                themselves (nothing on the site points at these two yet)
+
+AFTER IT IS LIVE
+  - Tab icons are cached hard. If a tab still shows the old icon, open the site in a private window
+    or hard-refresh (Ctrl+Shift+R).
+  - Facebook and LinkedIn keep their own copy of a share picture. Paste the address into Facebook's
+    Sharing Debugger and choose "Scrape Again", or LinkedIn's Post Inspector, to refresh it.
+  - Install the site once from Chrome's menu to check the app icon and name.
+
+WHAT WAS NOT DONE
+  - The email templates themselves (signature, newsletter, sign-in emails) and the alert-email patch
+    are still to be pasted in; the pictures they need are in brand\email\ and go up with this upload.
+  - No colour, type or layout on the site was changed. This is the logo and the brand files only.
+  - The three aow-index.html.bak_ files in the repository are old copies from earlier work. They are
+    not part of the site and were left alone; they can be deleted whenever you like.
