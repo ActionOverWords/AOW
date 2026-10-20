@@ -704,6 +704,16 @@
     .race-dot::after{content:''; position:absolute; inset:-14px -3px;}
     footer .foot-links a{display:inline-block; padding:6px 0;}
   }
+  /* ---------- Score over time (paid) ---------- */
+  .trend-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 6px;}
+  .score-history .trend-head h3{margin:0;}
+  .trend-toggle{display:inline-flex; gap:6px;}
+  .trend-toggle .term-btn{padding:4px 12px; font-size:12px;}
+  .trend-summary{font-size:13px; color:var(--text-muted); margin:0 0 6px;}
+  .trend-summary strong{color:var(--text);}
+  .trend-locked p{max-width:62ch;}
+  .trend-svg{width:100%; max-width:640px; height:auto; display:block; overflow:visible;}
+
   /* ---------- weekly email (newsletter) sign-up ---------- */
   .nl-box{background:var(--brand-tint); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin:22px 0 6px; max-width:640px; position:relative;}
   .nl-box h3{margin:0 0 4px; font-size:16px; color:var(--text);}
@@ -1350,6 +1360,7 @@ const TIER_FEATURES = [
   {label:'Alerts also cover your lists + new promises', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
   {label:'Saved lists of officials', free:'–', supporter:'1 list of 10', sustainer:'25 lists of 200', patron:'25 lists of 200'},
   {label:'Private notes on officials', free:'–', supporter:'Up to 10', sustainer:'Up to 200', patron:'Up to 200'},
+  {label:'Score charts: month by month and term by term', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
   {label:'Ad-free', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
   {label:'Dark mode', free:'–', supporter:'✓', sustainer:'✓', patron:'✓'},
   {label:'Find Officials: advanced filters + saved views', free:'–', supporter:'–', sustainer:'✓', patron:'✓'},
@@ -3114,10 +3125,10 @@ function scoresByTerm(memberId, promisesArr){
 // A small SVG: a bar per term (score), with a trend line connecting them once there is
 // more than one term. This is the "score over time, by term" view — it grows as an
 // official serves additional terms and as new promises are dated into them.
-function termScoreGraphHTML(memberId, promisesArr){
+function termScoreGraphHTML(memberId, promisesArr, bare){
   const data = scoresByTerm(memberId, promisesArr);
   if(!data.length) return '';
-  const W=640,H=210,padL=32,padR=14,padT=20,padB=48,plotW=W-padL-padR,plotH=H-padT-padB,n=data.length;
+  const W=(window.innerWidth<560?380:640),H=210,padL=32,padR=14,padT=20,padB=48,plotW=W-padL-padR,plotH=H-padT-padB,n=data.length;   // narrower on phones so labels stay readable
   const cx=i=>padL+(plotW/n)*(i+0.5);
   const cy=sc=>padT+plotH*(1-sc/100);
   const bw=Math.min(64,(plotW/n)*0.52);
@@ -3135,12 +3146,164 @@ function termScoreGraphHTML(memberId, promisesArr){
   let line='';
   if(n>1){ const poly=data.map((d,i)=>`${cx(i).toFixed(1)},${cy(d.score).toFixed(1)}`).join(' '); line=`<polyline points="${poly}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round"/>`; }
   const note = n>1 ? 'AOW score for each term served, with the trend across terms.' : 'AOW score for the current term. A term-over-term trend line appears here once a second term is tracked.';
-  return `<div class="score-history term-graph"><h3>Score by term</h3>
-    <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;" role="img" aria-label="AOW score by term">
+  const body = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;" role="img" aria-label="AOW score by term">
       ${grid}${line}${bars}${pts}${labels}
     </svg>
-    <p class="score-note" style="margin:8px 0 0;">${note}</p>
+    <p class="score-note" style="margin:8px 0 0;">${note}</p>`;
+  return bare ? body : `<div class="score-history term-graph"><h3>Score by term</h3>
+    ${body}
   </div>`;
+}
+/* ---------- Score over time: a paid chart, month by month and term by term ----------
+   Month by month: each point is the AOW score of the promises the official had made by the end of
+   that month (by promisedOn; a promise with no date counts from the start of its term). A status
+   counts from the day its change was logged (promise_status_changes(), from Oct 18, 2026, when the
+   tracker started keeping a change log); before that, each promise counts at its current status.
+   The last point is always the official's current score. */
+const TREND_MIN_TIER = 'supporter';                 // every paid plan
+const STATUS_LOG_STARTED = 'Oct 18, 2026';
+let scoreTrendView = 'time';                        // 'time' | 'term'
+const STATUS_CHANGES = {};                          // memberId -> [changes] | 'loading' | 'failed'
+const TREND_PANELS = {};                            // dom id -> {memberId, promisesArr, live}
+function localISODate(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function termRangeOf(term){ const m = String(term||'').match(/(\d{4})\D+(\d{4})/); return m ? [Number(m[1]), Number(m[2])] : null; }
+function termStartOf(term){ const m = String(term||'').match(/(\d{4})/); return m ? m[1] + '-01-01' : null; }
+function monthLabel(key){ const [y, m] = key.split('-').map(Number); return new Date(y, m - 1, 1).toLocaleDateString('en-US', {month:'short', year:'numeric'}); }
+function scoreTimeline(memberId, promisesArr, changes){
+  const today = localISODate(new Date());
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId);
+  if(!ps.length) return [];
+  const starts = ps.map(p => {
+    const d = /^\d{4}-\d{2}-\d{2}$/.test(p.promisedOn||'') ? p.promisedOn : (termStartOf(p.term) || today);
+    return d > today ? today : d;
+  });
+  const newestFirst = {};
+  (Array.isArray(changes) ? changes : []).forEach(c => { (newestFirst[c.promise_id] = newestFirst[c.promise_id] || []).push(c); });
+  Object.values(newestFirst).forEach(list => list.sort((a, b) => String(b.at).localeCompare(String(a.at))));
+  const first = starts.reduce((a, b) => (a < b ? a : b));
+  let y = Number(first.slice(0, 4)), mo = Number(first.slice(5, 7));
+  const endY = Number(today.slice(0, 4)), endM = Number(today.slice(5, 7));
+  const out = [];
+  while(y < endY || (y === endY && mo <= endM)){
+    const isNow = (y === endY && mo === endM);
+    const last = isNow ? today : localISODate(new Date(y, mo, 0));   // last day of the month
+    let sum = 0, n = 0;
+    ps.forEach((p, i) => {
+      if(starts[i] > last) return;
+      let st = p.status;
+      if(!isNow && newestFirst[p.id]){
+        for(const c of newestFirst[p.id]){ if(localISODate(new Date(c.at)) > last) st = c.old_status || st; else break; }
+      }
+      if(st === 'undetermined') return;                                // same rule as computeAOWScore
+      sum += (AOW_WEIGHTS[st] ?? 0); n++;
+    });
+    if(n) out.push({key: `${y}-${String(mo).padStart(2, '0')}`, date: last, score: Math.round(sum / n), n});
+    mo++; if(mo > 12){ mo = 1; y++; }
+  }
+  return out;
+}
+function timeTrendSVG(points, terms){
+  const narrow = window.innerWidth < 560;            // phones get a narrower drawing, so the text stays readable
+  const W = narrow ? 360 : 640, H = narrow ? 200 : 220, padL = 28, padR = 14, padT = 24, padB = 30, plotW = W - padL - padR, plotH = H - padT - padB;
+  const ms = s => new Date(s + 'T12:00:00').getTime();
+  const t0 = ms(points[0].key + '-01'), t1 = Math.max(ms(points[points.length - 1].date), t0 + 27 * 86400000);
+  const X = t => padL + plotW * (t - t0) / (t1 - t0);
+  const Y = sc => padT + plotH * (1 - sc / 100);
+  let grid = '';
+  [0, 25, 50, 75, 100].forEach(v => { const yy = Y(v).toFixed(1); grid += `<line x1="${padL}" y1="${yy}" x2="${W - padR}" y2="${yy}" stroke="var(--border)" stroke-width="1" opacity="0.7"/><text x="${padL - 6}" y="${(parseFloat(yy) + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--text-faint)">${v}</text>`; });
+  // terms as shaded bands behind the line, so both views read the same way
+  let bands = '';
+  terms.forEach(([a, b], i) => {
+    const x0 = Math.max(padL, X(ms(`${a}-01-01`))), x1 = Math.min(W - padR, X(ms(`${b}-01-01`)));
+    if(x1 - x0 < 2) return;
+    bands += `<rect x="${x0.toFixed(1)}" y="${padT}" width="${(x1 - x0).toFixed(1)}" height="${plotH}" fill="var(--brand)" opacity="${i % 2 ? 0.05 : 0.09}"/>`;
+    if(x1 - x0 > 50) bands += `<text x="${((x0 + x1) / 2).toFixed(1)}" y="${padT - 8}" text-anchor="middle" font-size="9" fill="var(--text-muted)">${a}–${b}</text>`;
+  });
+  // year ticks, at most 8 labels
+  const y0 = new Date(t0).getFullYear(), y1 = new Date(t1).getFullYear();
+  const step = Math.max(1, Math.ceil((y1 - y0 + 1) / (narrow ? 5 : 8)));
+  let ticks = '';
+  for(let yr = y0 + (new Date(t0).getMonth() === 0 ? 0 : 1); yr <= y1; yr += step){
+    const x = X(ms(`${yr}-01-01`));
+    if(x < padL - 0.5 || x > W - padR + 0.5) continue;
+    ticks += `<line x1="${x.toFixed(1)}" y1="${padT + plotH}" x2="${x.toFixed(1)}" y2="${padT + plotH + 4}" stroke="var(--border)"/><text x="${x.toFixed(1)}" y="${padT + plotH + 16}" text-anchor="middle" font-size="10" fill="var(--text-muted)">${yr}</text>`;
+  }
+  const xy = points.map(p => [X(ms(p.date)), Y(p.score)]);
+  const line = xy.map(([x, yy], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${yy.toFixed(1)}`).join(' ');
+  const area = `${line} L${xy[xy.length - 1][0].toFixed(1)} ${Y(0).toFixed(1)} L${xy[0][0].toFixed(1)} ${Y(0).toFixed(1)} Z`;
+  const lastP = points[points.length - 1], [lx, ly] = xy[xy.length - 1];
+  const hover = points.map((p, i) => `<circle cx="${xy[i][0].toFixed(1)}" cy="${xy[i][1].toFixed(1)}" r="7" fill="transparent"><title>${escAttr(monthLabel(p.key))}: score ${p.score} · ${p.n} promise${p.n === 1 ? '' : 's'}</title></circle>`).join('');
+  const label = `${escAttr(monthLabel(points[0].key))} to now: ${points[0].score} to ${lastP.score}`;
+  return `<svg class="trend-svg" viewBox="0 0 ${W} ${H}" style="max-width:${W === 640 ? 640 : 560}px" role="img" aria-label="AOW score month by month, ${label}">
+    ${bands}${grid}${ticks}
+    ${points.length > 1 ? `<path d="${area}" fill="var(--brand)" opacity="0.10"/><path d="${line}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round"/>` : ''}
+    <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="4.5" fill="${tierColorVar(lastP.score)}"/>
+    <text x="${Math.min(lx, W - padR - 4).toFixed(1)}" y="${(ly - 9).toFixed(1)}" text-anchor="end" font-size="12" font-weight="700" fill="var(--text)">${lastP.score}</text>
+    ${hover}
+  </svg>`;
+}
+function trendInnerHTML(domId){
+  const panel = TREND_PANELS[domId];
+  if(!panel) return '';
+  const {memberId, promisesArr, live} = panel;
+  const toggle = `<div class="trend-toggle" role="group" aria-label="Chart view">
+      <button class="term-btn ${scoreTrendView === 'time' ? 'active' : ''}" aria-pressed="${scoreTrendView === 'time'}" onclick="setScoreTrendView('time')">Month by month</button>
+      <button class="term-btn ${scoreTrendView === 'term' ? 'active' : ''}" aria-pressed="${scoreTrendView === 'term'}" onclick="setScoreTrendView('term')">By term</button>
+    </div>`;
+  let body;
+  if(scoreTrendView === 'term'){
+    body = termScoreGraphHTML(memberId, promisesArr, true) || `<p class="score-note" style="margin:0;">No terms are recorded for these promises yet.</p>`;
+  } else {
+    const changes = live ? STATUS_CHANGES[memberId] : null;
+    const pts = scoreTimeline(memberId, promisesArr, Array.isArray(changes) ? changes : null);
+    if(!pts.length){
+      body = `<p class="score-note" style="margin:0;">No scored promises yet.</p>`;
+    } else {
+      const firstP = pts[0], lastP = pts[pts.length - 1];
+      const lo = pts.reduce((a, b) => (b.score < a.score ? b : a)), hi = pts.reduce((a, b) => (b.score > a.score ? b : a));
+      const summary = pts.length > 1
+        ? `<p class="trend-summary">Now <strong>${lastP.score}</strong> · ${firstP.score} in ${escAttr(monthLabel(firstP.key))}, the month of the first tracked promise · low ${lo.score}, high ${hi.score}</p>`
+        : `<p class="trend-summary">Now <strong>${lastP.score}</strong> · all tracked promises date from ${escAttr(monthLabel(firstP.key))}</p>`;
+      const terms = [...new Set((promisesArr||PROMISES).filter(p=>p.memberId===memberId).map(p=>p.term).filter(Boolean))]
+        .map(termRangeOf).filter(Boolean).sort((a, b) => a[0] - b[0]);
+      body = `${summary}${timeTrendSVG(pts, terms)}
+        <p class="score-note" style="margin:8px 0 0;">Each point is the AOW score of the promises made up to that month, with the official's terms shaded behind. A status change counts from the day it was logged; the change log started ${STATUS_LOG_STARTED}, so before that each promise counts at its current status.</p>`;
+    }
+  }
+  return `<div class="trend-head"><h3>Score over time</h3>${toggle}</div>${body}`;
+}
+function scoreTrendHTML(memberId, promisesArr){
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && p.status!=='undetermined');
+  if(!ps.length) return '';
+  if(!userHasTier(TREND_MIN_TIER)){
+    const cta = CURRENT_USER
+      ? `<button class="btn-primary btn-sm" onclick="goToPlans()">See plans</button>`
+      : `<button class="btn-primary btn-sm" onclick="showAuthModal('signup')">Sign up</button>`;
+    return `<div class="score-history term-graph trend-locked"><h3>Score over time</h3>
+      <p class="score-note" style="margin:0 0 10px;">See how this official's AOW score has moved month by month and from term to term. Charts come with every paid plan, from ${escAttr(tierLabel('supporter'))} at ${escAttr((TIERS.find(t=>t.id==='supporter')||{}).price||'')}.</p>${cta}</div>`;
+  }
+  const domId = 'trend-' + String(memberId).replace(/[^A-Za-z0-9_-]/g, '_');
+  const live = !!memberById(memberId);   // a current official's promises are in the change log; past roles are not
+  TREND_PANELS[domId] = {memberId, promisesArr, live};
+  if(live) loadStatusChanges(memberId);
+  return `<div class="score-history term-graph" id="${domId}">${trendInnerHTML(domId)}</div>`;
+}
+function refreshTrendPanels(memberId){
+  Object.keys(TREND_PANELS).forEach(id => {
+    const el = document.getElementById(id);
+    if(!el){ delete TREND_PANELS[id]; return; }
+    if(!memberId || TREND_PANELS[id].memberId === memberId) el.innerHTML = trendInnerHTML(id);
+  });
+}
+function setScoreTrendView(view){ scoreTrendView = view === 'term' ? 'term' : 'time'; refreshTrendPanels(null); }
+function loadStatusChanges(memberId){
+  if(STATUS_CHANGES[memberId] !== undefined || !sb || !CURRENT_USER) return;
+  STATUS_CHANGES[memberId] = 'loading';
+  Promise.resolve(sb.rpc('promise_status_changes', { p_member_id: memberId })).then(res => {
+    const ok = res && !res.error && Array.isArray(res.data);
+    STATUS_CHANGES[memberId] = ok ? res.data.filter(c => c && typeof c.promise_id === 'string' && typeof c.at === 'string' && !isNaN(new Date(c.at))) : 'failed';
+    if(ok && STATUS_CHANGES[memberId].length) refreshTrendPanels(memberId);
+  }).catch(() => { STATUS_CHANGES[memberId] = 'failed'; });
 }
 // Headline numbers read like "700+", not "736". Always rounds DOWN to the leading digit so the
 // "+" is never an overstatement (736 → "700+", 88 → "80+", 22 → "20+"; 100 → "100+" on its own
@@ -3544,7 +3707,7 @@ function roleBlockHTML(role){
         <button class="btn-sm" onclick="editOfficial('${role.id}')">Edit official</button>
         <button class="btn-sm danger" onclick="handleDeleteOfficialClick(this,'${role.id}')">Delete official</button>
       </div>` : ''}
-      ${termScoreGraphHTML(role.id, role.promisesArr)}
+      ${scoreTrendHTML(role.id, role.promisesArr)}
       ${ps.length ? ps.map(p=>promiseCardHTML(p, role.name, canEditThisRole)).join('') : promiseEmptyCardHTML('No promises logged for this role yet.')}
       ${canEditThisRole ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${role.id}',null)">+ Add promise</button>` : ''}
     </div>
@@ -4708,7 +4871,7 @@ function renderDetailView(id){
     </div>
     ${memberToolsHTML(m.id)}
     ${privateNoteCardHTML(m.id)}
-    ${termScoreGraphHTML(m.id)}
+    ${scoreTrendHTML(m.id)}
     ${scoreHistoryHTML(m.id)}
     ${ps.length ? ps.map(p=>promiseCardHTML(p, m.name, isAdmin)).join('') : promiseEmptyCardHTML('No promises logged for this official yet.')}
     ${isAdmin ? `<button class="btn-primary add-promise-btn" onclick="openPromiseForm('add','${m.id}',null)">+ Add promise</button>` : ''}
