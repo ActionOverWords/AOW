@@ -320,7 +320,8 @@ const LEGAL = [['privacy-policy.html', 'Privacy Policy'], ['terms-of-service.htm
 function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss, mainClass, headExtra, csp }) {
   const up = '../'.repeat(depth);
   const mainOpen = mainClass === undefined ? '<main class="wrap">' : (mainClass ? `<main class="${mainClass}">` : '<main>');
-  const legal = [`<a href="${up}about/">About</a>`, `<a href="${up}contact/">Contact</a>`, `<a href="${up}methodology/">Methodology</a>`]
+  const legal = [`<a href="${up}about/">About</a>`, `<a href="${up}contact/">Contact</a>`, `<a href="${up}methodology/">Methodology</a>`,
+    `<a href="${up}aow-index.html#newsletter">Weekly email</a>`]   // the sign-up lives in the tracker (these pages run no scripts)
     .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<a href="${up}${f}">${l}</a>`)).join('');
   return `<!DOCTYPE html>
 ${MARK}
@@ -946,7 +947,8 @@ function renderHome(ctx) {
     .concat([...hubs.values()].map(h => `<li><a class="card" href="${esc(h.key)}/"><h3>${esc(cap(hubMeta(h.key, model).label))}</h3><p>${esc(nOf(h.pages.length, 'person', 'people'))} with promises published here.</p></a></li>`))
     .concat([`<li><a class="card" href="methodology/"><h3>Methodology</h3><p>Sources, statuses, the AOW Score and how the tracker stays nonpartisan.</p></a></li>`,
       `<li><a class="card" href="about/"><h3>About</h3><p>Who runs the Index, how it is paid for and what its limits are.</p></a></li>`,
-      `<li><a class="card" href="contact/"><h3>Contact</h3><p>Suggest a correction, appeal a status or ask a question.</p></a></li>`])
+      `<li><a class="card" href="contact/"><h3>Contact</h3><p>Suggest a correction, appeal a status or ask a question.</p></a></li>`,
+      `<li><a class="card" href="aow-index.html#newsletter"><h3>The weekly email</h3><p>What changed on the tracker this week, in one free email every Monday.</p></a></li>`])
     .concat(faq ? [`<li><a class="card" href="faq.html"><h3>Frequently asked questions</h3><p>Straight answers about how the site works.</p></a></li>`] : []);
 
   const body = `

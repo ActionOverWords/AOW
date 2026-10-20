@@ -704,6 +704,29 @@
     .race-dot::after{content:''; position:absolute; inset:-14px -3px;}
     footer .foot-links a{display:inline-block; padding:6px 0;}
   }
+  /* ---------- weekly email (newsletter) sign-up ---------- */
+  .nl-box{background:var(--brand-tint); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px; margin:22px 0 6px; max-width:640px; position:relative;}
+  .nl-box h3{margin:0 0 4px; font-size:16px; color:var(--text);}
+  .nl-box .nl-lead{margin:0 0 12px; font-size:13.5px; color:var(--text-muted); line-height:1.5; max-width:none;}
+  .nl-form{display:flex; gap:8px; flex-wrap:wrap; align-items:stretch; margin:0;}
+  .nl-form input[type=email]{flex:1 1 220px; min-width:0; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; font-family:inherit; color:var(--text); background:var(--bg);}
+  .nl-form input[type=email]:focus-visible{outline:2px solid var(--brand); outline-offset:1px;}
+  .nl-form .btn-primary{flex:0 0 auto;}
+  .nl-form .btn-primary:disabled{opacity:.7; cursor:default;}
+  .nl-trap{position:absolute !important; left:-10000px !important; top:auto; width:1px; height:1px; overflow:hidden;}
+  .nl-box .nl-fine{margin:8px 0 0; font-size:12px; color:var(--text-muted); line-height:1.5; max-width:none;}
+  .nl-box .nl-fine a{color:var(--brand-dark);}
+  html[data-theme="dark"] .nl-box .nl-fine a{color:var(--brand);}
+  .nl-done{margin:0; font-size:14px; font-weight:600; line-height:1.5; color:var(--brand-dark);}
+  html[data-theme="dark"] .nl-done{color:var(--brand);}
+  .modal-card .nl-box{margin:4px 0 0; background:none; border:none; padding:0;}
+  .nl-admin-table{border-collapse:collapse; font-size:13px; margin:8px 0 12px; width:100%; max-width:560px;}
+  .nl-admin-table th, .nl-admin-table td{border-bottom:1px solid var(--border); padding:6px 8px; text-align:left;}
+  .nl-admin-warn{background:var(--bg-alt); border-left:3px solid var(--broken, #B23A2F); padding:8px 12px; font-size:13px; margin:8px 0;}
+  @media (max-width:767px){
+    .nl-form input[type=email]{font-size:16px; flex-basis:100%;}
+    .nl-form .btn-primary{flex:1 1 100%; min-height:44px;}
+  }
 </style>
 </head>
 <body>
@@ -815,12 +838,23 @@
 <footer>
   <div class="wrap">
     <h2>ActionOverWords Index</h2>
-    <p>An independent tracker of specific promises made by elected officials, and what actually happened to them — kept, broken, or somewhere in between. 736 officials tracked so far, federal and state.</p>
+    <p>An independent tracker of specific promises made by elected officials, and what actually happened to them — kept, broken, or somewhere in between. 700+ officials tracked so far, federal and state.</p>
+    <div class="nl-box" data-nl-source="footer">
+      <h3>The weekly email</h3>
+      <p class="nl-lead">What changed on the tracker this week, in one short email every Monday. Free, and you can unsubscribe any time.</p>
+      <form class="nl-form" onsubmit="return newsletterSubmit(this, event)" novalidate>
+        <label class="nl-trap" aria-hidden="true">Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <input type="email" name="email" required maxlength="254" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-label="Your email address">
+        <button class="btn-primary" type="submit">Get it free</button>
+      </form>
+      <p class="nl-fine">We'll send a link to confirm first. Details in the <a href="privacy-policy.html#newsletter">Privacy Policy</a>.</p>
+    </div>
     <div class="foot-links">
       <a href="#" onclick="selectTab('about'); return false;">About &amp; methodology</a>
       <a href="methodology/">Methodology</a>
       <a href="officials/">Officials directory</a>
       <a href="#" onclick="selectTab('about'); selectedAboutSection='donate'; render(); return false;">Leave a tip</a>
+      <a href="#newsletter" onclick="openNewsletterModal('footer-link'); return false;">Weekly email</a>
     </div>
     <div class="foot-links foot-links-legal">
       <a href="privacy-policy.html">Privacy Policy</a>
@@ -1226,7 +1260,7 @@ async function loadCurrentUser(authUser){
     isAdminAccount: profile.is_admin_account,
     joinedAt: (profile.joined_at || '').slice(0, 10), // Postgres returns a full timestamp; only the date is shown
     watchlist: Array.isArray(byKey.watchlist) ? byKey.watchlist : [],
-    darkMode: !!byKey.dark_mode,
+    darkMode: !!byKey.dark_mode && TIERS.findIndex(t=>t.id===profile.tier) >= 1,   // paid plans only (a downgrade switches it off)
     savedLists: normalizeLists(byKey.saved_lists),
     notes: normalizeNotes(byKey.private_notes),
     savedViews: normalizeViews(byKey.saved_views),
@@ -2613,12 +2647,177 @@ async function unsubscribeAlerts(token){
   return true;
 }
 
+/* ---------- the free weekly email (newsletter) ----------
+   Sign-up goes to the `newsletter` Edge Function, which emails a confirmation link first (double opt-in).
+   The function answers {ok:true} for any valid address, so the form never reveals who is on the list. */
+const NEWSLETTER_FUNCTION_URL = SUPABASE_URL + '/functions/v1/newsletter';
+const NL_UUID = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
+let newsletterSignedUp = false;   // this visit only: boxes drawn later show "check your inbox" instead of the form
+let newsletterBusy = false;
+const NL_DONE_HTML = `<p class="nl-done" role="status">Almost done: check your inbox for a link to confirm. If it isn't there in a few minutes, look in spam or promotions.</p>`;
+function newsletterBoxHTML(source, opts){
+  const o = opts || {};
+  const head = o.noHeading ? '' : `<h3>The weekly email</h3>`;
+  const lead = `<p class="nl-lead">What changed on the tracker this week, in one short email every Monday. Free, and you can unsubscribe any time.</p>`;
+  if(newsletterSignedUp) return `<div class="nl-box" data-nl-source="${escAttr(source)}">${head}${NL_DONE_HTML}</div>`;
+  const email = (CURRENT_USER && CURRENT_USER.email) ? escAttr(CURRENT_USER.email) : '';
+  return `<div class="nl-box" data-nl-source="${escAttr(source)}">${head}${lead}
+    <form class="nl-form" onsubmit="return newsletterSubmit(this, event)" novalidate>
+      <label class="nl-trap" aria-hidden="true">Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      <input type="email" name="email" required maxlength="254" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-label="Your email address" value="${email}">
+      <button class="btn-primary" type="submit">Get it free</button>
+    </form>
+    <p class="nl-fine">We'll send a link to confirm first. Details in the <a href="privacy-policy.html#newsletter">Privacy Policy</a>.</p></div>`;
+}
+async function newsletterCall(body, token){
+  const headers = { 'Content-Type': 'application/json' };
+  if(token) headers['Authorization'] = `Bearer ${token}`;
+  try {
+    const res = await fetch(NEWSLETTER_FUNCTION_URL, { method: 'POST', headers, body: JSON.stringify(body) });
+    const data = await res.json().catch(()=>({}));
+    return { ok: res.ok, status: res.status, data: data || {} };
+  } catch(e){ return { ok: false, status: 0, data: {} }; }
+}
+async function newsletterSubmit(form, ev){
+  if(ev) ev.preventDefault();
+  if(newsletterBusy) return false;
+  const emailEl = form.querySelector('input[name=email]');
+  const trapEl = form.querySelector('input[name=website]');
+  const email = (emailEl && emailEl.value || '').trim();
+  if(email.length < 6 || email.length > 254 || !/^[^\s@<>()",;:\\]+@[^\s@<>()",;:\\]+\.[A-Za-z]{2,}$/.test(email)){
+    showStatus("That email address doesn't look right. Check it and try again.", true, 4500);
+    if(emailEl) emailEl.focus();
+    return false;
+  }
+  const box = form.closest('.nl-box');
+  const source = (box && box.getAttribute('data-nl-source')) || 'site';
+  const btn = form.querySelector('button[type=submit]');
+  newsletterBusy = true;
+  if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+  const r = await newsletterCall({ action: 'subscribe', email, source, website: trapEl ? trapEl.value : '' });
+  newsletterBusy = false;
+  if(r.ok && r.data.ok === true){
+    newsletterSignedUp = true;
+    // every sign-up box on the page (footer, Featured, the pop-up) switches to the "check your inbox" note
+    document.querySelectorAll('.nl-box').forEach(b => {
+      b.querySelectorAll('.nl-form, .nl-lead, .nl-fine').forEach(el => el.remove());
+      if(!b.querySelector('.nl-done')) b.insertAdjacentHTML('beforeend', NL_DONE_HTML);
+    });
+    return false;
+  }
+  if(btn && btn.isConnected){ btn.disabled = false; btn.textContent = 'Get it free'; }
+  const msg = r.status === 400 ? "That email address doesn't look right. Check it and try again."
+    : (r.status === 429 ? 'Too many sign-ups from here just now. Please try again in an hour.'
+    : (r.status === 0 ? "Couldn't reach the server. Check your connection and try again." : "That didn't go through. Please try again in a few minutes."));
+  showStatus(msg, true, 5000);
+  return false;
+}
+function openNewsletterModal(source){
+  openModal(`<h3>The weekly email</h3>${newsletterBoxHTML(source || 'link', { noHeading: true })}
+    <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Close</button></div>`);
+  const el = document.querySelector('#modalCard input[name=email]');
+  if(el && !el.value) { try { el.focus(); } catch(e){ /* ignore */ } }
+}
+function newsletterConfirmPrompt(token){
+  // A button press, not opening the link, confirms: some workplace mail scanners open (and run) every link in an
+  // email, and they must not be able to sign anyone up.
+  openModal(`<h3>Confirm the weekly email</h3>
+    <p>Press the button to start getting the free Monday "What changed" email at the address this link was sent to.</p>
+    <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Not now</button>
+    <button class="btn-primary" id="nl-confirm-btn" onclick="newsletterConfirm('${token}')">Yes, send it to me</button></div>`);
+}
+async function newsletterConfirm(token){
+  if(!new RegExp('^' + NL_UUID + '$').test(token)) return;
+  const btn = document.getElementById('nl-confirm-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Confirming…'; }
+  const r = await newsletterCall({ action: 'confirm', token });
+  let html;
+  if(r.ok && r.data.ok === true){
+    html = r.data.already
+      ? `<p>You're already confirmed. The weekly email comes on Mondays.</p>`
+      : `<p><strong>You're subscribed.</strong> The weekly email comes on Mondays, listing the promises whose status changed that week. Every email has an unsubscribe link.</p>`;
+  } else if(r.ok && (r.data.error === 'expired' || r.data.error === 'invalid')){
+    html = `<p>That confirmation link ${r.data.error === 'expired' ? 'has expired' : "isn't valid anymore"}. Enter your email again and we'll send a fresh one.</p>${newsletterBoxHTML('reconfirm', { noHeading: true })}`;
+  } else {
+    html = `<p>That didn't go through. Try the link in your email again in a few minutes.</p>`;
+  }
+  if(document.getElementById('modalBackdrop').style.display !== 'none'){
+    openModal(`<h3>The weekly email</h3>${html}<div class="modal-actions"><button class="btn-primary" onclick="closeModal()">OK</button></div>`);
+  }
+}
+function newsletterUnsubPrompt(token){
+  // A button press, not the link itself, unsubscribes: some mail scanners open every link in an email.
+  openModal(`<h3>Unsubscribe from the weekly email?</h3>
+    <p>You'll stop getting the Monday "What changed" email. You can sign up again any time.</p>
+    <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">Keep getting it</button>
+    <button class="btn-primary" id="nl-unsub-btn" onclick="newsletterUnsubscribe('${token}')">Unsubscribe</button></div>`);
+}
+async function newsletterUnsubscribe(token){
+  if(!new RegExp('^' + NL_UUID + '$').test(token)) return;
+  const btn = document.getElementById('nl-unsub-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Working…'; }
+  const r = await newsletterCall({ action: 'unsubscribe', token });
+  if(r.ok && r.data.ok === true){
+    openModal(`<h3>Done</h3><p>You won't get the weekly email anymore.</p><div class="modal-actions"><button class="btn-primary" onclick="closeModal()">OK</button></div>`);
+  } else {
+    if(btn && btn.isConnected){ btn.disabled = false; btn.textContent = 'Unsubscribe'; }
+    showStatus("That didn't go through. Try again, or reply to any of the emails with \"unsubscribe\".", true, 6000);
+  }
+}
+/* admin: list size, recent editions, and a preview sent to the admin's own inbox */
+async function newsletterAdminToken(){
+  try { const { data: { session } } = await sb.auth.getSession(); return session ? session.access_token : null; } catch(e){ return null; }
+}
+async function loadNewsletterStats(){
+  const el = document.getElementById('nl-admin');
+  if(!el) return;
+  el.innerHTML = '<p>Loading…</p>';
+  const token = await newsletterAdminToken();
+  if(!token){ el.innerHTML = '<p>Log in again to see this.</p>'; return; }
+  const r = await newsletterCall({ action: 'stats' }, token);
+  if(!(r.ok && r.data.ok === true)){ el.innerHTML = `<p>Couldn't load the weekly email numbers (${escAttr(String(r.data.error || r.status))}).</p>`; return; }
+  const d = r.data, s = d.settings || {};
+  const n = v => escAttr(String(Number(v) || 0));
+  const eds = (Array.isArray(d.editions) ? d.editions : []).map(e => `<tr><td>${escAttr(String(e.week_of || ''))}</td><td>${escAttr(String(e.status || ''))}${e.reason ? ` <span class="score-note">(${escAttr(String(e.reason))})</span>` : ''}</td><td>${n(e.items)}</td><td>${n(e.sent)}</td><td>${n(e.failed)}</td></tr>`).join('');
+  const warns = [];
+  if(!s.postal_address_set) warns.push('No edition goes out until a mailing address is set: marketing email law (CAN-SPAM) asks for one in every email. A P.O. box works. Ask Claude to add it.');
+  if(s.paused) warns.push('Sending is paused.');
+  const perDay = (Number(s.daily_cap) || 0) - (Number(s.confirm_cap) || 0);
+  if(perDay > 0 && Number(d.confirmed) > perDay) warns.push(`The list (${Number(d.confirmed)}) is bigger than one day's sending allowance (about ${perDay}), so each Monday email takes ${Math.ceil(Number(d.confirmed) / perDay)} days to reach everyone. Upgrading Resend and raising the cap fixes it.`);
+  if(!s.email_configured) warns.push('Email sending is not set up (RESEND_API_KEY missing).');
+  el.innerHTML = `
+    <p>Confirmed: <strong>${n(d.confirmed)}</strong> · Waiting to confirm: ${n(d.pending)} · Unsubscribed: ${n(d.unsubscribed)}</p>
+    <p class="score-note">Goes out Mondays from ${n(s.send_hour)}:00 Pacific when at least one fully sourced promise changed. Emails sent by it in the last 24 hours: ${n(s.emails_last_24h)} of ${n(s.daily_cap)} a day (Resend's free plan allows 100 a day in total).</p>
+    ${warns.map(w => `<div class="nl-admin-warn">${escAttr(w)}</div>`).join('')}
+    ${eds ? `<table class="nl-admin-table"><tr><th>Week of</th><th>Status</th><th>Items</th><th>Sent</th><th>Failed</th></tr>${eds}</table>` : '<p class="score-note">No editions yet.</p>'}`;
+}
+async function sendNewsletterPreview(){
+  const btn = document.getElementById('nl-preview-btn');
+  const token = await newsletterAdminToken();
+  if(!token){ showStatus('Please log in again.', true); return; }
+  if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+  const r = await newsletterCall({ action: 'preview' }, token);
+  if(btn && btn.isConnected){ btn.disabled = false; btn.textContent = 'Email me a preview'; }
+  if(r.ok && r.data.ok === true){
+    showStatus(`Preview sent to ${CURRENT_USER ? CURRENT_USER.email : 'your inbox'}: ${Number(r.data.items) || 0} item${Number(r.data.items) === 1 ? '' : 's'} so far this week.`, false, 5000);
+    return;
+  }
+  const msg = { rate_limited: 'One preview every 3 minutes.', admin_only: 'Admins only.', email_not_configured: "Email sending isn't set up." }[r.data.error]
+    || "Couldn't send a preview just now.";
+  showStatus(msg, true, 5000);
+}
+
+
 /* ----- links from emails: #official=<id>, #alerts, #unsubscribe=<token> ----- */
 async function handleLinkHash(){
   const h = (location.hash || '').replace(/^#/, '');
   if(!h) return;
   const clear = () => { try { history.replaceState(null, '', location.pathname + location.search); } catch(e){ /* old browser: leave it */ } };
   let match;
+  if(h === 'newsletter'){ clear(); openNewsletterModal('link'); return; }
+  if(h === 'plans'){ clear(); selectTab('about'); selectedAboutSection = 'support'; render(); if(typeof scrollToContentTop === 'function') scrollToContentTop(); return; }
+  if((match = h.match(new RegExp('^newsletter-confirm=(' + NL_UUID + ')$')))){ clear(); newsletterConfirmPrompt(match[1].toLowerCase()); return; }
+  if((match = h.match(new RegExp('^newsletter-unsub=(' + NL_UUID + ')$')))){ clear(); newsletterUnsubPrompt(match[1].toLowerCase()); return; }
   if((match = h.match(/^official=([A-Za-z0-9_.%~-]{1,120})$/))){
     let id = '';
     try { id = decodeURIComponent(match[1]); } catch(e){ id = ''; }
@@ -3488,6 +3687,10 @@ function renderAbout(){
       <p>County and city government, school boards, and special districts aren't in scope yet — that tier is thousands of people with no single clean national source, unlike the U.S. Congress or the executive branch. State legislatures and judiciaries aren't built out yet. Federal judges (lifetime-appointed, not elected) and independent regulatory boards like the Federal Reserve are a different category — appointed and often deliberately apolitical, with less to track in the same way.</p>
 
       ${isAdmin ? `
+      <h2>Weekly email</h2>
+      <div id="nl-admin"><p class="score-note">Press Refresh to load the numbers.</p></div>
+      <div class="modal-actions" style="justify-content:flex-start;"><button class="btn-secondary" onclick="loadNewsletterStats()">Refresh</button>
+      <button class="btn-primary" id="nl-preview-btn" onclick="sendNewsletterPreview()">Email me a preview</button></div>
       <h2>Admin</h2>
       <p>This page's data lives in storage on this device. If something looks stuck on an old snapshot — missing recent additions, showing outdated numbers — this clears it and reloads the current built-in roster and promises. Any saved edits on this device are discarded; it cannot be undone.</p>
       <button class="btn-secondary" onclick="resetToLatestData()" style="color:var(--broken); border-color:var(--broken);">Reset to latest built-in data</button>
@@ -4280,7 +4483,7 @@ function renderFeatured(){
   // "Hover" and "click" mean nothing on a touch screen, so those screens get wording that does.
   const touch = !!(window.matchMedia && window.matchMedia('(hover:none)').matches);
   const hint = touch ? 'Use the arrows to step through, or tap any candidate for their full profile.' : 'Hover to pause, use the arrows to step through, or click any candidate for their full profile.';
-  return `<div class="races-wrap"><div class="section-intro"><h2>2026 races we're tracking</h2><p>Key races on the November 2026 ballot. ${hint}</p></div><div class="races-rotator" onmouseenter="racesPaused=true" onmouseleave="racesPaused=false"><div id="races-rotator-body">${raceSlideHTML(featuredRaceIdx)}</div><div class="race-rotnav"><button class="race-rotnav-btn" onclick="raceStep(-1)" aria-label="Previous race">&#8249;</button><div class="race-dots">${RACES_2026.map((r,i)=>`<button class="race-dot ${i===featuredRaceIdx?'active':''}" onclick="jumpRace(${i})" title="${escAttr(r.label)}" aria-label="${escAttr(r.label)}"></button>`).join('')}</div><button class="race-rotnav-btn" onclick="raceStep(1)" aria-label="Next race">&#8250;</button></div></div></div>`;
+  return `<div class="races-wrap"><div class="section-intro"><h2>2026 races we're tracking</h2><p>Key races on the November 2026 ballot. ${hint}</p></div><div class="races-rotator" onmouseenter="racesPaused=true" onmouseleave="racesPaused=false"><div id="races-rotator-body">${raceSlideHTML(featuredRaceIdx)}</div><div class="race-rotnav"><button class="race-rotnav-btn" onclick="raceStep(-1)" aria-label="Previous race">&#8249;</button><div class="race-dots">${RACES_2026.map((r,i)=>`<button class="race-dot ${i===featuredRaceIdx?'active':''}" onclick="jumpRace(${i})" title="${escAttr(r.label)}" aria-label="${escAttr(r.label)}"></button>`).join('')}</div><button class="race-rotnav-btn" onclick="raceStep(1)" aria-label="Next race">&#8250;</button></div></div></div>${newsletterBoxHTML('featured')}`;
 }
 
 // Administration rosters follow the official order: President, Vice President, the 15 executive
