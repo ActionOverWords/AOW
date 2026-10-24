@@ -1297,7 +1297,12 @@ ${urls.map(([u, lm]) => `  <url><loc>${esc(SITE + '/' + u)}</loc><lastmod>${lm}<
 </urlset>
 `;
 
-  const blocked = LEGAL.length ? ['thank-you-donate.html', 'thank-you-subscribe.html'].filter(f => fs.existsSync(path.join(ROOT, f))) : [];
+  // Do NOT Disallow the noindex pages (thank-you-donate.html, thank-you-subscribe.html, 404.html) here.
+  // A page that robots.txt blocks can't be crawled, so Google never reads its
+  // <meta name="robots" content="noindex">, and a URL it already knows about can stay listed as
+  // "Indexed, though blocked by robots.txt" in Search Console. Leave them crawlable: the noindex
+  // tag on each page is what keeps them out of search results. (Changed 2026-10-24.)
+  const blocked = [];
   const robots = `# aow-generated: do not edit by hand; rebuilt by tools/build-pages.js
 User-agent: *
 Allow: /
