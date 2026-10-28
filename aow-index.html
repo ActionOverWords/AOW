@@ -118,7 +118,17 @@
   html[data-theme="dark"][data-accent="slate"]{--brand:#9AA3B2; --brand-dark:#7C8698; --brand-tint:#262B33; --brand-tint-hover:#323945;}
   *{box-sizing:border-box;}
   html{-webkit-text-size-adjust:100%; text-size-adjust:100%;} /* stop phones from inflating text when turned sideways */
-  body{margin:0; background:var(--bg-alt); color:var(--text); font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;}
+  /* ---------- page column with white side bars ----------
+     The whole page (header, notice, hero, content, footer) sits in one centered 1080px column. On
+     screens wider than that, plain white bars run down both sides, and nothing is ever drawn in them.
+     That is the room for Google's "Side rail ads" (a desktop-only Auto ads format that Google overlays
+     in the margins), so the ads never land on top of the header or the green hero. At 1080px wide and
+     below this changes nothing at all. */
+  body{margin:0 auto; max-width:1080px; background:var(--bg-alt); color:var(--text); font-family:'Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;}
+  @media (min-width:1082px){
+    html{background:var(--bg); scrollbar-gutter:stable;}   /* keep the page from sliding sideways when a pop-up locks the scroll */
+    body{min-height:100vh; box-shadow:-1px 0 0 var(--border), 1px 0 0 var(--border); padding-right:0 !important;}   /* padding-right: openModal() adds scrollbar-width padding; a centered column doesn't need it */
+  }
   .wrap{max-width:1080px; margin:0 auto; padding:0 20px;}
   a{color:var(--brand);}
   button{font-family:inherit;}
