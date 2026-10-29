@@ -1567,7 +1567,7 @@ function renderTierTableHTML(){
       <tr class="tier-pick-row"><td></td>${pickCells}</tr>
     </table>
     </div>
-    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there.'}</p>
+    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there. Plans renew monthly until you cancel; cancel any time with "Manage subscription".'}</p>
   `;
 }
 // Small hand-drawn line icons for the account panel, sized/colored via .acct-row-icon —
@@ -1627,7 +1627,7 @@ function renderPlanCardsHTML(){
   }).join('');
   return `
     <div class="plan-cards">${cards}</div>
-    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there.'}</p>
+    <p class="score-note">${hasSubscription ? '"Manage subscription" opens Stripe\'s portal — switch plans, update your card, or cancel there.' : 'Subscribing redirects to Stripe\'s secure checkout — nothing is charged until you complete it there. Plans renew monthly until you cancel; cancel any time with "Manage subscription".'}</p>
   `;
 }
 // Supabase sends a confirmation link to the new address (and, depending on the project's
