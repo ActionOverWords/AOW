@@ -223,6 +223,16 @@
   .stat-row div{background:#135951; padding:14px 12px;}
   .stat-row .n{display:block; font-size:24px; font-weight:800;}
   .stat-row .l{font-size:11px; color:#B7E0D8; text-transform:uppercase; letter-spacing:.05em;}
+  /* Badge row under the headline numbers (2026-10-30): small proof points in the style of a project's README badges. Every
+     figure is counted live from the loaded data and rounded down with a "+" like the numbers above; a badge whose figure
+     can't be worked out is left out, never guessed. The hero is dark in both themes, so the colours are fixed. */
+  .proof-row{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 10px; padding:0; list-style:none;}
+  .proof-row:empty{display:none;}
+  .proof-row li{display:inline-flex; align-items:stretch; border:1px solid rgba(255,255,255,.22); border-radius:999px; overflow:hidden; font-size:12.5px; line-height:1.2; color:#DDF1EC; background:rgba(255,255,255,.05); white-space:nowrap;}
+  .proof-row .pv{background:rgba(255,255,255,.15); color:#fff; font-weight:800; padding:5px 9px; font-variant-numeric:tabular-nums;}
+  .proof-row .pl{padding:5px 11px 5px 8px;}
+  /* The smallest phones: the three headline numbers ("2,000+") were clipped inside their cells at 320 px wide. */
+  @media (max-width:359px){ .stat-row div{padding:12px 8px;} .stat-row .n{font-size:20px;} .proof-row li{font-size:12px;} }
 
   /* ---------- tabs ---------- */
   .tabs{display:flex; gap:3px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); margin-top:-20px; position:relative; z-index:2; padding:5px; overflow-x:auto;}
@@ -819,6 +829,7 @@
     <h1>What they said. What happened.</h1>
     <p>We track the specific promises elected officials make, and show whether they were kept, broken, or somewhere in between. Every promise links to its source.</p>
     <div class="stat-row" id="tally"></div>
+    <ul class="proof-row" id="proofRow" aria-label="About the index"></ul>
   </div>
 </div>
 
@@ -1371,6 +1382,7 @@ async function initData(){
   render();
   maybeLoadAds();
   handleLinkHash(); // links from alert emails: #official=…, #alerts, #unsubscribe=…
+  loadDataUpdatedAt(); // the "Updated" badge; not waited for
 }
 
 /* ---------- admin state (derived from the logged-in account, see user accounts below) ---------- */
@@ -3354,6 +3366,62 @@ function renderTally(){
   const cells = [[members,'Officials'],[total,'Promises'],[done,'Completed']];
   // The exact figure stays one hover away (title) for anyone who wants to check the rounding.
   document.getElementById('tally').innerHTML = cells.map(([n,l])=>`<div title="Exactly ${n.toLocaleString('en-US')}"><span class="n">${roundedPlus(n)}</span><span class="l">${l}</span></div>`).join('');
+  renderProofRow();
+}
+// The badge row under the headline numbers: how many states, how many publishers and source links stand behind the
+// promises, when the promise list last changed, and that it is free. Counted from exactly what the page loaded (the
+// same list the numbers above count), rounded down like them, with the exact figure on hover. When the list last
+// changed comes from one small extra read (loadDataUpdatedAt); that badge only shows for a change in the last 14 days.
+const FIFTY_STATES = new Set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' '));
+let DATA_UPDATED_AT = null;
+function proofBadges(members, promises, updatedAt, now){
+  const states = new Set();
+  for(const m of members) if(m && FIFTY_STATES.has(m.state)) states.add(m.state);
+  const publishers = new Set();
+  let links = 0;
+  for(const p of promises){
+    for(const src of promiseSources(p)){
+      if(!src) continue;
+      if(typeof src.url === 'string' && /^https?:\/\//i.test(src.url)) links++;
+      const pub = String(src.publisher || '').trim().toLowerCase();
+      if(pub) publishers.add(pub);
+    }
+  }
+  const out = [];
+  if(states.size) out.push({v: String(states.size), l: states.size === 1 ? 'state' : 'states'});
+  if(publishers.size >= 10) out.push({v: roundedPlus(publishers.size), l: 'publishers cited', exact: publishers.size});
+  if(links >= 10) out.push({v: roundedPlus(links), l: 'source links', exact: links});
+  if(updatedAt instanceof Date && !isNaN(updatedAt)){
+    const day = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const ago = Math.round((day(now) - day(updatedAt)) / 86400000);
+    if(ago >= 0 && ago <= 14){
+      const when = ago === 0 ? 'today' : ago === 1 ? 'yesterday' : updatedAt.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+      out.push({v: 'Updated', l: when});
+    }
+  }
+  out.push({v: 'Free', l: 'to browse'});
+  return out;
+}
+function renderProofRow(){
+  const el = document.getElementById('proofRow');
+  if(!el) return;
+  el.textContent = '';
+  for(const b of proofBadges(MEMBERS, PROMISES, DATA_UPDATED_AT, new Date())){
+    const li = document.createElement('li');
+    if(b.exact) li.title = 'Exactly ' + b.exact.toLocaleString('en-US');
+    const v = document.createElement('span'); v.className = 'pv'; v.textContent = b.v;
+    const l = document.createElement('span'); l.className = 'pl'; l.textContent = b.l;
+    li.append(v, l);
+    el.appendChild(li);
+  }
+}
+async function loadDataUpdatedAt(){
+  if(!sb) return;
+  try {
+    const { data, error } = await sb.from('app_data').select('updated_at').eq('key', 'aow_promises').maybeSingle();
+    const t = (!error && data && data.updated_at) ? new Date(data.updated_at) : null;
+    if(t && !isNaN(t)){ DATA_UPDATED_AT = t; renderProofRow(); }
+  } catch(e){ /* the badge just stays off */ }
 }
 function renderLegend(){
   document.getElementById('legend').innerHTML = Object.entries(STATUS_META)
