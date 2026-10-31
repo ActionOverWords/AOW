@@ -15,14 +15,15 @@ anything it didn't generate (every generated file carries an `aow-generated` mar
   example a one-line `location.replace('aow-index.html' + location.search + location.hash)` redirect), commit, and
   run "Build static pages". The builder then leaves it alone and "Home" goes back to meaning the tracker.
   The landing page's three headline numbers come in two layers. The page is written with **rounded-down claims that stay
-  true**: officials is the roster rounded down to its leading digit, states is counted from the roster, and promises comes
+  true**: officials is the roster rounded down (two leading digits from 100 up: 736 reads "730+"), states is counted from the roster, and promises comes
   from `PROMISES_FLOOR` near the top of the home section in `build-pages.js` (the repo data files hold only a small
-  hand-entered set of promises, so the builder cannot count the tracker's thousands; the live database held 11,495 on
-  2026-10-18). That is what a visitor sees with scripts off, offline, or if the lookup below fails.
-  In a normal browser a second small inline script then reads the **live counts** (736 officials, 11,495 promises, 50
-  states on 2026-10-18) and shows them **rounded down by the same rule as the tracker's headline strip**: 736 reads
-  "700+", 11,495 reads "10,000+", and the states are shown as they are. The exact figure is one hover away ("Exactly
-  736"), like the tracker. So the page steps up by itself ("800+", "20,000+") as the data grows, without a rebuild, and
+  hand-entered set of promises, so the builder cannot count the tracker's thousands; the live database held 19,540 on
+  2026-10-30, and `PROMISES_FLOOR` is 19,000). That is what a visitor sees with scripts off, offline, or if the lookup below fails.
+  In a normal browser a second small inline script then reads the **live counts** (736 officials, 19,540 promises, 50
+  states on 2026-10-30) and shows them **rounded down by the same rule as the tracker's headline strip**: from 100 up the
+  first two digits are kept, so 736 reads "730+" and 19,540 reads "19,000+" (10 to 99 keep one digit, under 10 is exact),
+  and the states are shown as they are. (Until 2026-10-30 only the first digit was kept, which held 19,540 at "10,000+".) The exact figure is one hover away ("Exactly
+  736"), like the tracker. So the page steps up by itself ("740+", "20,000+") as the data grows, without a rebuild, and
   always matches the tracker. The note under the numbers ("Counts are rounded down ...") is left as it is. The script
   makes one read-only lookup, `GET <project address>/rest/v1/rpc/site_counts` (the browser first sends its own automatic
   permission check, an `OPTIONS` request, so two small requests go out), to the database function `public.site_counts()`

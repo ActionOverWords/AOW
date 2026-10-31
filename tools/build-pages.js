@@ -237,6 +237,10 @@ function buildModel(D) {
       excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'status is Undetermined (a placeholder, left out of scores)' });
       return;
     }
+    if (p.status === 'campaign_promise') {                   // a candidate's record, not a verdict: never published here, never scored
+      excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'status is Campaign promise (a candidate\'s record, left out of scores)' });
+      return;
+    }
     if (!STATUS[p.status]) fatal('Promise ' + p.id + ' has invalid status: ' + p.status);
     if (!String(p.text || '').trim()) fatal('Promise ' + p.id + ' has empty text');
     const src = (Array.isArray(p.sources) && p.sources.length ? p.sources : (p.source ? [p.source] : []))
@@ -692,6 +696,7 @@ function renderMethodology() {
 ${Object.keys(STATUS).map(k => `<dt><span class="pill s-${k}">${esc(STATUS[k])}</span></dt><dd>${esc(meaning[k])}</dd>`).join('\n')}
 </dl>
 <p>A promise whose outcome has not been fully verified shows <strong>Undetermined</strong> in the interactive tracker. That is a placeholder, not a verdict. It is left out of the AOW Score until it is resolved, and it is not published on these pages.</p>
+<p>Candidates on the ballot are the one exception to the six statuses: from 60 days before their election through election day, each of their promises shows <strong>Campaign promise</strong> in the interactive tracker. That is a record of what they said they would do if elected, not a verdict, and it is left out of the AOW Score.</p>
 
 <h2 id="aow-score">The AOW Score</h2>
 <p>An official's score is the average of their tracked promises, weighted by status, on a scale of 0 to 100. It is rounded to the nearest whole number, with halves rounding up.</p>
@@ -699,7 +704,7 @@ ${Object.keys(STATUS).map(k => `<dt><span class="pill s-${k}">${esc(STATUS[k])}<
 <tr><th scope="col">Status</th><th scope="col">Weight</th></tr>
 ${scoreOrder.map(k => `<tr><td>${esc(STATUS[k])}</td><td>${WEIGHTS[k]}</td></tr>`).join('\n')}
 </table>
-<p>Undetermined promises carry no weight: they are left out of the average rather than counted as 0. An official with no tracked promises shows a dash instead of a 0, because no data isn't the same as a bad record. The score badge uses the same colors as the statuses: 70 and above reads green, 40 to 69 amber, and below 40 red.</p>
+<p>Undetermined promises and campaign promises carry no weight: they are left out of the average rather than counted as 0. An official with no tracked promises shows a dash instead of a 0, because no data isn't the same as a bad record. The score badge uses the same colors as the statuses: 70 and above reads green, 40 to 69 amber, and below 40 red.</p>
 <p>There is no minimum number of promises required to produce a score, so a single promise generates one. That is why the number of tracked promises is shown next to every score: a score built on one promise and a score built on twenty look the same if they land in the same range, and the count is what tells them apart.</p>
 <p>The formula is fixed and published, not an editorial judgment made case by case, so anyone can recompute it from an official's promise list and get the same number. It runs identically for current officials, past administrations and the archive, with no softer standard for someone no longer in office or who never won. Worked examples:</p>
 <table>
@@ -749,21 +754,23 @@ ${example({ completed: 5, in_progress: 3 })}
 // It never says that every promise has three sources: most entries are bill promises checked against the congressional
 // record, and many others are still being sourced, which the page says in plain words.
 
-// Headline numbers read like "700+", not "736": always rounded DOWN to the leading digit, the same rule the interactive
-// tracker's hero strip uses, so the "+" can never overstate.
+// Headline numbers are rounded DOWN and get a "+", the same rule the interactive tracker's hero strip uses, so the "+"
+// can never overstate: from 100 up the first two digits are kept (736 -> "730+", 19,540 -> "19,000+"), 10 to 99 keep the
+// first digit (88 -> "80+"), and under 10 is exact. The live script's up() below must stay the same rule.
 const fmtInt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 function roundedPlus(n) {
+  n = Math.floor(n);
   if (n < 10) return String(n);
-  const step = Math.pow(10, String(Math.floor(n)).length - 1);
+  const step = Math.pow(10, String(n).length - (n < 100 ? 1 : 2));
   return fmtInt(Math.floor(n / step) * step) + '+';
 }
 // These three figures are what the hero shows when the live lookup (see "live headline numbers" below) is not available:
 // no script, no network, a refused answer. The roster and the states are counted from the data files, so they move by
 // themselves. The promise total lives in the live database, not in these files, so it is a stated floor: the tracker held
-// 11,495 promises when this was last checked (2026-10-18), and its own headline strip rounds that down to "10,000+", the
+// 19,540 promises when this was last checked (2026-10-26), and its own headline strip rounds that down to "19,000+", the
 // same figure used here. It stays true as the tracker grows. Raise it when you want the fallback to claim more, and keep
 // it below the real count.
-const PROMISES_FLOOR = 10000;
+const PROMISES_FLOOR = 19000;
 const NOT_A_STATE = new Set(['DC', 'PR', 'GU', 'AS', 'VI', 'MP']);
 
 // Small line icons (Feather, MIT licence), drawn inline so the page stays script-free and needs no image files.
@@ -889,8 +896,8 @@ const HOME_REDIRECT_JS = "if(location.search||location.hash.indexOf('=')>-1){loc
 // ---- live headline numbers ----
 // The hero's three numbers (Officials, Promises, States covered) are written into the page as the rounded-down figures
 // above, which are always true. In the visitor's browser a second small script then reads the current counts from the
-// same database the tracker reads and shows them rounded down by the tracker's own rule (736 officials read "700+", 11,495
-// promises read "10,000+"; the 50 states are shown as they are), with the exact figure one hover away ("Exactly 736"),
+// same database the tracker reads and shows them rounded down by the tracker's own rule (736 officials read "730+", 19,540
+// promises read "19,000+"; the 50 states are shown as they are), with the exact figure one hover away ("Exactly 736"),
 // just like the tracker's headline strip. So the page steps up by itself as officials and promises are added, with no
 // rebuild and nobody having to remember to raise a floor, and it always matches the tracker. The note under the numbers
 // ("Counts are rounded down ...") is left alone: it stays true. The script's rounding function (up) must stay the same
@@ -942,7 +949,7 @@ function homeLiveJs(cfg) {
     "var o=document.getElementById('live-officials'),p=document.getElementById('live-promises'),s=document.getElementById('live-states');",
     "if(!o||!p||!s||!window.fetch)return;",
     "function ok(v,max){return typeof v==='number'&&isFinite(v)&&Math.floor(v)===v&&v>=1&&v<=max}",
-    "function up(n){if(n<10)return String(n);var m=Math.pow(10,String(n).length-1);return (Math.floor(n/m)*m).toLocaleString('en-US')+'+'}",
+    "function up(n){if(n<10)return String(n);var m=Math.pow(10,String(n).length-(n<100?1:2));return (Math.floor(n/m)*m).toLocaleString('en-US')+'+'}",
     "var c=window.AbortController?new AbortController():null,t=setTimeout(function(){if(c)c.abort()}," + LIVE_COUNTS_TIMEOUT_MS + ");",
     "fetch(" + JSON.stringify(cfg.origin + '/rest/v1/rpc/site_counts') + ",{method:'GET',headers:{apikey:" + JSON.stringify(cfg.key) + ",Accept:'application/json'},credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',signal:c?c.signal:undefined})",
     ".then(function(r){if(!r.ok)throw 0;return r.json()})",
@@ -1062,7 +1069,7 @@ ${liveJs ? `<script>${liveJs}</script>\n` : ''}
 <ul class="legend-grid">
 ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}</span><p>${esc(STATUS_MEANING[k])}</p></li>`).join('\n')}
 </ul>
-<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved.</p>
+<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved. A candidate's promises show <strong>Campaign promise</strong> from 60 days before their election through election day, also left out of the score.</p>
 </div>
 </section>
 
@@ -1330,7 +1337,7 @@ Sitemap: ${SITE}/sitemap.xml
     `hub pages (a group needs at least ${HUB_MIN} people with pages): ${hubs.size}`,
     ...[...hubs.values()].map(h => `  - ${h.key}: ${h.pages.length} with pages, ${h.roster.length} listed by name only`),
     `groups with a page but below that minimum, so no hub yet: ${[...ctx.groups.keys()].filter(k => !hubs.has(k)).length}`,
-    `promises held back (fewer than ${MIN_PUBLISHERS} distinct publishers, no primary-record source, or status Undetermined): ${model.excluded.length}`,
+    `promises held back (fewer than ${MIN_PUBLISHERS} distinct publishers, no primary-record source, or status Undetermined or Campaign promise): ${model.excluded.length}`,
     ...model.excluded.map(x => x.reason
       ? `  - ${x.id} (${x.member}): ${x.reason}`
       : `  - ${x.id} (${x.member}): ${x.publishers} publisher(s), primary-record source: ${x.primary ? 'yes' : 'no'}`),

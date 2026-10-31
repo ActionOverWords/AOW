@@ -81,6 +81,7 @@
     --not_started-bg:#EEF0F3; --in_progress-bg:#FBF0DF; --stalled-bg:#E9EDF4;
     --compromise-bg:#F3E9F6; --completed-bg:#E4F5EC; --broken-bg:#FBE7E4; --broken-border:#F0D3CE;
     --undetermined-bg:#E4E4E7;
+    --campaign_promise:#0B6680; --campaign_promise-bg:#E0F0F5;
     --party-d:#2058B0; --party-d-bg:#E7EFFC; --party-r:#B23A2F; --party-r-bg:#FBEAE7;
     --party-i:#8B5E00; --party-i-bg:#F7EEDA; --party-np:#6B7280; --party-np-bg:#EEF0F2;
     --watch-on:#D97706; --watch-on-bg:#FEF3E2;
@@ -98,6 +99,7 @@
     --not_started-bg:#262B33; --in_progress-bg:#3A2E1B; --stalled-bg:#212A38;
     --compromise-bg:#2E2438; --completed-bg:#1A3327; --broken-bg:#3A2220; --broken-border:#4D2B27;
     --undetermined-bg:#2C2E33;
+    --campaign_promise:#62BFDA; --campaign_promise-bg:#14303A;
     --party-d:#5B9BF0; --party-d-bg:#1B2A42; --party-r:#F0776A; --party-r-bg:#3A2220;
     --party-i:#D9A93F; --party-i-bg:#332A16; --party-np:#9AA3B2; --party-np-bg:#262B33;
     --watch-on:#E0993D; --watch-on-bg:#3A2E1B;
@@ -228,16 +230,8 @@
   .stat-row div{background:#135951; padding:14px 12px;}
   .stat-row .n{display:block; font-size:24px; font-weight:800;}
   .stat-row .l{font-size:11px; color:#B7E0D8; text-transform:uppercase; letter-spacing:.05em;}
-  /* Badge row under the headline numbers (2026-10-30): small proof points in the style of a project's README badges. Every
-     figure is counted live from the loaded data and rounded down with a "+" like the numbers above; a badge whose figure
-     can't be worked out is left out, never guessed. The hero is dark in both themes, so the colours are fixed. */
-  .proof-row{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 10px; padding:0; list-style:none;}
-  .proof-row:empty{display:none;}
-  .proof-row li{display:inline-flex; align-items:stretch; border:1px solid rgba(255,255,255,.22); border-radius:999px; overflow:hidden; font-size:12.5px; line-height:1.2; color:#DDF1EC; background:rgba(255,255,255,.05); white-space:nowrap;}
-  .proof-row .pv{background:rgba(255,255,255,.15); color:#fff; font-weight:800; padding:5px 9px; font-variant-numeric:tabular-nums;}
-  .proof-row .pl{padding:5px 11px 5px 8px;}
   /* The smallest phones: the three headline numbers ("2,000+") were clipped inside their cells at 320 px wide. */
-  @media (max-width:359px){ .stat-row div{padding:12px 8px;} .stat-row .n{font-size:20px;} .proof-row li{font-size:12px;} }
+  @media (max-width:359px){ .stat-row div{padding:12px 8px;} .stat-row .n{font-size:20px;} }
 
   /* ---------- tabs ---------- */
   .tabs{display:flex; gap:3px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-md); margin-top:-20px; position:relative; z-index:2; padding:5px; overflow-x:auto;}
@@ -417,6 +411,7 @@
   .p-broken{background:var(--broken-bg); color:var(--broken);}
   .pill-sourcing{background:var(--in_progress-bg); color:var(--in_progress); border:1px dashed currentColor;}
   .p-undetermined{background:var(--undetermined-bg); color:var(--undetermined);}
+  .p-campaign_promise{background:var(--campaign_promise-bg); color:var(--campaign_promise);}
   .cat-tag{font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.04em; font-weight:600; margin-top:6px;}
   .pnote{font-size:13.5px; color:var(--text-muted); margin:10px 0 0; line-height:1.55;}
   .psource{display:flex; align-items:center; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); font-size:12.5px; color:var(--text-faint); flex-wrap:wrap;}
@@ -842,7 +837,6 @@
     <h1>What they said. What happened.</h1>
     <p>We track the specific promises elected officials make, and show whether they were kept, broken, or somewhere in between. Every promise links to its source.</p>
     <div class="stat-row" id="tally"></div>
-    <ul class="proof-row" id="proofRow" aria-label="About the index"></ul>
   </div>
 </div>
 
@@ -1057,8 +1051,17 @@ const STATUS_META = {
   compromise:{label:'Compromise', color:'var(--compromise)'},
   completed:{label:'Completed', color:'var(--completed)'},
   broken:{label:'Broken', color:'var(--broken)'},
+  campaign_promise:{label:'Campaign promise', color:'var(--campaign_promise)'},
   undetermined:{label:'Undetermined', color:'var(--undetermined)'}
 };
+// Only statuses with a weight in AOW_WEIGHTS count toward the AOW Score. Everything else is left out entirely (not
+// counted as 0): Undetermined is "not verified yet", a Campaign promise is what a candidate on the ballot said they
+// would do (a record, not a verdict), and a status this page doesn't know never moves anyone's score.
+function isScored(s){ return Object.prototype.hasOwnProperty.call(AOW_WEIGHTS, s); }
+// A status this page doesn't know (a newer pipeline, a typo) still draws, as Undetermined, instead of breaking the page.
+function knownStatus(s){ return typeof s === 'string' && Object.prototype.hasOwnProperty.call(STATUS_META, s); }
+function statusMeta(s){ return knownStatus(s) ? STATUS_META[s] : STATUS_META.undetermined; }
+function statusClass(s){ return knownStatus(s) ? s : 'undetermined'; }
 // AOW Score: 0-100, the average of these weights across a person's tracked promises.
 // Not Started and Broken both score 0 for different reasons — one hasn't happened yet,
 // the other happened and failed — but a low score reads the same either way today.
@@ -1233,12 +1236,13 @@ let pendingAppealContext = null; // set by "Appeal this status" links, consumed 
 function escAttr(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
-// For dynamic text embedded inside an inline onclick="fn('...')" attribute.
-// Order matters: HTML-escape first (browsers decode the attribute value before
-// handing it to the JS parser), THEN escape the single quote that would otherwise
-// break out of the JS string literal the decoded value lands inside.
+// For dynamic text embedded inside an inline onclick="fn('...')" attribute. The browser HTML-decodes the
+// attribute, then parses it as JavaScript, so the text is made safe for a single-quoted JS string first
+// (backslashes, quotes, line breaks) and HTML-escaped last. escAttr leaves backslashes and quotes alone,
+// so the order of the two steps can't undo each other.
 function escJsAttr(s){
-  return escAttr(s).replace(/'/g, "\\'");
+  const js = String(s==null?'':s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r\n|[\r\n\u2028\u2029]/g, ' ');
+  return escAttr(js);
 }
 function genId(prefix){ return prefix + Date.now().toString(36) + Math.floor(Math.random()*1000); }
 function partyLabel(p){ return p==='D' ? 'Democrat' : p==='R' ? 'Republican' : p==='NP' ? 'Nonpartisan' : 'Independent'; }
@@ -1370,11 +1374,64 @@ async function resetToLatestData(){
   render();
   showStatus('Reset to the latest built-in data.');
 }
+/* ---------- promises for people on the Archive and past-administration pages ---------- */
+// The research pipeline publishes these under their own key, aow_archive_promises (2026 candidates, former Cabinet
+// members and the like), apart from aow_promises, because those people are not on the current roster. This page only
+// ever READS that key (no seeding, no saving), and a row joins a list only when its person is on that list, so a
+// stray row can never attach words to someone the page doesn't show.
+async function loadArchivePromises(){
+  try { return await Backend.get('aow_archive_promises'); }
+  catch(e){ return null; }                     // offline, blocked or not published yet: the built-in lists stand
+}
+// Jay's rule for candidates: someone running for office within 60 days of their election has their promises shown
+// as Campaign promise (a record of what they said, not a verdict, and left out of the AOW Score). The window runs
+// from 60 days before election day through election day itself, in the visitor's own date, and closes by itself.
+// Only Archive people whose category is 'candidate-YYYY' are candidates; election day is the first Tuesday after
+// the first Monday in November of that year.
+function campaignWindowOpen(person, todayISO){
+  const m = /^candidate-(\d{4})$/.exec((person && person.category) || '');
+  if(!m) return false;
+  const y = Number(m[1]);
+  const nov1 = new Date(Date.UTC(y, 10, 1)).getUTCDay();        // 0 = Sunday
+  const eday = 2 + ((8 - nov1) % 7);                             // November day of the first Tuesday after the first Monday
+  const iso = d => new Date(Date.UTC(y, 10, d)).toISOString().slice(0, 10);
+  const today = todayISO || localISODate(new Date());
+  return today >= iso(eday - 60) && today <= iso(eday);
+}
+function mergeArchivePromises(rows, todayISO){
+  const pastIds = new Set();
+  PAST_ADMINISTRATIONS.forEach(a => (a.people || []).forEach(p => pastIds.add(p.id)));
+  const archById = new Map(ARCHIVE.map(p => [p.id, p]));
+  const norm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const seenId = new Set(), seenText = new Set();
+  PAST_PROMISES.concat(ARCHIVE_PROMISES).forEach(p => { seenId.add(p.id); seenText.add(p.memberId + '|' + norm(p.text)); });
+  let added = 0;
+  (Array.isArray(rows) ? rows : []).forEach(r => {
+    if(!r || typeof r !== 'object' || typeof r.id !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(r.id) || typeof r.memberId !== 'string' || typeof r.text !== 'string' || !r.text.trim()) return;
+    const textKey = r.memberId + '|' + norm(r.text);
+    if(seenId.has(r.id) || seenText.has(textKey)) return;   // already in the built-in lists
+    const target = pastIds.has(r.memberId) ? PAST_PROMISES : (archById.has(r.memberId) ? ARCHIVE_PROMISES : null);
+    if(!target) return;
+    const p = Object.assign({}, r);
+    if(!knownStatus(p.status)) p.status = 'undetermined';
+    target.push(p);
+    seenId.add(p.id); seenText.add(textKey); added++;
+  });
+  ARCHIVE_PROMISES.forEach(p => {
+    if(p.status !== 'campaign_promise' && campaignWindowOpen(archById.get(p.memberId), todayISO)){
+      p.researchedStatus = p.status;            // kept for reference; the page shows the campaign status
+      p.status = 'campaign_promise';
+    }
+  });
+  return added;
+}
 async function initData(){
+  const archiveRows = loadArchivePromises();   // small; fetched alongside the roster, merged before anything renders
   MEMBERS = await loadOrSeed('aow_officials', DEFAULT_MEMBERS);
   PROMISES = await loadOrSeed('aow_promises', DEFAULT_PROMISES);
   DONATE_URL = await loadOrSeed('aow_donate_url', '');
   SCORE_LOG = await loadOrSeed('aow_score_log', []);
+  mergeArchivePromises(await archiveRows);
   // Supabase's own client restores a saved session from this browser (if any) — there's
   // no more manual session key to load. Wrapped around getSession() too (not just the
   // profile lookup below it) so that even a Supabase outage, or a null `sb` from a failed
@@ -1401,7 +1458,6 @@ async function initData(){
   render();
   maybeLoadAds();
   handleLinkHash(); // links from alert emails: #official=…, #alerts, #unsubscribe=…
-  loadDataUpdatedAt(); // the "Updated" badge; not waited for
 }
 
 /* ---------- admin state (derived from the logged-in account, see user accounts below) ---------- */
@@ -1899,6 +1955,13 @@ function formatDonationUSD(cents){
 }
 // https links only, parsed rather than pattern-matched: anything else ("javascript:", "data:",
 // a bare word) comes back as '' so it can never end up in an href.
+// A promise's source link: http or https only, anything else (javascript:, data:) is shown without a link.
+function sourceHref(raw){
+  try {
+    const u = new URL(String(raw == null ? '' : raw).trim());
+    return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : '';
+  } catch(e){ return ''; }
+}
 function safeExternalUrl(raw){
   const s = String(raw == null ? '' : raw).trim();
   if(!s) return '';
@@ -2366,7 +2429,7 @@ function officialStats(m, index){
   const counts = {}; Object.keys(STATUS_META).forEach(k=>counts[k]=0);
   let drafts = 0;
   ps.forEach(p => { counts[p.status] = (counts[p.status]||0) + 1; if(p.draft) drafts++; });
-  const scored = ps.filter(p=>p.status!=='undetermined');
+  const scored = ps.filter(p=>isScored(p.status));
   const score = scored.length ? Math.round(scored.reduce((t,p)=>t+(AOW_WEIGHTS[p.status]??0), 0) / scored.length) : null;
   return {ps, counts, drafts, score, total:ps.length};
 }
@@ -3126,14 +3189,14 @@ function avatarHTML(m, size){
 function computeDist(memberId, promisesArr){
   const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId);
   const dist = {}; Object.keys(STATUS_META).forEach(k=>dist[k]=0);
-  ps.forEach(p=>dist[p.status]++);
+  ps.forEach(p=>{ if(Object.prototype.hasOwnProperty.call(dist, p.status)) dist[p.status]++; });
   return {dist, total: ps.length};
 }
 function computeAOWScore(memberId, promisesArr){
   // Undetermined promises are excluded here, not just weighted at 0 — they shouldn't move
   // the average in either direction while their outcome is still unverified. n reflects only
   // the promises actually counted, so the UI's "based on N promises" stays honest too.
-  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && p.status!=='undetermined');
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && isScored(p.status));
   if(!ps.length) return {score:null, n:0};
   const sum = ps.reduce((t,p)=>t+(AOW_WEIGHTS[p.status]??0), 0);
   return {score: Math.round(sum/ps.length), n: ps.length};
@@ -3147,7 +3210,9 @@ function scoreTier(score){
 function scoreBadgeHTML(memberId, large, promisesArr){
   const {score,n} = computeAOWScore(memberId, promisesArr);
   const tier = scoreTier(score);
-  return `<div class="aow-score ${large?'aow-score-lg':''} tier-${tier}" title="${n ? 'AOW Score, based on '+n+' tracked promise'+(n===1?'':'s') : 'No promises tracked yet'}">
+  const why = n ? 'AOW Score, based on '+n+' tracked promise'+(n===1?'':'s')
+    : ((promisesArr||PROMISES).some(p=>p.memberId===memberId) ? 'Not scored: campaign promises and promises still being verified are left out of the AOW Score' : 'No promises tracked yet');
+  return `<div class="aow-score ${large?'aow-score-lg':''} tier-${tier}" title="${why}">
     <span class="num">${score===null?'—':score}</span>
     <span class="lbl">Score</span>
   </div>`;
@@ -3166,9 +3231,9 @@ function scoreHistoryHTML(memberId){
       ${entries.map(e=>`
         <div class="history-row">
           <span class="history-date">${new Date(e.timestamp).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}</span>
-          <span class="pill p-${e.oldStatus||'not_started'}" style="opacity:.6;">${e.oldStatus?STATUS_META[e.oldStatus].label:'New'}</span>
+          <span class="pill p-${e.oldStatus?statusClass(e.oldStatus):'not_started'}" style="opacity:.6;">${e.oldStatus?statusMeta(e.oldStatus).label:'New'}</span>
           <span>→</span>
-          <span class="pill p-${e.newStatus}">${STATUS_META[e.newStatus].label}</span>
+          <span class="pill p-${statusClass(e.newStatus)}">${statusMeta(e.newStatus).label}</span>
         </div>
       `).join('')}
     </div>
@@ -3177,7 +3242,7 @@ function scoreHistoryHTML(memberId){
 function tierColorVar(score){ return score>=70 ? 'var(--completed)' : score>=40 ? 'var(--in_progress)' : 'var(--broken)'; }
 // Group an official's promises by the term they were made in, and score each term on its own.
 function scoresByTerm(memberId, promisesArr){
-  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && p.term && p.status!=='undetermined');
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && p.term && isScored(p.status));
   const groups = {};
   ps.forEach(p=>{ (groups[p.term]=groups[p.term]||[]).push(p); });
   return Object.keys(groups).map(term=>{
@@ -3259,7 +3324,7 @@ function scoreTimeline(memberId, promisesArr, changes){
       if(!isNow && newestFirst[p.id]){
         for(const c of newestFirst[p.id]){ if(localISODate(new Date(c.at)) > last) st = c.old_status || st; else break; }
       }
-      if(st === 'undetermined') return;                                // same rule as computeAOWScore
+      if(!isScored(st)) return;                                        // same rule as computeAOWScore
       sum += (AOW_WEIGHTS[st] ?? 0); n++;
     });
     if(n) out.push({key: `${y}-${String(mo).padStart(2, '0')}`, date: last, score: Math.round(sum / n), n});
@@ -3338,7 +3403,7 @@ function trendInnerHTML(domId){
   return `<div class="trend-head"><h3>Score over time</h3>${toggle}</div>${body}`;
 }
 function scoreTrendHTML(memberId, promisesArr){
-  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && p.status!=='undetermined');
+  const ps = (promisesArr||PROMISES).filter(p=>p.memberId===memberId && isScored(p.status));
   if(!ps.length) return '';
   if(!userHasTier(TREND_MIN_TIER)){
     const cta = CURRENT_USER
@@ -3370,12 +3435,14 @@ function loadStatusChanges(memberId){
     if(ok && STATUS_CHANGES[memberId].length) refreshTrendPanels(memberId);
   }).catch(() => { STATUS_CHANGES[memberId] = 'failed'; });
 }
-// Headline numbers read like "700+", not "736". Always rounds DOWN to the leading digit so the
-// "+" is never an overstatement (736 → "700+", 88 → "80+", 22 → "20+"; 100 → "100+" on its own
-// once the count gets there). Under 10 it just shows the exact number.
+// Headline numbers are rounded DOWN and get a "+", so the "+" is never an overstatement. From 100 up the first two
+// digits are kept (736 → "730+", 1,660 → "1,600+", 19,540 → "19,000+"), so the figure keeps moving as the data
+// grows instead of sitting on one round number for months; 10 to 99 keep the first digit (88 → "80+"); under 10
+// is the exact number. The landing page uses this exact rule too (tools/build-pages.js: roundedPlus and up).
 function roundedPlus(n){
+  n = Math.floor(n);
   if(n < 10) return String(n);
-  const step = Math.pow(10, String(Math.floor(n)).length - 1);
+  const step = Math.pow(10, String(n).length - (n < 100 ? 1 : 2));
   return (Math.floor(n / step) * step).toLocaleString('en-US') + '+';
 }
 function renderTally(){
@@ -3385,62 +3452,6 @@ function renderTally(){
   const cells = [[members,'Officials'],[total,'Promises'],[done,'Completed']];
   // The exact figure stays one hover away (title) for anyone who wants to check the rounding.
   document.getElementById('tally').innerHTML = cells.map(([n,l])=>`<div title="Exactly ${n.toLocaleString('en-US')}"><span class="n">${roundedPlus(n)}</span><span class="l">${l}</span></div>`).join('');
-  renderProofRow();
-}
-// The badge row under the headline numbers: how many states, how many publishers and source links stand behind the
-// promises, when the promise list last changed, and that it is free. Counted from exactly what the page loaded (the
-// same list the numbers above count), rounded down like them, with the exact figure on hover. When the list last
-// changed comes from one small extra read (loadDataUpdatedAt); that badge only shows for a change in the last 14 days.
-const FIFTY_STATES = new Set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' '));
-let DATA_UPDATED_AT = null;
-function proofBadges(members, promises, updatedAt, now){
-  const states = new Set();
-  for(const m of members) if(m && FIFTY_STATES.has(m.state)) states.add(m.state);
-  const publishers = new Set();
-  let links = 0;
-  for(const p of promises){
-    for(const src of promiseSources(p)){
-      if(!src) continue;
-      if(typeof src.url === 'string' && /^https?:\/\//i.test(src.url)) links++;
-      const pub = String(src.publisher || '').trim().toLowerCase();
-      if(pub) publishers.add(pub);
-    }
-  }
-  const out = [];
-  if(states.size) out.push({v: String(states.size), l: states.size === 1 ? 'state' : 'states'});
-  if(publishers.size >= 10) out.push({v: roundedPlus(publishers.size), l: 'publishers cited', exact: publishers.size});
-  if(links >= 10) out.push({v: roundedPlus(links), l: 'source links', exact: links});
-  if(updatedAt instanceof Date && !isNaN(updatedAt)){
-    const day = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    const ago = Math.round((day(now) - day(updatedAt)) / 86400000);
-    if(ago >= 0 && ago <= 14){
-      const when = ago === 0 ? 'today' : ago === 1 ? 'yesterday' : updatedAt.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-      out.push({v: 'Updated', l: when});
-    }
-  }
-  out.push({v: 'Free', l: 'to browse'});
-  return out;
-}
-function renderProofRow(){
-  const el = document.getElementById('proofRow');
-  if(!el) return;
-  el.textContent = '';
-  for(const b of proofBadges(MEMBERS, PROMISES, DATA_UPDATED_AT, new Date())){
-    const li = document.createElement('li');
-    if(b.exact) li.title = 'Exactly ' + b.exact.toLocaleString('en-US');
-    const v = document.createElement('span'); v.className = 'pv'; v.textContent = b.v;
-    const l = document.createElement('span'); l.className = 'pl'; l.textContent = b.l;
-    li.append(v, l);
-    el.appendChild(li);
-  }
-}
-async function loadDataUpdatedAt(){
-  if(!sb) return;
-  try {
-    const { data, error } = await sb.from('app_data').select('updated_at').eq('key', 'aow_promises').maybeSingle();
-    const t = (!error && data && data.updated_at) ? new Date(data.updated_at) : null;
-    if(t && !isNaN(t)){ DATA_UPDATED_AT = t; renderProofRow(); }
-  } catch(e){ /* the badge just stays off */ }
 }
 function renderLegend(){
   document.getElementById('legend').innerHTML = Object.entries(STATUS_META)
@@ -3786,19 +3797,19 @@ function promiseSources(p){
 function promiseCardHTML(p, personName, canEdit){
   return `
     <div class="pcard">
-      <div class="pcard-top" role="button" tabindex="0" aria-expanded="false" aria-controls="pcard-body-${p.id}" onclick="togglePromiseCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); togglePromiseCard(this);}">
+      <div class="pcard-top" role="button" tabindex="0" aria-expanded="false" aria-controls="pcard-body-${escAttr(p.id)}" onclick="togglePromiseCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); togglePromiseCard(this);}">
         <p class="ptext">${escAttr(p.text)}</p>
         <span class="pcard-top-right">
           ${p.draft ? `<span class="pill pill-sourcing" title="Published while its sourcing is still being completed to our three-source standard.">Still finding sources</span>` : ''}
-          <span class="pill p-${p.status}">${STATUS_META[p.status].label}</span>
+          <span class="pill p-${statusClass(p.status)}">${statusMeta(p.status).label}</span>
           <span class="pcard-chevron" aria-hidden="true">&#9662;</span>
         </span>
       </div>
-      <div class="pcard-body" id="pcard-body-${p.id}">
+      <div class="pcard-body" id="pcard-body-${escAttr(p.id)}">
         <div class="cat-tag">${escAttr(p.category)}</div>
         <p class="pnote">${escAttr(p.note)}</p>
         <div class="psource">
-          ${promiseSources(p).map(src => `<span class="src-type">${SRC_TYPE_LABEL[src.type]||'Source'}</span> <span>${escAttr(src.publisher)}</span>${src.url ? ` <a href="${escAttr(src.url)}" target="_blank" rel="noopener">View source ↗</a>` : ''}`).join(' <span style="color:var(--text-faint);">·</span> ') || (p.draft ? `<span style="color:var(--text-muted); font-style:italic;">No source linked yet.</span>` : '')}
+          ${promiseSources(p).map(src => `<span class="src-type">${SRC_TYPE_LABEL[src.type]||'Source'}</span> <span>${escAttr(src.publisher)}</span>${sourceHref(src.url) ? ` <a href="${escAttr(sourceHref(src.url))}" target="_blank" rel="noopener">View source ↗</a>` : ''}`).join(' <span style="color:var(--text-faint);">·</span> ') || (p.draft ? `<span style="color:var(--text-muted); font-style:italic;">No source linked yet.</span>` : '')}
           <a href="#" onclick="appealPromise('${escJsAttr(p.text)}','${escJsAttr(personName)}'); return false;" style="margin-left:auto; font-size:11.5px;">Appeal this status</a>
         </div>
         ${canEdit ? `<div class="padmin-row">
@@ -3938,7 +3949,7 @@ function renderAbout(){
       <p>None of this makes the current dataset a finished, audited record — see the caveats further down. What it's meant to do is make any bias that does creep in visible and checkable, instead of buried behind a "trust the editors" black box.</p>
 
       <h2>How to read a promise's status</h2>
-      <p>Every promise gets one of six statuses: <strong>Not started</strong> (nothing has happened yet), <strong>In progress</strong> (active movement, not yet resolved), <strong>Stalled</strong> (attempted, but momentum has died), <strong>Compromise</strong> (something was delivered, narrower than promised), <strong>Completed</strong> (kept as stated), or <strong>Broken</strong> (not kept). A promise whose outcome we haven't finished verifying shows <strong>Undetermined</strong> instead — a placeholder, not a verdict, and it's left out of the AOW Score until it's resolved. Every sourced entry links back to where it came from and is labeled by source type — a campaign statement and an independently reported outcome don't carry the same weight, and this site doesn't pretend otherwise.</p>
+      <p>Every promise gets one of six statuses: <strong>Not started</strong> (nothing has happened yet), <strong>In progress</strong> (active movement, not yet resolved), <strong>Stalled</strong> (attempted, but momentum has died), <strong>Compromise</strong> (something was delivered, narrower than promised), <strong>Completed</strong> (kept as stated), or <strong>Broken</strong> (not kept). A promise whose outcome we haven't finished verifying shows <strong>Undetermined</strong> instead — a placeholder, not a verdict, and it's left out of the AOW Score until it's resolved. Candidates on the ballot are the one exception: from 60 days before their election through election day, each of their promises shows <strong>Campaign promise</strong> — what they said they would do if elected. That's a record, not a verdict, and it's left out of the AOW Score too. Every sourced entry links back to where it came from and is labeled by source type — a campaign statement and an independently reported outcome don't carry the same weight, and this site doesn't pretend otherwise.</p>
 
       <h2>What the tags mean</h2>
       <p><strong>Appointed</strong> — nominated and confirmed by the Senate, or serving in an acting capacity, rather than elected by voters. Applies to Cabinet secretaries and senior agency heads. <strong>Non-voting</strong> — genuinely elected, but without a vote on final House passage: the District of Columbia, Puerto Rico, and four Pacific and Caribbean territories each send a delegate (Puerto Rico's is called the Resident Commissioner). <strong>Nonpartisan</strong> — elected on a ballot with no party label, by law — a handful of state judiciaries and statewide offices work this way.</p>
@@ -3947,7 +3958,7 @@ function renderAbout(){
       <p>Not everyone worth tracking currently holds office. The Archive covers three kinds of people: <strong>former officeholders</strong> who left a tracked seat (resignation, retirement, defeat, or death), <strong>candidates who ran and lost</strong>, and other <strong>historical figures</strong> whose promises are still worth having on record. A promise doesn't stop being checkable just because someone left office or never won — the same six statuses and the same sourcing standard apply. For someone who never held office, most promises will simply sit at Not Started indefinitely, since there was never any power to act on them; some, particularly promises about a candidate's own conduct rather than governing, can still resolve either way even without a win.</p>
 
       <h2>The AOW Score</h2>
-      <p>Each person's score is the average of their tracked promises, weighted by status: Completed = 100, Compromise = 60, In Progress = 40, Stalled = 15, Not Started = 0, Broken = 0 — rounded to the nearest whole number. Undetermined promises carry no weight: they're left out of the average entirely rather than counted as 0, so a promise we haven't finished verifying can neither drag a score down nor prop it up. They still appear on the profile and in its promise count. A person with no promises tracked yet shows "—," not a 0 — no data isn't the same as a bad record, and that's most of the roster right now.</p>
+      <p>Each person's score is the average of their tracked promises, weighted by status: Completed = 100, Compromise = 60, In Progress = 40, Stalled = 15, Not Started = 0, Broken = 0 — rounded to the nearest whole number. Undetermined promises carry no weight: they're left out of the average entirely rather than counted as 0, so a promise we haven't finished verifying can neither drag a score down nor prop it up. They still appear on the profile and in its promise count. Campaign promises are left out of the average the same way. A person with no promises tracked yet shows "—," not a 0 — no data isn't the same as a bad record, and that's most of the roster right now.</p>
       <p>The badge's color follows the same six-status vocabulary used everywhere else on the site, not a separate scale: 70 and above reads green, the "Completed" color; 40–69 reads amber, "In progress"; below 40 reads red, "Broken." There's no minimum number of promises required to produce a score — it's just an average of whatever's tracked, so a single promise generates one. That's exactly why the "N promises tracked" count sits next to every badge: a score built on one promise and a score built on twenty look identical in color if they land in the same range, and the count is what tells them apart.</p>
       <p>The formula runs identically everywhere a score appears — current officials, Past Administrations, and the Archive all use the same weights and the same rounding, with no softer standard for someone no longer in office or who never won. Scores can also be sorted high-to-low or low-to-high wherever a roster grid appears. The score is a summary, not a replacement for the underlying breakdown; both are always shown together on a profile.</p>
       <table class="example-table">
@@ -4718,14 +4729,14 @@ const RACES_2026 = [
 let featuredRaceIdx = 0, racesPaused = false, racesTimerStarted = false, racesAuto = true;
 function racePromisesHTML(id){
   var arr = id.indexOf('arch-')===0 ? ARCHIVE_PROMISES : PROMISES;
-  var order = {completed:0, broken:1, compromise:2, in_progress:3, stalled:4, not_started:5, undetermined:6};
+  var order = {campaign_promise:0, completed:1, broken:2, compromise:3, in_progress:4, stalled:5, not_started:6, undetermined:7};
   var ps = arr.filter(function(p){return p.memberId===id;}).slice();
-  ps.sort(function(a,b){ var oa=(order[a.status]==null?9:order[a.status]), ob=(order[b.status]==null?9:order[b.status]); return oa-ob; });
+  ps.sort(function(a,b){ var oa=(order[a.status]==null?9:order[a.status]), ob=(order[b.status]==null?9:order[b.status]); return (oa-ob) || ((a.draft?1:0)-(b.draft?1:0)); });
   ps = ps.slice(0,3);
   if(!ps.length) return '<p class="race-noprom">No promises tracked yet.</p>';
   return '<div class="race-promises">'+ps.map(function(p){
-    var label = STATUS_META[p.status] ? STATUS_META[p.status].label : p.status;
-    return '<div class="race-promise"><span class="rp-text">'+escAttr(p.text)+'</span><span class="pill p-'+p.status+'">'+label+'</span></div>';
+    var label = statusMeta(p.status).label;
+    return '<div class="race-promise"><span class="rp-text">'+escAttr(p.text)+'</span><span class="pill p-'+statusClass(p.status)+'">'+label+'</span></div>';
   }).join('')+'</div>';
 }
 function raceAvatarHTML(id, e){
