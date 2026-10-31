@@ -57,7 +57,12 @@
         "width": 512,
         "height": 512
       },
-      "email": "info@action-over-words.com"
+      "email": "info@action-over-words.com",
+      "sameAs": [
+        "https://www.instagram.com/aow_index/",
+        "https://www.facebook.com/profile.php?id=61594983407204",
+        "https://www.youtube.com/@ActionOverWordsIndex"
+      ]
     }
   ]
 }
@@ -477,6 +482,14 @@
   footer .foot-links-legal{margin-top:8px; flex-wrap:wrap;}
   footer .foot-links-legal a{color:var(--text-faint); font-weight:500;}
   footer .foot-links-legal a:hover{color:var(--text-muted);}
+  /* Follow us (2026-10-30): AOW's active social accounts. Only accounts that are live and posting go here. */
+  footer .foot-social{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin-top:16px;}
+  footer .foot-social-label{font-size:13px; font-weight:700; color:var(--text);}
+  footer .foot-social a{display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:6px 13px; border:1px solid var(--border); border-radius:999px; background:var(--bg); color:var(--brand); font-size:13px; font-weight:600; text-decoration:none;}
+  footer .foot-social a:hover{background:var(--brand-tint); border-color:var(--brand);}
+  footer .foot-social a:focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
+  footer .foot-social .handle{color:var(--text-muted); font-weight:500;}
+  @media (max-width:480px){ footer .foot-social-label{flex-basis:100%;} }   /* phones: label on its own line, buttons side by side */
 
   .about-page{max-width:72ch;}
   .about-page h2{font-size:18px; margin:26px 0 8px;}
@@ -904,6 +917,12 @@
       </form>
       <p class="nl-fine">We'll send a link to confirm first. Details in the <a href="privacy-policy.html#newsletter">Privacy Policy</a>.</p>
     </div>
+    <nav class="foot-social" aria-label="ActionOverWords Index on social media">
+      <span class="foot-social-label">Follow us</span>
+      <a href="https://www.instagram.com/aow_index/" target="_blank" rel="me noopener noreferrer" aria-label="Instagram, @aow_index (opens in a new tab)">Instagram <span class="handle">@aow_index</span> <span aria-hidden="true">&#8599;</span></a>
+      <a href="https://www.facebook.com/profile.php?id=61594983407204" target="_blank" rel="me noopener noreferrer" aria-label="Facebook (opens in a new tab)">Facebook <span aria-hidden="true">&#8599;</span></a>
+      <a href="https://www.youtube.com/@ActionOverWordsIndex" target="_blank" rel="me noopener noreferrer" aria-label="YouTube (opens in a new tab)">YouTube <span aria-hidden="true">&#8599;</span></a>
+    </nav>
     <div class="foot-links">
       <a href="#" onclick="selectTab('about'); return false;">About &amp; methodology</a>
       <a href="methodology/">Methodology</a>

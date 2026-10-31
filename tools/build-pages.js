@@ -44,6 +44,13 @@ const MIN_PUBLISHERS = Number(argv['min-publishers'] === undefined ? 3 : argv['m
 const HUB_MIN = Number(argv['hub-min'] === undefined ? 3 : argv['hub-min']);
 const TODAY = String(argv.today || new Date().toISOString().slice(0, 10));
 const CONTACT = 'info@action-over-words.com';
+// AOW's active social accounts, shown in every generated page's footer and listed as sameAs in the site's structured data
+// (the tracker, aow-index.html, carries the same two in its footer and JSON-LD). Only accounts that are live and posting.
+const SOCIAL = [
+  { name: 'Instagram', handle: '@aow_index', url: 'https://www.instagram.com/aow_index/' },
+  { name: 'Facebook', handle: '', url: 'https://www.facebook.com/profile.php?id=61594983407204' },
+  { name: 'YouTube', handle: '', url: 'https://www.youtube.com/@ActionOverWordsIndex' }
+];
 // The AdSense publisher account. Google's site verification and its periodic re-checks look for this meta tag in the head of
 // the bare domain, so every generated page carries it (index.html is generated once the landing page is on).
 const ADSENSE_ACCOUNT = 'ca-pub-2415928011419150';
@@ -89,7 +96,8 @@ const SITE_LD = [
   { '@type': 'WebSite', '@id': SITE + '/#website', url: SITE + '/', name: 'ActionOverWords Index', alternateName: ['AOW Index', 'Action Over Words'],
     description: SITE_DESC, inLanguage: 'en-US', publisher: { '@id': SITE + '/#organization' } },
   { '@type': 'Organization', '@id': SITE + '/#organization', name: 'ActionOverWords Index', url: SITE + '/',
-    logo: { '@type': 'ImageObject', url: SITE + '/icon-512.png', width: 512, height: 512 }, email: CONTACT }
+    logo: { '@type': 'ImageObject', url: SITE + '/icon-512.png', width: 512, height: 512 }, email: CONTACT,
+    sameAs: SOCIAL.map(s => s.url) }
 ];
 
 /* --------------------------------- helpers --------------------------------- */
@@ -309,6 +317,7 @@ h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{fon
 .dir-sec h2,.dir-sec h3{font-size:17px;margin:26px 0 6px}.dir{list-style:none;margin:0;padding:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
 .dir li{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--border);flex-wrap:wrap}.dir li:first-child{border-top:0}.dir .meta{color:var(--text-muted);font-size:13px;margin-left:auto}
 footer{border-top:1px solid var(--border);margin-top:40px;padding:22px 0 40px;font-size:13px;color:var(--text-muted)}footer a{color:var(--text-muted);margin-right:14px}
+footer .follow{margin:0 0 12px}footer .follow b{color:var(--text);margin-right:10px}footer .follow a{color:var(--brand);font-weight:600}footer .follow .handle{color:var(--text-muted);font-weight:500}
 .related{margin-top:30px}.related .sub{font-size:14px}.summary{margin:14px 0 4px}
 .prose p{margin:0 0 14px}.prose h2{margin-top:34px}.prose ul{margin:0 0 14px;padding-left:22px}.prose li{margin:0 0 8px}.defs{margin:0 0 14px}.defs dt{margin-top:12px}.defs dd{margin:4px 0 0;color:var(--text-muted)}
 table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;background:var(--bg);border:1px solid var(--border)}th,td{padding:9px 12px;border-top:1px solid var(--border);text-align:left;vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);border-top:0}code{font-size:13px;background:var(--bg-alt);padding:1px 5px;border-radius:5px}
@@ -351,6 +360,7 @@ function layout({ depth, title, description, canonical, body, ld, lastmodToken, 
   const legal = [`<a href="${up}about/">About</a>`, `<a href="${up}contact/">Contact</a>`, `<a href="${up}methodology/">Methodology</a>`,
     `<a href="${up}aow-index.html#newsletter">Weekly email</a>`]   // the sign-up lives in the tracker (these pages run no scripts)
     .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<a href="${up}${f}">${l}</a>`)).join('');
+  const follow = `<p class="follow"><b>Follow us</b>${SOCIAL.map(s => `<a href="${esc(s.url)}" target="_blank" rel="me noopener noreferrer">${esc(s.name)}${s.handle ? ` <span class="handle">${esc(s.handle)}</span>` : ''} <span aria-hidden="true">&#8599;</span></a>`).join('')}</p>`;
   return `<!DOCTYPE html>
 ${MARK}
 <html lang="en">
@@ -388,7 +398,7 @@ ${ld ? `<script type="application/ld+json">${jsonLd(ld)}</script>` : ''}
 ${mainOpen}
 ${body}
 </main>
-<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated ${lastmodToken}. Spot an error? <a style="margin:0" href="mailto:${CONTACT}">${CONTACT}</a></p><div>${legal}</div></div></footer>
+<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated ${lastmodToken}. Spot an error? <a style="margin:0" href="mailto:${CONTACT}">${CONTACT}</a></p>${follow}<div>${legal}</div></div></footer>
 </body>
 </html>
 `;
