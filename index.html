@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-Ic6x7VH2TthmU7nWJ0lArg/y4mrjYot4DHn+BQHjnZQ=&#39; &#39;sha256-4CK9ynzzewKSH+IFabKMGbAYGdkkDzIeN6sdCXRCTCg=&#39;; connect-src https://iqouvbbuiarrsryfkgsz.supabase.co; style-src &#39;unsafe-inline&#39; https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src &#39;self&#39; data:; base-uri &#39;none&#39;; form-action &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;sha256-Ic6x7VH2TthmU7nWJ0lArg/y4mrjYot4DHn+BQHjnZQ=&#39; &#39;sha256-FN4gRzn5UOX1WCiZtzEEg4t/4EB9SpU4tsHb1LOovfM=&#39;; connect-src https://iqouvbbuiarrsryfkgsz.supabase.co; style-src &#39;unsafe-inline&#39; https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src &#39;self&#39; data:; base-uri &#39;none&#39;; form-action &#39;none&#39;">
 <title>ActionOverWords Index: Did Officials Keep Their Promises?</title>
 <meta name="description" content="Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.">
 <meta name="robots" content="max-image-preview:large">
@@ -185,8 +185,8 @@ a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
 <p class="lede">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and shows what actually happened to each one: kept, broken, or somewhere in between. Every promise is held to the same standard, whatever the official's party.</p>
 <div class="btns"><a class="btn light" href="aow-index.html">Open the interactive tracker</a><a class="btn ghost" href="#how-it-works">How it works</a></div>
 <ul class="stat-row" aria-label="The size of the tracker">
-<li><b class="n" id="live-officials">700+</b><span class="l">Officials</span></li>
-<li><b class="n" id="live-promises">10,000+</b><span class="l">Promises</span></li>
+<li><b class="n" id="live-officials">730+</b><span class="l">Officials</span></li>
+<li><b class="n" id="live-promises">19,000+</b><span class="l">Promises</span></li>
 <li><b class="n" id="live-states">50</b><span class="l">States covered</span></li>
 </ul>
 <p class="fine">Counts are rounded down. The interactive tracker has the full, current roster.</p>
@@ -197,7 +197,7 @@ if(location.search||location.hash.indexOf('=')>-1)return;
 var o=document.getElementById('live-officials'),p=document.getElementById('live-promises'),s=document.getElementById('live-states');
 if(!o||!p||!s||!window.fetch)return;
 function ok(v,max){return typeof v==='number'&&isFinite(v)&&Math.floor(v)===v&&v>=1&&v<=max}
-function up(n){if(n<10)return String(n);var m=Math.pow(10,String(n).length-1);return (Math.floor(n/m)*m).toLocaleString('en-US')+'+'}
+function up(n){if(n<10)return String(n);var m=Math.pow(10,String(n).length-(n<100?1:2));return (Math.floor(n/m)*m).toLocaleString('en-US')+'+'}
 var c=window.AbortController?new AbortController():null,t=setTimeout(function(){if(c)c.abort()},8000);
 fetch("https://iqouvbbuiarrsryfkgsz.supabase.co/rest/v1/rpc/site_counts",{method:'GET',headers:{apikey:"sb_publishable_Q1M5T3VhhyTV4vOVYhONiA_SYk6tsmG",Accept:'application/json'},credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',signal:c?c.signal:undefined})
 .then(function(r){if(!r.ok)throw 0;return r.json()})
@@ -271,7 +271,7 @@ o.parentNode.title='Exactly '+d.officials.toLocaleString('en-US');p.parentNode.t
 <li><span class="pill s-completed">Completed</span><p>Kept as stated.</p></li>
 <li><span class="pill s-broken">Broken</span><p>Not kept.</p></li>
 </ul>
-<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved.</p>
+<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved. A candidate's promises show <strong>Campaign promise</strong> from 60 days before their election through election day, also left out of the score.</p>
 </div>
 </section>
 

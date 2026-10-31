@@ -7,7 +7,7 @@ current officials listed by name only (no publishable promises yet): 707
 hub pages (a group needs at least 3 people with pages): 1
   - administration: 29 with pages, 1 listed by name only
 groups with a page but below that minimum, so no hub yet: 0
-promises held back (fewer than 3 distinct publishers, no primary-record source, or status Undetermined): 33
+promises held back (fewer than 3 distinct publishers, no primary-record source, or status Undetermined or Campaign promise): 33
   - p27 (Donald Trump): 3 publisher(s), primary-record source: no
   - p44 (Donald Trump): 2 publisher(s), primary-record source: no
   - p87 (John Ratcliffe): 3 publisher(s), primary-record source: no
