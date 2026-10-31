@@ -1,0 +1,41 @@
+NEXT SITE UPLOAD - ActionOverWords Index
+========================================
+This folder is the one place a site update waits to go live:
+  C:\Users\jnayk\Desktop\AOW\upload-to-github
+Each new update replaces what is in here - no new folders. After you upload, you can empty it.
+Desktop\AOW\AOW-main already has these same files (it is your full copy of the site).
+Older packages are kept in Desktop\AOW\_archive\site-updates - never upload from there.
+
+WHAT'S IN HERE NOW:
+Take "Prototype" off the policy, FAQ and thank-you pages. Sat Oct 31 2026
+=========================================================================
+Built on what is live right now (commit 232c7ae). Upload all 8 files in ONE commit.
+
+FILES (all 8 go in the repo ROOT; each replaces the file of the same name)
+  404.html
+  cookie-policy.html
+  dmca-policy.html
+  faq.html
+  privacy-policy.html
+  terms-of-service.html
+  thank-you-donate.html
+  thank-you-subscribe.html
+
+WHAT IT CHANGES
+  - Removes the "Prototype" pill from the top of all 8 pages (one line each).
+  - privacy-policy.html and cookie-policy.html: one sentence in each said "prototype"; both now read normally.
+  - Nothing else changes. aow-index.html and tools\ are NOT in this package: they are already live.
+
+WHY
+  Google AdSense did not approve the site on Oct 31. A "Prototype" label on the Privacy Policy, Terms and FAQ
+  makes the site look unfinished to a reviewer, so it is the first thing to remove.
+
+UPLOAD
+  1. github.com/actionoverwords/AOW -> Add file -> Upload files
+  2. Drag the 8 .html files from this folder onto the page (not this READ-ME file), then Commit directly to main.
+  3. Wait 1 to 2 minutes, then open https://action-over-words.com/privacy-policy.html and press Ctrl+F5:
+     the green "Prototype" pill next to the logo should be gone.
+
+UNDO
+  The 8 old files are in Desktop\AOW\_archive\site-updates\2026-10-31-prototype-badges-ROLLBACK
+  Upload those the same way.
