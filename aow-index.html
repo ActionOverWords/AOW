@@ -1426,12 +1426,41 @@ function mergeArchivePromises(rows, todayISO){
     seenId.add(p.id); seenText.add(textKey); added++;
   });
   ARCHIVE_PROMISES.forEach(p => {
-    if(p.status !== 'campaign_promise' && campaignWindowOpen(archById.get(p.memberId), todayISO)){
+    const person = archById.get(p.memberId);
+    if(p.status !== 'campaign_promise' && (campaignWindowOpen(person, todayISO) || isRacePledge(person, p))){
       p.researchedStatus = p.status;            // kept for reference; the page shows the campaign status
       p.status = 'campaign_promise';
+    } else if(OFFICE_ONLY_STATUSES.has(p.status)){
+      p.researchedStatus = p.status;            // a term that is over can't still be under way: shown as not yet checked
+      p.status = 'undetermined';
     }
   });
+  PAST_PROMISES.forEach(p => {
+    if(OFFICE_ONLY_STATUSES.has(p.status)){ p.researchedStatus = p.status; p.status = 'undetermined'; }
+  });
   return added;
+}
+// Statuses that only make sense while someone holds the office the promise is about. Nobody in the Archive or a past
+// administration holds it now, so none of their promises can be Not started, In progress or Stalled: a candidate's pledge
+// is a Campaign promise (win or lose, until a winner takes office and moves to the roster), and a promise from a term
+// that is over was completed, broken or a compromise. Until that final outcome has been checked it shows Undetermined
+// (left out of the score) rather than a status that can't be true.
+const OFFICE_ONLY_STATUSES = new Set(['not_started', 'in_progress', 'stalled']);
+// The election year of the race an Archive person ran in: 'candidate-2026' / 'elected-2026', or a seat ending "(2026, lost)".
+function raceYearOf(person){
+  const m = /^(?:candidate|elected)-(\d{4})$/.exec((person && person.category) || '') || /\((\d{4}), lost\)/.exec((person && person.seat) || '');
+  return m ? Number(m[1]) : null;
+}
+// Was this promise made for that race (from two years before its election day on, or undated)? Applies from the 2026
+// races on, when the Campaign promise status began; older entries keep the outcomes they were researched with.
+function isRacePledge(person, p){
+  const y = raceYearOf(person);
+  if(!y || y < 2026) return false;
+  const d = String((p && (p.promisedOn || p.promised_on)) || '');
+  if(!/^\d{4}-\d{2}/.test(d)) return true;
+  const nov1 = new Date(Date.UTC(y, 10, 1)).getUTCDay();
+  const start = new Date(Date.UTC(y, 10, 2 + ((8 - nov1) % 7)) - 730 * 86400000).toISOString().slice(0, 10);
+  return d.length >= 10 ? d.slice(0, 10) >= start : d.slice(0, 7) >= start.slice(0, 7);
 }
 async function initData(){
   const archiveRows = loadArchivePromises();   // small; fetched alongside the roster, merged before anything renders
@@ -3957,7 +3986,7 @@ function renderAbout(){
       <p>None of this makes the current dataset a finished, audited record — see the caveats further down. What it's meant to do is make any bias that does creep in visible and checkable, instead of buried behind a "trust the editors" black box.</p>
 
       <h2>How to read a promise's status</h2>
-      <p>Every promise gets one of six statuses: <strong>Not started</strong> (nothing has happened yet), <strong>In progress</strong> (active movement, not yet resolved), <strong>Stalled</strong> (attempted, but momentum has died), <strong>Compromise</strong> (something was delivered, narrower than promised), <strong>Completed</strong> (kept as stated), or <strong>Broken</strong> (not kept). A promise whose outcome we haven't finished verifying shows <strong>Undetermined</strong> instead — a placeholder, not a verdict, and it's left out of the AOW Score until it's resolved. Candidates on the ballot are the one exception: from 60 days before their election through election day, each of their promises shows <strong>Campaign promise</strong> — what they said they would do if elected. That's a record, not a verdict, and it's left out of the AOW Score too. Every sourced entry links back to where it came from and is labeled by source type — a campaign statement and an independently reported outcome don't carry the same weight, and this site doesn't pretend otherwise.</p>
+      <p>Every promise gets one of six statuses: <strong>Not started</strong> (nothing has happened yet), <strong>In progress</strong> (active movement, not yet resolved), <strong>Stalled</strong> (attempted, but momentum has died), <strong>Compromise</strong> (something was delivered, narrower than promised), <strong>Completed</strong> (kept as stated), or <strong>Broken</strong> (not kept). A promise whose outcome we haven't finished verifying shows <strong>Undetermined</strong> instead — a placeholder, not a verdict, and it's left out of the AOW Score until it's resolved. Candidates on the ballot are the one exception: from 60 days before their election, each of their promises shows <strong>Campaign promise</strong> — what they said they would do if elected. That's a record, not a verdict, and it's left out of the AOW Score too. A pledge made for a race keeps that label after election day, because nothing a candidate promised can be under way before they hold the office: if they lost, it stays a record of what they promised; if they won, it starts being tracked when the term they ran for begins. The same logic applies to anyone who has left office. A promise from a term that is over shows its final outcome (<strong>Completed</strong>, <strong>Compromise</strong> or <strong>Broken</strong>), or <strong>Undetermined</strong> until that outcome has been checked — never Not started, In progress or Stalled. Every sourced entry links back to where it came from and is labeled by source type — a campaign statement and an independently reported outcome don't carry the same weight, and this site doesn't pretend otherwise.</p>
 
       <h2>What the tags mean</h2>
       <p><strong>Appointed</strong> — nominated and confirmed by the Senate, or serving in an acting capacity, rather than elected by voters. Applies to Cabinet secretaries and senior agency heads. <strong>Non-voting</strong> — genuinely elected, but without a vote on final House passage: the District of Columbia, Puerto Rico, and four Pacific and Caribbean territories each send a delegate (Puerto Rico's is called the Resident Commissioner). <strong>Nonpartisan</strong> — elected on a ballot with no party label, by law — a handful of state judiciaries and statewide offices work this way.</p>

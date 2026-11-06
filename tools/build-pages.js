@@ -67,6 +67,9 @@ const STATUS_MEANING = {
   compromise: 'Something was delivered, narrower than promised.', completed: 'Kept as stated.', broken: 'Not kept.'
 };
 const WEIGHTS = { completed: 100, compromise: 60, in_progress: 40, stalled: 15, not_started: 0, broken: 0 };
+// Statuses that only describe work still being done in office. A past administration's or an Archive person's promise
+// can't be one of these (see mergeArchivePromises in aow-index.html, which shows them as Undetermined).
+const OFFICE_ONLY = new Set(['not_started', 'in_progress', 'stalled']);
 const SRC_TYPE = {
   campaign_statement: 'Campaign statement', interview: 'Interview', voting_record: 'Voting record',
   official_record: 'Official record', self_published_report: "Official's own office", news_report: 'News report'
@@ -239,6 +242,11 @@ function buildModel(D) {
     }
     if (p.status === 'campaign_promise') {                   // a candidate's record, not a verdict: never published here, never scored
       excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'status is Campaign promise (a candidate\'s record, left out of scores)' });
+      return;
+    }
+    if (kind !== 'current' && OFFICE_ONLY.has(p.status)) {   // nobody in a past administration or the Archive holds the office now:
+      excluded.push({ id: p.id, member: entries.get(p.memberId).name,  // the live tracker shows these as Undetermined, so they are held back here
+        reason: 'status is ' + STATUS[p.status] + ', which can\'t apply to someone not in office (the tracker shows Undetermined until the final outcome is checked)' });
       return;
     }
     if (!STATUS[p.status]) fatal('Promise ' + p.id + ' has invalid status: ' + p.status);
@@ -696,7 +704,8 @@ function renderMethodology() {
 ${Object.keys(STATUS).map(k => `<dt><span class="pill s-${k}">${esc(STATUS[k])}</span></dt><dd>${esc(meaning[k])}</dd>`).join('\n')}
 </dl>
 <p>A promise whose outcome has not been fully verified shows <strong>Undetermined</strong> in the interactive tracker. That is a placeholder, not a verdict. It is left out of the AOW Score until it is resolved, and it is not published on these pages.</p>
-<p>Candidates on the ballot are the one exception to the six statuses: from 60 days before their election through election day, each of their promises shows <strong>Campaign promise</strong> in the interactive tracker. That is a record of what they said they would do if elected, not a verdict, and it is left out of the AOW Score.</p>
+<p>Candidates on the ballot are the one exception to the six statuses: from 60 days before their election, each of their promises shows <strong>Campaign promise</strong> in the interactive tracker. That is a record of what they said they would do if elected, not a verdict, and it is left out of the AOW Score. A pledge made for a race keeps that label after election day, because nothing a candidate promised can be under way before they hold the office: if they lost, it stays a record of what they promised; if they won, it starts being tracked when the term they ran for begins.</p>
+<p>The same logic applies to anyone who has left office. A promise from a term that is over shows its final outcome (<strong>Completed</strong>, <strong>Compromise</strong> or <strong>Broken</strong>), or <strong>Undetermined</strong> until that outcome has been checked. It never shows Not started, In progress or Stalled, which describe work still being done in office.</p>
 
 <h2 id="aow-score">The AOW Score</h2>
 <p>An official's score is the average of their tracked promises, weighted by status, on a scale of 0 to 100. It is rounded to the nearest whole number, with halves rounding up.</p>
@@ -1069,7 +1078,7 @@ ${liveJs ? `<script>${liveJs}</script>\n` : ''}
 <ul class="legend-grid">
 ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}</span><p>${esc(STATUS_MEANING[k])}</p></li>`).join('\n')}
 </ul>
-<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved. A candidate's promises show <strong>Campaign promise</strong> from 60 days before their election through election day, also left out of the score.</p>
+<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved. A candidate's promises show <strong>Campaign promise</strong> from 60 days before their election, and a pledge made for that race keeps the label after election day, also left out of the score.</p>
 </div>
 </section>
 
@@ -1337,7 +1346,7 @@ Sitemap: ${SITE}/sitemap.xml
     `hub pages (a group needs at least ${HUB_MIN} people with pages): ${hubs.size}`,
     ...[...hubs.values()].map(h => `  - ${h.key}: ${h.pages.length} with pages, ${h.roster.length} listed by name only`),
     `groups with a page but below that minimum, so no hub yet: ${[...ctx.groups.keys()].filter(k => !hubs.has(k)).length}`,
-    `promises held back (fewer than ${MIN_PUBLISHERS} distinct publishers, no primary-record source, or status Undetermined or Campaign promise): ${model.excluded.length}`,
+    `promises held back (fewer than ${MIN_PUBLISHERS} distinct publishers, no primary-record source, status Undetermined or Campaign promise, or a status that can't apply to someone not in office): ${model.excluded.length}`,
     ...model.excluded.map(x => x.reason
       ? `  - ${x.id} (${x.member}): ${x.reason}`
       : `  - ${x.id} (${x.member}): ${x.publishers} publisher(s), primary-record source: ${x.primary ? 'yes' : 'no'}`),

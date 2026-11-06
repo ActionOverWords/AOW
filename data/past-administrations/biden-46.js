@@ -31,7 +31,9 @@ PAST_PROMISES.push(
   {id:'pp2', memberId:'past-biden', text:'Cancel a broad swath of federal student loan debt.', category:'Education', status:'compromise',
    note:'His original broad forgiveness plan was struck down by the Supreme Court in 2023. The administration then pursued narrower relief through alternate programs, with mixed and partial success.',
    source:{publisher:'PolitiFact / Poynter', type:'news_report', url:'https://www.politifact.com/article/2025/jan/14/did-joe-biden-keep-these-99-promises-we-reviewed/'}},
-  {id:'pp3', memberId:'past-harris', text:'Address the root causes of migration from Central America.', category:'Immigration', status:'stalled',
-   note:'This was her signature assigned portfolio. Reporting through the term found limited visible movement on the underlying conditions the initiative targeted.',
-   source:{publisher:'PolitiFact', type:'news_report', url:'https://www.politifact.com/truth-o-meter/promises/biden-promise-tracker/'}},
+  {id:'pp3', memberId:'past-harris', text:'Address the root causes of migration from Central America.', category:'Immigration', status:'compromise',
+   note:'Harris led the 2021 Root Causes Strategy and helped secure more than $5.2 billion in private-sector commitments for Guatemala, Honduras and El Salvador. Apprehensions of migrants from those countries fell from their 2021 peak, though experts say her own impact is unclear. The proposed $4 billion federal aid package never passed, and only about $1 billion of the private money had been distributed by March 2024.',
+   sources:[{publisher:'PolitiFact', type:'news_report', url:'https://www.politifact.com/truth-o-meter/promises/biden-promise-tracker/promise/387353/provide-assistance-northern-triangle-countries/article/387356/'},
+            {publisher:'The White House (archived)', type:'official_record', url:'https://bidenwhitehouse.archives.gov/briefing-room/statements-releases/2024/03/25/readout-of-vice-president-harriss-roundtable-with-central-america-forward-stakeholders/'},
+            {publisher:'Reuters (via Investing.com)', type:'news_report', url:'https://investing.com/news/world-news/republicans-call-harris-a-failed-border-czar-the-truth-is-more-complicated-3543139'}]},
 );
