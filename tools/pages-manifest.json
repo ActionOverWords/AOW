@@ -1,10 +1,10 @@
 {
  "version": 1,
- "officialCount": 29,
+ "officialCount": 30,
  "pages": {
   "home": {
-   "hash": "2fbc1bcfc7db5fa3066f2d541a8c921dcfcce686ce457cb50f8e7e4bb938f71a",
-   "lastmod": "2026-10-31"
+   "hash": "3561a6cbaa64cfbcf150a7cbf55e63cc086c1da7fdd6a9461933a0ad9ea03c9e",
+   "lastmod": "2026-11-06"
   },
   "officials/cab-rollins/": {
    "hash": "c0731731b45a349233695ea7594d95499a814bb813841c6f514b38f712219f71",
@@ -41,6 +41,10 @@
   "officials/vance-vp/": {
    "hash": "60ef0bbc4bdebbe3017e30eedcc7baaa5c6358b0931015551b51649d098ed3a8",
    "lastmod": "2026-10-31"
+  },
+  "officials/past-harris/": {
+   "hash": "deda7aae3f43eddcc1859cb14a2691816e3d9693c95da9212b64811ea4af3779",
+   "lastmod": "2026-11-06"
   },
   "officials/agh-patel/": {
    "hash": "669a0ef0c206b5dd5550a5d88bbbd9da2490670bf8a35a507f2d74011b61fa86",
@@ -123,12 +127,12 @@
    "lastmod": "2026-10-31"
   },
   "officials/": {
-   "hash": "18ce248c53cb2f0f97854637ade504d675577ec2e5a420de2f3ec657146ffc88",
-   "lastmod": "2026-10-31"
+   "hash": "6f0fea49830588919d68b0574d1d5abe4dca7b0c8cfbd16d0ea1cd1878bf6bde",
+   "lastmod": "2026-11-06"
   },
   "methodology/": {
-   "hash": "0e19d7e56c533746d35b16671f3f27af1859f0bf33eebb2d5309bc613d18420d",
-   "lastmod": "2026-10-31"
+   "hash": "799dcdf3a995fbbcb0ee6cb133b28caf11343b7b9868d247463bf4f77243e192",
+   "lastmod": "2026-11-06"
   },
   "about/": {
    "hash": "68643de24fc5fc6076dc2a26baa0e2a2674d0352bb19f7ca1ac4020d4d2f35b8",
@@ -143,7 +147,7 @@
    "lastmod": "2026-10-31"
   },
   "aow-index.html": {
-   "hash": "f7d39a8a8531beb03f493c328995f34c5ec99bab9380e824624081113c5c84d2",
+   "hash": "139d3ff56fd78346bca51397e8dcf40d8febcdb6fb1f12e1bb267dc98bc3ffa1",
    "lastmod": "2026-11-06"
   },
   "privacy-policy.html": {
