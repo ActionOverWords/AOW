@@ -1535,7 +1535,7 @@ ${body}
 function renderHomeV2(ctx) {
   const { model, hubs } = ctx;
   const up = '../';
-  const tracker = up + 'aow-index.html';
+  const tracker = up + 'aow-index.html?look=new';   // the tracker's own preview switch (see LOOK2 in aow-index.html)
   const current = [...model.entries.values()].filter(e => e.kind === 'current');
   const states = new Set(current.filter(e => e.level === 'state' && STATE_NAMES[e.state] && !NOT_A_STATE.has(e.state)).map(e => e.state)).size;
   const people = model.pages.length;
