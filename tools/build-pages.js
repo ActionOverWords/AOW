@@ -1165,10 +1165,9 @@ const V2_CSS = `
   --radius:14px;
   --deep:#0D4A43; --ink-band:#171A21; --on-deep:#FFFFFF; --on-deep-muted:#D3E7E2; --on-deep-faint:#B4D2CB; --on-deep-border:rgba(255,255,255,.28);
   --t0:var(--text); --m0:var(--text-muted); --f0:var(--text-faint); --b0:var(--border);
-  --wm-blend:multiply;
 }
 html[data-theme="dark"]{
-  --deep:#0A332E; --ink-band:#0B0D10; --wm-blend:screen;
+  --deep:#0A332E; --ink-band:#0B0D10;
   --bg:#1D222B; --bg-alt:#14171D; --border:#313946;
   --text:#E8EAED; --text-muted:#A9B1BB; --text-faint:#8E97A3;
   --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E; --brand-tint-hover:#1E4038; --on-tint:#6FD6BC; --on-brand:#06231C;
@@ -1401,14 +1400,14 @@ body:is(.bk-deep,.bk-ink) :is(.band-top,.foot) :is(.filters input,.filters selec
 body:is(.bk-deep,.bk-ink) :is(.hero,.band-top) :is(.ledger,.scorebox){border-color:transparent}
 body:is(.bk-deep,.bk-ink) .foot{margin-top:clamp(48px,7vw,96px)}
 body:is(.bk-deep,.bk-ink) .home .foot{margin-top:0}
-body.wm-pattern,body.wm-mark main{position:relative;isolation:isolate}
-body.wm-pattern::after,body.wm-mark main::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;background:var(--brand);opacity:var(--wm-o,.09);mix-blend-mode:var(--wm-blend)}
-body.wm-mark main::after{-webkit-mask:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y;mask:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y}
-body.wm-pattern::after{-webkit-mask:var(--wm-tile) 0 0/280px auto repeat;mask:var(--wm-tile) 0 0/280px auto repeat}
+body.wm-pattern,body.wm-mark main{position:relative}
+body.wm-pattern::after,body.wm-mark main::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;opacity:var(--wm-o,.09)}
+body.wm-mark main::after{background:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y}
+body.wm-pattern::after{background:var(--wm-tile) 0 0/280px auto repeat}
 body.wm-pattern :is(.top,.notice,.hero,.band-top,.foot),body.wm-mark .hero{position:relative;z-index:41}
 body.wm-mark .home main::after{display:none}
-body.wm-mark .home .band:not(.paper):not(#corrections){position:relative;isolation:isolate}
-body.wm-mark .home .band:not(.paper):not(#corrections)::after{content:'';position:absolute;inset:0;margin:auto;width:min(46vw,540px);aspect-ratio:166.55/181.3;max-height:80%;z-index:40;pointer-events:none;background:var(--brand);opacity:var(--wm-o,.09);mix-blend-mode:var(--wm-blend);-webkit-mask:var(--wm-one) center/contain no-repeat;mask:var(--wm-one) center/contain no-repeat}
+body.wm-mark .home .band:not(.paper):not(#corrections){position:relative}
+body.wm-mark .home .band:not(.paper):not(#corrections)::after{content:'';position:absolute;inset:0;margin:auto;width:min(46vw,540px);aspect-ratio:166.55/181.3;max-height:80%;z-index:40;pointer-events:none;opacity:var(--wm-o,.09);background:var(--wm-one) center/contain no-repeat}
 body.wms-faint{--wm-o:.05}
 body.wms-medium{--wm-o:.09}
 body.wms-strong{--wm-o:.15}
@@ -1472,13 +1471,18 @@ function v2Logo() {
 }
 function v2WatermarkCss() {
   const { w, h, d } = v2Logo();
+  // Plain pictures in the logo's own green (a lighter green in dark theme), shown through the element's opacity.
+  // No blend mode and no mask: on long pages those made scrolling slow.
   const url = svg => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
-  const p = `<path d="${d}"/>`;
   const tall = +(h * 2.3).toFixed(2);
-  const one = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${p}</svg>`;
-  const mark = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${tall}" viewBox="0 0 ${w} ${tall}"><g transform="translate(0,${+(h * 0.65).toFixed(2)})">${p}</g></svg>`;
-  const tile = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"><g transform="translate(60,50) scale(.6)">${p}</g><g transform="translate(380,370) scale(.6)">${p}</g></svg>`;
-  return `:root{--wm-one:${url(one)};--wm-mark:${url(mark)};--wm-tile:${url(tile)}}\n`;
+  const vars = fill => {
+    const p = `<path fill="${fill}" d="${d}"/>`;
+    const one = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${p}</svg>`;
+    const mark = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${tall}" viewBox="0 0 ${w} ${tall}"><g transform="translate(0,${+(h * 0.65).toFixed(2)})">${p}</g></svg>`;
+    const tile = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"><g transform="translate(60,50) scale(.6)">${p}</g><g transform="translate(380,370) scale(.6)">${p}</g></svg>`;
+    return `:root{--wm-one:${url(one)};--wm-mark:${url(mark)};--wm-tile:${url(tile)}}`;
+  };
+  return `${vars('#12836F')}\n@media (prefers-color-scheme:dark){${vars('#22A98A')}}\n`;
 }
 
 const V2_TICK = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1514,7 +1518,7 @@ ${MARK}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>${v2WatermarkCss()}${v2StaticCss()}</style>
+<style>${v2StaticCss()}${v2WatermarkCss()}</style>
 </head>
 <body class="${bodyClass || V2_BODY_CLASS}">
 <div class="${wrapClass || ''}">
