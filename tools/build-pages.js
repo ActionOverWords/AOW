@@ -19,6 +19,7 @@
  *   sitemap.xml                 honest <lastmod> values (see tools/pages-manifest.json)
  *   robots.txt                  only if absent, or previously generated
  *   tools/pages-manifest.json   content hashes -> lastmod dates (committed)
+ *   preview/index.html          the redesigned home page, as a PREVIEW: noindex, not in the sitemap or the manifest
  *   tools/pages-report.txt      what was published and what was held back, and why
  *
  * Nothing existing is edited. Every generated file carries a marker; the script
@@ -1143,6 +1144,507 @@ ${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}<
     csp: homeCsp([HOME_REDIRECT_JS].concat(liveJs ? [liveJs] : []), liveJs ? live.origin : null) });
 }
 
+/* ------------------------------ redesign preview ("The record") ------------------------------ */
+// The redesign chosen in the Look Studio (Nov 2026), built as a PREVIEW first. Nothing in this section changes a page
+// visitors see today. It writes one extra file, preview/index.html (the redesigned home page), which carries
+// "noindex, nofollow", is left out of sitemap.xml and the manifest, and links back into the live site. When the
+// redesign is approved, these templates replace the current ones and the preview folder goes away.
+//
+// V2_CSS is the redesign's one stylesheet. It is written for the tracker's theme switch (html[data-theme="dark"]);
+// v2StaticCss() turns those rules into a prefers-color-scheme block for these script-free pages.
+// Look settings picked in the studio: deep green banner and footer, large centered logo watermark at medium strength.
+const V2_BODY_CLASS = 'bk-deep wm-mark wms-medium';
+const V2_CSS = `
+:root{
+  --bg:#FFFFFF; --bg-alt:#F6F8F7; --border:#DCE3E0;
+  --text:#171A21; --text-muted:#566069; --text-faint:#69737E;
+  --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF; --brand-tint-hover:#D2ECE6; --on-tint:#0C6355; --on-brand:#FFFFFF;
+  --not_started:#8A93A3; --in_progress:#C2790F; --stalled:#5D7599; --compromise:#8A5CA8; --completed:#1E8E5A; --broken:#C0392B;
+  --not_started-bg:#EEF0F3; --in_progress-bg:#FBF0DF; --stalled-bg:#E9EDF4; --compromise-bg:#F3E9F6; --completed-bg:#E4F5EC; --broken-bg:#FBE7E4;
+  --party-d:#2058B0; --party-r:#B23A2F; --party-i:#8B5E00; --party-np:#6B7280;
+  --radius:14px;
+  --deep:#0D4A43; --ink-band:#171A21; --on-deep:#FFFFFF; --on-deep-muted:#D3E7E2; --on-deep-faint:#B4D2CB; --on-deep-border:rgba(255,255,255,.28);
+  --t0:var(--text); --m0:var(--text-muted); --f0:var(--text-faint); --b0:var(--border);
+  --wm-blend:multiply;
+}
+html[data-theme="dark"]{
+  --deep:#0A332E; --ink-band:#0B0D10; --wm-blend:screen;
+  --bg:#1D222B; --bg-alt:#14171D; --border:#313946;
+  --text:#E8EAED; --text-muted:#A9B1BB; --text-faint:#8E97A3;
+  --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E; --brand-tint-hover:#1E4038; --on-tint:#6FD6BC; --on-brand:#06231C;
+  --not_started:#9AA3B2; --in_progress:#E0993D; --stalled:#7C93C4; --compromise:#B084D1; --completed:#3DBE82; --broken:#E0685A;
+  --not_started-bg:#262B33; --in_progress-bg:#3A2E1B; --stalled-bg:#212A38; --compromise-bg:#2E2438; --completed-bg:#1A3327; --broken-bg:#3A2220;
+  --party-d:#5B9BF0; --party-r:#F0776A; --party-i:#D9A93F; --party-np:#9AA3B2;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg-alt);color:var(--text);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol,dl,dd,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:var(--brand);text-underline-offset:3px}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1168px;margin:0 auto;padding:0 24px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.top{background:var(--bg);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;gap:8px 26px;min-height:70px}
+.logo{display:flex;align-items:center;flex:none;color:var(--text);text-decoration:none}
+.logo svg{display:block;overflow:visible}
+.logo .aow-sym .s,.logo .aow-wm .i{fill:var(--brand)}
+.logo .aow-wm .w{fill:currentColor}
+html[data-theme="dark"] .logo .aow-wm .i{fill:#7CE0C4}
+.logo .lw-short{display:none}
+.nav{display:flex;align-self:stretch;gap:2px;margin-right:auto}
+.nav a{display:flex;align-items:center;padding:3px 11px 0;border-bottom:3px solid transparent;font-size:15px;font-weight:600;color:var(--text-muted);text-decoration:none;white-space:nowrap}
+.nav a:hover{color:var(--text)}
+.nav a[aria-current]{color:var(--text);border-bottom-color:var(--brand)}
+.acts{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border:2px solid transparent;border-radius:calc(var(--radius) - 3px);background:none;font-size:15.5px;font-weight:700;line-height:1.2;text-decoration:none;white-space:nowrap;cursor:pointer}
+.btn.primary{background:var(--brand);color:var(--on-brand)}
+.btn.primary:hover{background:var(--brand-dark)}
+html[data-theme="dark"] .btn.primary:hover{background:var(--brand);filter:brightness(1.1)}
+.btn.line{border-color:var(--text);color:var(--text)}
+.btn.line:hover{background:var(--bg-alt)}
+.btn.quiet{border-color:var(--border);background:var(--bg);color:var(--text)}
+.btn.quiet:hover{border-color:var(--text-faint)}
+.btn.sm{min-height:38px;padding:0 14px;font-size:14px}
+.notice{background:var(--brand-tint);font-size:14px}
+.notice .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:9px;padding-bottom:9px}
+.notice a{color:var(--on-tint);font-weight:600}
+.notice button{flex:none;width:32px;height:32px;border:0;border-radius:50%;background:none;font-size:18px;line-height:1;cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:5px 13px 5px 10px;border-radius:999px;background:var(--pill-bg);color:var(--text);font-size:14px;font-weight:700;line-height:1.3;white-space:nowrap}
+.pill::before{content:'';flex:none;width:10px;height:10px;border-radius:50%;background:var(--pill-c)}
+.s-not_started{--pill-c:var(--not_started);--pill-bg:var(--not_started-bg)}
+.s-in_progress{--pill-c:var(--in_progress);--pill-bg:var(--in_progress-bg)}
+.s-stalled{--pill-c:var(--stalled);--pill-bg:var(--stalled-bg)}
+.s-compromise{--pill-c:var(--compromise);--pill-bg:var(--compromise-bg)}
+.s-completed{--pill-c:var(--completed);--pill-bg:var(--completed-bg)}
+.s-broken{--pill-c:var(--broken);--pill-bg:var(--broken-bg)}
+.pill.sourcing{padding:4px 12px;background:none;border:1.5px dashed var(--in_progress)}
+.pill.sourcing::before{display:none}
+.b-not_started{background:var(--not_started)}.b-in_progress{background:var(--in_progress)}.b-stalled{background:var(--stalled)}
+.b-compromise{background:var(--compromise)}.b-completed{background:var(--completed)}.b-broken{background:var(--broken)}
+.mix{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden;background:var(--border)}
+.mix i{display:block;height:100%;min-width:4px}
+.src3{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--text-muted)}
+.src3 li{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.src3 svg{flex:none;color:var(--brand)}
+.src3 .missing{color:var(--text-faint)}
+.src3 .missing svg{color:var(--text-faint)}
+.ring{--p:0;--tier:var(--border);position:relative;display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:50%;background:conic-gradient(var(--tier) calc(var(--p) * 1%),var(--border) 0)}
+.ring::before{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--ring-bg,var(--bg-alt))}
+.ring b{position:relative;font-size:17px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ring.high{--tier:var(--completed)}.ring.mid{--tier:var(--in_progress)}.ring.low{--tier:var(--broken)}
+.ring.na b{color:var(--text-faint);font-weight:600}
+.ring.lg{width:104px;height:104px}
+.ring.lg::before{inset:10px}
+.ring.lg b{font-size:38px;letter-spacing:-.04em}
+.ledger{background:var(--bg);border:2px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.ledger-head{display:grid;grid-template-columns:1fr 1fr;border-bottom:3px solid var(--text);font-size:14px;color:var(--text-muted)}
+.ledger-head span{padding:11px 22px}
+.ledger-head span+span{font-weight:800;color:var(--text)}
+.entry{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.ledger-head+.entry{border-top:0}
+.said{padding:22px;border-right:1px solid var(--border)}
+.did{padding:22px;min-width:0}
+.said .q{font-size:20px;font-weight:400;line-height:1.35;letter-spacing:-.01em;text-wrap:pretty}
+.said .cat{margin-top:8px;font-size:14px;color:var(--text-muted)}
+.said .src3{margin-top:16px}
+.did .pills{display:flex;flex-wrap:wrap;gap:8px}
+.did .note{margin-top:12px;font-size:15.5px;line-height:1.6;color:var(--text-muted)}
+.did .links{margin-top:14px;display:grid;gap:6px;font-size:14px}
+.did .links li{display:flex;flex-wrap:wrap;gap:4px 10px}
+.did .links span{color:var(--text-muted)}
+.did .links a{font-weight:600}
+.did .appeal{display:inline-block;margin-top:14px;font-size:13.5px;color:var(--text-muted)}
+.ledger.small .said,.ledger.small .did{padding:16px 18px}
+.ledger.small .said .q{font-size:17px}
+.ledger.small .ledger-head span{padding:9px 18px}
+.hero{background:var(--bg);border-bottom:1px solid var(--border);padding:clamp(36px,6vw,80px) 0 clamp(36px,5vw,64px)}
+.said-did{margin-bottom:clamp(24px,4vw,48px);font-size:clamp(40px,9vw,112px);line-height:.96;letter-spacing:-.045em}
+.said-did span{display:block}
+.said-did .a{font-weight:300}
+.said-did .b{font-weight:800}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.hero h1{font-size:clamp(20px,2.3vw,26px);font-weight:700;line-height:1.25;letter-spacing:-.015em}
+.hero .lede{margin-top:12px;max-width:54ch;font-size:clamp(16px,1.5vw,18px);color:var(--text-muted)}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.hero figcaption{margin-top:10px;font-size:13.5px;color:var(--text-faint)}
+.figures{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(32px,5vw,60px);border-top:3px solid var(--text)}
+.figures div{padding:16px 16px 0 0}
+.figures div+div{padding-left:22px;border-left:1px solid var(--border)}
+.figures b{display:block;font-size:clamp(26px,4.6vw,52px);font-weight:800;line-height:1.05;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.figures span{font-size:15px;color:var(--text-muted)}
+.figures-note{margin-top:14px;font-size:13.5px;color:var(--text-faint)}
+.band{padding:clamp(48px,7vw,104px) 0}
+.band.paper{background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.band-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(20px,5vw,80px);align-items:start}
+.band h2{font-size:clamp(28px,4vw,46px);font-weight:800;line-height:1.05;letter-spacing:-.035em;text-wrap:balance}
+.band .intro{margin-top:14px;font-size:17.5px;color:var(--text-muted);text-wrap:pretty}
+.band .more{margin-top:18px;font-size:15.5px}
+.band h3{font-size:19px;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.steps{counter-reset:s;border-top:3px solid var(--text)}
+.steps li{counter-increment:s;display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;padding:22px 0;border-bottom:1px solid var(--border)}
+.steps li::before{content:counter(s);grid-row:span 2;font-size:46px;font-weight:300;line-height:.95;color:var(--brand);font-variant-numeric:tabular-nums}
+.steps p{color:var(--text-muted)}
+.kinds{border-top:3px solid var(--text)}
+.kinds li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;padding:20px 0;border-bottom:1px solid var(--border)}
+.kinds svg{grid-row:span 2;color:var(--brand)}
+.kinds p{color:var(--text-muted)}
+.kinds .sum{border-bottom:0;margin-top:20px;padding:22px;border-radius:var(--radius);background:var(--brand);color:var(--on-brand)}
+.kinds .sum svg,.kinds .sum p{color:inherit}
+.asides{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:clamp(32px,5vw,56px)}
+.asides h3{font-size:17px}
+.asides p{margin-top:6px;font-size:15.5px;color:var(--text-muted)}
+.statuses{border-top:3px solid var(--text)}
+.statuses div{display:grid;grid-template-columns:170px minmax(0,1fr);gap:8px 16px;align-items:center;padding:15px 0;border-bottom:1px solid var(--border)}
+.statuses dd{color:var(--text-muted)}
+.fine{margin-top:18px;font-size:15px;color:var(--text-muted)}
+.pledges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px;border-top:3px solid var(--text)}
+.pledges li{padding:22px 0;border-bottom:1px solid var(--border)}
+.pledges svg{display:block;margin-bottom:10px;color:var(--brand)}
+.pledges p{margin-top:6px;color:var(--text-muted)}
+.cover{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.cover h3{padding-bottom:12px;border-bottom:3px solid var(--text)}
+.cover li{position:relative;padding:14px 0 14px 30px;border-bottom:1px solid var(--border);font-size:15.5px}
+.cover li::before{content:'';position:absolute;left:2px;top:19px;width:14px;height:14px;border-radius:50%;background:var(--brand)}
+.cover .not li{color:var(--text-muted)}
+.cover .not li::before{background:none;border:2px solid var(--text-faint)}
+.browse{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px;border-top:3px solid var(--text)}
+.browse a{display:block;height:100%;padding:18px 0;border-bottom:1px solid var(--border);color:inherit;text-decoration:none}
+.browse b{display:block;font-size:18px;color:var(--brand)}
+.browse a:hover b{text-decoration:underline}
+.browse span{color:var(--text-muted);font-size:15.5px}
+.browse .lead{grid-column:1/-1}
+.browse .lead a{height:auto;margin:22px 0 10px;padding:24px;border:0;border-radius:var(--radius);background:var(--brand);color:var(--on-brand)}
+.browse .lead b{font-size:22px;color:inherit}
+.browse .lead span{color:inherit}
+.fix{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 40px;padding:clamp(22px,3vw,36px);border-radius:var(--radius);background:var(--brand-tint)}
+.fix div{flex:1 1 440px}
+.fix h2{font-size:clamp(22px,2.6vw,28px);max-width:none}
+.fix p{margin-top:8px}
+.fix a:not(.btn){color:var(--on-tint)}
+.page-head{padding-top:clamp(26px,4vw,48px)}
+.page-head h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.02;letter-spacing:-.04em}
+.page-head .sub{margin-top:10px;max-width:64ch;color:var(--text-muted)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:24px}
+.filters input[type=search]{flex:1 1 300px;min-width:0;min-height:50px;padding:0 16px 0 46px;border:2px solid var(--border);border-radius:calc(var(--radius) - 2px);background:var(--bg) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="%2369737E" stroke-width="2.2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><line x1="12.5" y1="12.5" x2="16.5" y2="16.5"/></svg>') no-repeat 16px center;font-size:16px}
+.filters select{min-height:50px;padding:0 12px;border:2px solid var(--border);border-radius:calc(var(--radius) - 2px);background:var(--bg);font-size:15px}
+.group{margin-top:clamp(28px,4vw,48px)}
+.group-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:3px solid var(--text)}
+.group-head h2{font-size:24px;font-weight:800;letter-spacing:-.025em}
+.group-head span{font-size:14.5px;color:var(--text-muted)}
+.cols,.row{display:grid;grid-template-columns:minmax(0,2.3fr) 130px minmax(0,1.5fr) 56px 44px;gap:20px;align-items:center}
+.cols{padding:10px 8px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text-muted)}
+.row{padding:14px 8px;border-bottom:1px solid var(--border);color:inherit;text-decoration:none}
+.row:hover{background:var(--bg);--ring-bg:var(--bg)}
+.who{display:flex;align-items:center;gap:14px;min-width:0}
+.mono{display:flex;align-items:center;justify-content:center;flex:none;width:46px;height:46px;border:2px solid var(--border);border-radius:50%;background:var(--bg);font-size:14.5px;font-weight:700;color:var(--text-muted)}
+.who .name{display:block;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.015em;color:var(--text);text-decoration:none}
+.who .name:hover{text-decoration:underline}
+.who .seat{display:block;font-size:14.5px;color:var(--text-muted)}
+.party{display:inline-flex;align-items:center;gap:8px;font-size:15px}
+.party i{flex:none;width:10px;height:10px;border-radius:50%}
+.pd i{background:var(--party-d)}.pr i{background:var(--party-r)}.pi i{background:var(--party-i)}.pn i{background:var(--party-np)}
+.kept{min-width:0;font-size:14.5px;color:var(--text-muted)}
+.kept .mix{margin-top:7px}
+.star{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:50%;background:none;font-size:20px;color:var(--text-faint);cursor:pointer}
+.star:hover{color:var(--text);background:var(--bg-alt)}
+.key{display:flex;flex-wrap:wrap;gap:8px 20px;margin:clamp(28px,4vw,44px) 0 0;font-size:14.5px;color:var(--text-muted)}
+.key li{display:flex;align-items:center;gap:8px}
+.key i{width:10px;height:10px;border-radius:50%}
+.crumbs{padding-top:22px;font-size:14.5px;color:var(--text-muted)}
+.crumbs a{color:var(--text-muted)}
+.profile{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:clamp(24px,5vw,64px);align-items:start;padding:18px 0 0}
+.profile h1{font-size:clamp(36px,6vw,72px);font-weight:800;line-height:.98;letter-spacing:-.045em}
+.facts{display:flex;flex-wrap:wrap;gap:4px 26px;margin-top:16px;font-size:16.5px;color:var(--text-muted)}
+.facts strong{font-weight:600;color:var(--text)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.scorebox{padding:22px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);--ring-bg:var(--bg)}
+.scorebox .head{display:flex;align-items:center;gap:18px}
+.scorebox .head b.t{display:block;font-size:17px;font-weight:800}
+.scorebox .head .d{display:block;font-size:14.5px;color:var(--text-muted)}
+.scorebox .mix{height:10px;border-radius:5px;margin-top:20px}
+.tally{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;margin-top:14px;font-size:14px;color:var(--text-muted)}
+.tally li{display:flex;align-items:center;gap:8px}
+.tally i{flex:none;width:10px;height:10px;border-radius:50%}
+.tally b{margin-left:auto;color:var(--text);font-variant-numeric:tabular-nums}
+.upsell{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin-top:22px;padding:14px 18px;border:2px dashed var(--border);border-radius:var(--radius);font-size:15px;color:var(--text-muted)}
+.upsell b{color:var(--text)}
+.sec-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin:clamp(28px,4vw,44px) 0 16px}
+.sec-head h2{font-size:28px;font-weight:800;letter-spacing:-.03em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{min-height:38px;padding:0 13px;border:2px solid var(--border);border-radius:999px;background:var(--bg);font-size:14px;font-weight:600;cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--text);background:var(--text);color:var(--bg)}
+.foot{margin-top:clamp(48px,7vw,96px);padding:36px 0 52px;border-top:3px solid var(--text);background:var(--bg);font-size:15px;color:var(--text-muted)}
+.home .foot{margin-top:0}
+.foot-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,3fr) minmax(0,3fr);gap:28px clamp(24px,5vw,72px)}
+.foot h2{margin-bottom:10px;font-size:15px;font-weight:800;color:var(--text)}
+.foot li{padding:3px 0}
+.foot a{color:var(--text-muted)}
+.foot a:hover{color:var(--text)}
+.foot .mail{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.foot .mail input{flex:1 1 200px;min-width:0;min-height:46px;padding:0 14px;border:2px solid var(--border);border-radius:calc(var(--radius) - 3px);background:var(--bg-alt)}
+.band-top{padding-bottom:clamp(22px,3vw,38px)}
+body.bk-plain .band-top.p{border-bottom:3px solid var(--text)}
+body.bk-ink{--deep:var(--ink-band)}
+body.bk-tint :is(.hero,.band-top){background:var(--brand-tint);border-color:transparent;--border:color-mix(in srgb,var(--text) 16%,transparent)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot){background:var(--deep);border-color:transparent;color:var(--on-deep);--text:var(--on-deep);--text-muted:var(--on-deep-muted);--text-faint:var(--on-deep-faint);--border:var(--on-deep-border)}
+body.bk-ink :is(.hero,.band-top,.foot){color:#FFFFFF;--text:#FFFFFF;--text-muted:#D5D9DE;--text-faint:#B3B9C2;--border:rgba(255,255,255,.26)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.primary{background:var(--text);color:var(--deep)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.primary:hover{background:var(--text);filter:brightness(.93)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.line:hover{background:color-mix(in srgb,var(--text) 12%,transparent)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.quiet{background:transparent}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.quiet:hover{border-color:var(--text)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top) .party i{box-shadow:0 0 0 2px var(--text)}
+body:is(.bk-tint,.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) :is(.ledger,.scorebox,.filters input,.filters select,.mail input){--text:var(--t0);--text-muted:var(--m0);--text-faint:var(--f0);--border:var(--b0);color:var(--text)}
+body:is(.bk-deep,.bk-ink) :is(.band-top,.foot) :is(.filters input,.filters select,.mail input){border-color:transparent;background-color:var(--bg)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top) :is(.ledger,.scorebox){border-color:transparent}
+body:is(.bk-deep,.bk-ink) .foot{margin-top:clamp(48px,7vw,96px)}
+body:is(.bk-deep,.bk-ink) .home .foot{margin-top:0}
+body.wm-pattern,body.wm-mark main{position:relative;isolation:isolate}
+body.wm-pattern::after,body.wm-mark main::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;background:var(--brand);opacity:var(--wm-o,.09);mix-blend-mode:var(--wm-blend)}
+body.wm-mark main::after{-webkit-mask:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y;mask:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y}
+body.wm-pattern::after{-webkit-mask:var(--wm-tile) 0 0/280px auto repeat;mask:var(--wm-tile) 0 0/280px auto repeat}
+body.wm-pattern :is(.top,.notice,.hero,.band-top,.foot),body.wm-mark .hero{position:relative;z-index:41}
+body.wm-mark .home main::after{display:none}
+body.wm-mark .home .band:not(.paper):not(#corrections){position:relative;isolation:isolate}
+body.wm-mark .home .band:not(.paper):not(#corrections)::after{content:'';position:absolute;inset:0;margin:auto;width:min(46vw,540px);aspect-ratio:166.55/181.3;max-height:80%;z-index:40;pointer-events:none;background:var(--brand);opacity:var(--wm-o,.09);mix-blend-mode:var(--wm-blend);-webkit-mask:var(--wm-one) center/contain no-repeat;mask:var(--wm-one) center/contain no-repeat}
+body.wms-faint{--wm-o:.05}
+body.wms-medium{--wm-o:.09}
+body.wms-strong{--wm-o:.15}
+@media (max-width:1000px){
+  .top .wrap{flex-wrap:wrap;padding-top:10px}
+  .nav{order:3;flex:1 1 100%;align-self:auto;margin:0 -24px;padding:0 14px;overflow-x:auto;border-top:1px solid var(--border)}
+  .nav a{padding:12px 10px 9px}
+  .hero-grid,.band-grid,.profile{grid-template-columns:minmax(0,1fr)}
+  .asides{grid-template-columns:minmax(0,1fr);gap:20px}
+}
+@media (max-width:720px){
+  .wrap{padding:0 18px}
+  .nav{margin:0 -18px;padding:0 8px}
+  .logo .lw-full{display:none}.logo .lw-short{display:block}
+  .btn{min-height:44px;padding:0 15px;font-size:15px}
+  .cols{display:none}
+  .row{grid-template-columns:minmax(0,1fr) 56px;gap:12px 14px;padding:16px 2px}
+  .row .party{grid-column:1;grid-row:2;padding-left:60px}
+  .row .kept{grid-column:1/-1;grid-row:3}
+  .row .ring{grid-column:2;grid-row:1}
+  .row .star{display:none}
+  .ledger-head{display:none}
+  .entry{grid-template-columns:minmax(0,1fr)}
+  .said{border-right:0;padding-bottom:6px}
+  .did{padding-top:10px}
+  .pledges,.cover,.browse{grid-template-columns:minmax(0,1fr)}
+  .cover .not{margin-top:28px}
+  .statuses div{grid-template-columns:minmax(0,1fr);gap:6px}
+  .steps li{grid-template-columns:44px minmax(0,1fr)}
+  .steps li::before{font-size:36px}
+  .figures div{padding-right:8px}
+  .figures div+div{padding-left:12px}
+  .figures span{font-size:13.5px}
+  .foot-grid{grid-template-columns:minmax(0,1fr)}
+  .cta-row .btn{flex:1 1 100%}
+  .acts .btn.quiet{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+`;
+
+function v2StaticCss() {
+  const dark = [];
+  const light = V2_CSS.replace(/html\[data-theme="dark"\]( [^{]+)?\{([^}]*)\}\n?/g, (_, sel, decl) => {
+    dark.push(`${sel ? sel.trim() : ':root'}{${decl}}`);
+    return '';
+  });
+  if (!dark.length || light.includes('data-theme')) fatal('Redesign preview: the dark-theme rules in V2_CSS did not convert cleanly.');
+  return `${light}\n@media (prefers-color-scheme:dark){\n${dark.join('\n')}\n}\n`;
+}
+
+// The header logo and the watermark both come from the artwork already in layout(), so there is one copy of it.
+let V2_LOGO = null;
+function v2Logo() {
+  if (V2_LOGO) return V2_LOGO;
+  const page = layout({ depth: 0, title: '', description: '', canonical: SITE + '/', body: '' });
+  const m = /<a class="logo"[^>]*>([\s\S]*?)<\/a><a class="cta"/.exec(page);
+  const sym = m && /<svg class="aow-sym"[^>]*viewBox="0 0 ([\d.]+) ([\d.]+)"[^>]*><path d="([^"]+)"/.exec(m[1]);
+  if (!m || !sym) fatal('Redesign preview: could not read the header logo out of layout().');
+  V2_LOGO = { inner: m[1], w: +sym[1], h: +sym[2], d: sym[3] };
+  return V2_LOGO;
+}
+function v2WatermarkCss() {
+  const { w, h, d } = v2Logo();
+  const url = svg => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  const p = `<path d="${d}"/>`;
+  const tall = +(h * 2.3).toFixed(2);
+  const one = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${p}</svg>`;
+  const mark = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${tall}" viewBox="0 0 ${w} ${tall}"><g transform="translate(0,${+(h * 0.65).toFixed(2)})">${p}</g></svg>`;
+  const tile = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"><g transform="translate(60,50) scale(.6)">${p}</g><g transform="translate(380,370) scale(.6)">${p}</g></svg>`;
+  return `:root{--wm-one:${url(one)};--wm-mark:${url(mark)};--wm-tile:${url(tile)}}\n`;
+}
+
+const V2_TICK = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const V2_OPEN = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5" stroke-dasharray="3 2.6"/></svg>';
+const V2_BIGTICK = '<svg width="30" height="30" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.2"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+// The three kinds of source the standard asks for, in the order the site always lists them.
+const V2_SOURCE_KINDS = ['Official record', 'Mainstream news', 'Right-leaning news'];
+const v2Src3 = found => `<ul class="src3" aria-label="Sources found">${V2_SOURCE_KINDS.map((k, i) => found[i]
+  ? `<li>${V2_TICK}${k}</li>` : `<li class="missing">${V2_OPEN}${k} (not yet)</li>`).join('')}</ul>`;
+
+// One page shell for every redesigned page: header with the page's own links, the body, and the footer.
+function v2Layout({ depth, title, description, body, nav, cta, bodyClass, csp, wrapClass }) {
+  const up = '../'.repeat(depth);
+  const logo = v2Logo();
+  const legal = [`<li><a href="${up}about/">About</a></li>`, `<li><a href="${up}contact/">Contact</a></li>`, `<li><a href="${up}methodology/">Methodology</a></li>`,
+    `<li><a href="${up}aow-index.html#newsletter">Weekly email</a></li>`]
+    .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<li><a href="${up}${f}">${l}</a></li>`)).join('');
+  const follow = SOCIAL.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="me noopener noreferrer">${esc(s.name)}${s.handle ? ` ${esc(s.handle)}` : ''}</a></li>`).join('');
+  return `<!DOCTYPE html>
+${MARK}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="${esc(csp || CSP)}">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0D4A43">
+<link rel="icon" href="${up}favicon.ico" sizes="32x32">
+<link rel="icon" href="${up}favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="${up}apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>${v2WatermarkCss()}${v2StaticCss()}</style>
+</head>
+<body class="${bodyClass || V2_BODY_CLASS}">
+<div class="${wrapClass || ''}">
+<header class="top"><div class="wrap"><a class="logo" href="${up}preview/">${logo.inner}</a><nav class="nav" aria-label="On this page">${nav || ''}</nav><div class="acts">${cta || ''}</div></div></header>
+<div class="notice"><div class="wrap"><span><strong>Preview of the new design.</strong> Visitors still see the current site. <a href="${up || './'}">Back to the live home page</a></span></div></div>
+<main>
+${body}
+</main>
+<footer class="foot"><div class="wrap foot-grid"><div><h2>ActionOverWords Index</h2><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated {{LASTMOD}}. Spot an error? <a href="mailto:${CONTACT}">${CONTACT}</a></p></div><div><h2>Follow</h2><ul>${follow}</ul></div><div><h2>The site</h2><ul>${legal}</ul></div></div></footer>
+</div>
+</body>
+</html>
+`;
+}
+
+// The redesigned home page. Every sentence is the current home page's own (see renderHome); only the layout is new.
+// Keep the two in step until this one replaces it.
+function renderHomeV2(ctx) {
+  const { model, hubs } = ctx;
+  const up = '../';
+  const tracker = up + 'aow-index.html';
+  const current = [...model.entries.values()].filter(e => e.kind === 'current');
+  const states = new Set(current.filter(e => e.level === 'state' && STATE_NAMES[e.state] && !NOT_A_STATE.has(e.state)).map(e => e.state)).size;
+  const people = model.pages.length;
+  const total = model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0);
+  const faq = fs.existsSync(path.join(ROOT, 'faq.html'));
+  const live = liveCountsConfig();
+  const liveJs = live.origin ? homeLiveJs(live) : null;
+  const liveId = k => (liveJs ? ` id="live-${k}"` : '');
+
+  const link = (href, name, text, lead) => `<li${lead ? ' class="lead"' : ''}><a href="${href}"><b>${name}</b><span>${text}</span></a></li>`;
+  const browse = [link(tracker, 'The interactive tracker', 'Search officials by name or state, filter by status and read each promise with its sources.', true),
+    link(up + 'officials/', 'Officials directory', `${esc(nOf(people, 'person', 'people'))} and ${esc(nOf(total, 'promise', 'promises'))}, each promise with sources from at least three distinct publishers, including a primary record.`)]
+    .concat([...hubs.values()].map(h => link(up + esc(h.key) + '/', esc(cap(hubMeta(h.key, model).label)), `${esc(nOf(h.pages.length, 'person', 'people'))} with promises published here.`)))
+    .concat([link(up + 'methodology/', 'Methodology', 'Sources, statuses, the AOW Score and how the tracker stays nonpartisan.'),
+      link(up + 'about/', 'About', 'Who runs the Index, how it is paid for and what its limits are.'),
+      link(up + 'contact/', 'Contact', 'Suggest a correction, appeal a status or ask a question.'),
+      link(tracker + '#newsletter', 'The weekly email', 'What changed on the tracker this week, in one free email every Monday.')])
+    .concat(faq ? [link(up + 'faq.html', 'Frequently asked questions', 'Straight answers about how the site works.')] : []);
+
+  const band = (id, hid, h2, intro, content, { paper, more, wide } = {}) => `
+<section class="band${paper ? ' paper' : ''}" id="${id}" aria-labelledby="${hid}">
+<div class="wrap">
+<div class="band-grid"><div><h2 id="${hid}">${h2}</h2>${intro ? `<p class="intro">${intro}</p>` : ''}${more ? `<p class="more">${more}</p>` : ''}</div><div>${content}</div></div>${wide || ''}
+</div>
+</section>`;
+
+  const body = `
+<section class="hero" aria-labelledby="top">
+<div class="wrap">
+<p class="said-did"><span class="a">What they said.</span><span class="b">What happened.</span></p>
+<div class="hero-grid">
+<div>
+<h1 id="top">Did U.S. officials keep their promises?</h1>
+<p class="lede">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and shows what actually happened to each one: kept, broken, or somewhere in between. Every promise is held to the same standard, whatever the official's party.</p>
+<div class="cta-row"><a class="btn primary" href="${tracker}">Open the interactive tracker</a><a class="btn line" href="#how-it-works">How it works</a></div>
+</div>
+<figure aria-label="Two made-up example entries">
+<div class="ledger small"><div class="ledger-head"><span>What they said</span><span>What happened</span></div>
+<div class="entry"><div class="said"><p class="q">Cut permit wait times for new housing in half</p><p class="cat">Housing</p>${v2Src3([true, true, true])}</div><div class="did"><div class="pills"><span class="pill s-in_progress">In progress</span></div><p class="note">Example: fully sourced.</p></div></div>
+<div class="entry"><div class="said"><p class="q">Bring high-speed internet to every rural county</p><p class="cat">Infrastructure</p>${v2Src3([false, true, false])}</div><div class="did"><div class="pills"><span class="pill sourcing">Still finding sources</span><span class="pill s-not_started">Not started</span></div><p class="note">Example: still being sourced.</p></div></div>
+</div>
+<figcaption>Made-up examples to show the layout. Real entries link to each source.</figcaption>
+</figure>
+</div>
+<div class="figures" role="group" aria-label="The size of the tracker">
+<div><b${liveId('officials')}>${roundedPlus(current.length)}</b><span>Officials</span></div>
+<div><b${liveId('promises')}>${fmtInt(PROMISES_FLOOR)}+</b><span>Promises</span></div>
+<div><b${liveId('states')}>${states}</b><span>States covered</span></div>
+</div>
+<p class="figures-note">Counts are rounded down. The interactive tracker has the full, current roster.</p>
+</div>
+</section>
+${liveJs ? `<script>${liveJs}</script>\n` : ''}${band('how-it-works', 'h-how', 'How it works', 'Each entry is one specific promise, rated on what has actually happened, with the sources we found for it shown right on the entry.', `<ol class="steps">
+<li><h3>One specific promise at a time</h3><p>Each entry is a single promise an official made: a bill to introduce, a policy to carry out, a commitment to keep.</p></li>
+<li><h3>Checked against sources</h3><p>Our standard is three kinds of sources for each promise: a government record, mainstream or left-leaning news, and right-leaning news. The aim is that a status never rests on one side's account.</p></li>
+<li><h3>Rated on what happened</h3><p>Six statuses, from Not started to Completed or Broken, based on what has actually happened, not on intent.</p></li>
+<li><h3>Scored the same way for everyone</h3><p>The AOW Score is a 0 to 100 average of an official's tracked promises, weighted by status. The formula is fixed and published, so anyone can recompute it.</p></li>
+</ol>`)}
+${band('sourcing', 'h-src', 'Our sourcing standard', 'For each promise we look for three kinds of sources. The standard exists so a status doesn\'t rest on reporting from only one side of the aisle.', `<ul class="kinds">
+<li>${V2_BIGTICK}<h3>A government record</h3><p>A vote record, a signed bill, an agency filing or a similar primary record.</p></li>
+<li>${V2_BIGTICK}<h3>Mainstream or left-leaning news</h3><p>At least one outlet from the mainstream or left-leaning press.</p></li>
+<li>${V2_BIGTICK}<h3>Right-leaning news</h3><p>At least one outlet from the right-leaning press.</p></li>
+<li class="sum">${V2_BIGTICK}<h3>Sources you can check</h3><p>Every source we list is linked and labeled by type.</p></li>
+</ul>`, { paper: true, more: `Read the <a href="${up}methodology/#sourcing">full sourcing rules</a>.`, wide: `<div class="asides">
+<div><h3>When the record is the proof</h3><p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. Many entries in the tracker are of this kind.</p></div>
+<div><h3>Still being sourced</h3><p>This is a new dataset, and sourcing is still being completed for many entries. Many of them carry a <span class="pill sourcing">Still finding sources</span> tag in the tracker instead of being presented as fully verified.</p></div>
+<div><h3>A good-faith reading, open to appeal</h3><p>A status is our reading of the sources linked on the entry, not an audited record. If you think one is wrong, you can appeal it with a named source.</p></div>
+</div>` })}
+${band('statuses', 'h-status', 'Six statuses', 'Every promise gets one of six statuses, based on what has actually happened so far.', `<dl class="statuses">
+${Object.keys(STATUS).map(k => `<div><dt><span class="pill s-${k}">${esc(STATUS[k])}</span></dt><dd>${esc(STATUS_MEANING[k])}</dd></div>`).join('\n')}
+</dl>
+<p class="fine">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved. A candidate's promises show <strong>Campaign promise</strong> from 60 days before their election, and a pledge made for that race keeps the label after election day, also left out of the score.</p>`)}
+${band('nonpartisan', 'h-fair', 'The same standard for everyone', 'How the Index is run, in four commitments.', `<ul class="pledges">
+<li>${icon('tag')}<h3>Party is a fact, not a verdict</h3><p>A party badge is shown the way an election map shows one, and party is never assumed from context. Status colors are earned by outcome, never by party.</p></li>
+<li>${icon('check')}<h3>One standard, every official</h3><p>The same six statuses, the same sourcing standard and the same score formula apply to every official, current or former.</p></li>
+<li>${icon('list')}<h3>No ranking by party or score</h3><p>On these pages, officials are grouped by where they serve and listed alphabetically, or for the administration in the official order of office.</p></li>
+<li>${icon('shield')}<h3>Independent and openly funded</h3><p>Run by Action Over Words LLC and supported by memberships, optional tips and advertising. None of those changes a status or a score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p></li>
+</ul>`, { paper: true })}
+${band('coverage', 'h-cov', 'What is covered', 'Federal and state officials. Appointed officials such as Cabinet secretaries are included and marked Appointed in the tracker.', `<div class="cover">
+<div><h3>Covered</h3><ul>
+<li><strong>Federal:</strong> the President, the Vice President, Cabinet and senior White House officials, a set of sub-Cabinet law-enforcement and agency heads, and the U.S. Congress, including its non-voting members.</li>
+<li><strong>State:</strong> in every state, the Governor, the Lieutenant Governor (or whichever office is first in succession) and the Attorney General. Some larger states go deeper into their other executive offices.</li>
+<li><strong>Former officeholders</strong> and candidates who ran and lost are kept in the Archive, and past administrations are kept alongside the current one, under the same statuses and the same sourcing standard.</li>
+</ul></div>
+<div class="not"><h3>Not covered yet</h3><ul>
+<li>County and city government, school boards and special districts.</li>
+<li>State legislatures and judiciaries.</li>
+<li>Federal judges and independent regulatory boards such as the Federal Reserve, which are a different category: appointed, often deliberately apolitical, and with less to track in the same way.</li>
+</ul></div>
+</div>`, { more: `<a href="${up}methodology/#coverage">What is and is not covered</a> in full.` })}
+${band('browse', 'h-browse', 'Browse', 'Start in the interactive tracker, or browse the pages published here.', `<ul class="browse">${browse.join('')}</ul>`, { paper: true })}
+<section class="band" id="corrections" aria-labelledby="h-fix">
+<div class="wrap">
+<div class="fix">
+<div><h2 id="h-fix">Spot something wrong?</h2><p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:${CONTACT}">${CONTACT}</a> or use the Contact form in the tracker (details on the <a href="${up}contact/">contact page</a>). Appeals need a named source, the outlet and headline being cited, so they can be checked the same way every other entry is. <a href="${up}methodology/#corrections">How corrections work</a>.</p></div>
+<a class="btn primary" href="${tracker}">Open the tracker</a>
+</div>
+</div>
+</section>`;
+  return v2Layout({
+    depth: 1, wrapClass: 'home', body,
+    title: 'Redesign preview | ActionOverWords Index',
+    description: 'A preview of the redesigned ActionOverWords Index home page. Not public yet.',
+    nav: '<a href="#how-it-works">How it works</a><a href="#sourcing">Sourcing</a><a href="#statuses">Statuses</a><a href="#coverage">Coverage</a>',
+    cta: `<a class="btn primary sm" href="${tracker}">Open the tracker</a>`,
+    csp: liveJs ? homeCsp([liveJs], live.origin) : CSP
+  });
+}
+
 /* ------------------------------ about and contact ----------------------------- */
 // Static versions of what the tracker's About tab already says about who runs the site, how it is paid for and how to
 // reach it, so a visitor, a search engine or a reviewer can find them at a real address without running scripts. Every
@@ -1282,6 +1784,7 @@ function main() {
   guard(path.join(ROOT, 'methodology', 'index.html'));
   guard(path.join(ROOT, 'about', 'index.html'));
   guard(path.join(ROOT, 'contact', 'index.html'));
+  guard(path.join(ROOT, 'preview', 'index.html'));
   hubs.forEach((_, k) => guard(path.join(ROOT, k, 'index.html')));
   model.pages.forEach(pg => guard(path.join(ROOT, 'officials', pg.slug, 'index.html')));
 
@@ -1297,6 +1800,8 @@ function main() {
   };
   const emit = (key, rel, raw) => { const lm = stamp(key, raw); out.set(rel, raw.split('{{LASTMOD}}').join(lm)); };   // every occurrence, not just the first
   if (HOME_LANDING) emit('home', 'index.html', renderHome(ctx));
+  // The redesign preview is not a public page: no manifest entry, no sitemap line. Its "Last updated" date follows the home page's.
+  out.set('preview/index.html', renderHomeV2(ctx).split('{{LASTMOD}}').join(HOME_LANDING ? next['home'].lastmod : TODAY));
   model.pages.forEach(pg => emit(`officials/${pg.slug}/`, `officials/${pg.slug}/index.html`, renderOfficial(pg, ctx)));
   emit('officials/', 'officials/index.html', renderDirectory(model.pages, model.roster, hubs));
   emit('methodology/', 'methodology/index.html', renderMethodology());
@@ -1340,6 +1845,7 @@ Sitemap: ${SITE}/sitemap.xml
     'AOW static pages report (deterministic; no timestamps)',
     `data files read: ${fileCount}`,
     HOME_LANDING ? `home page (/): generated landing page; live headline numbers: ${HOME_LIVE_STATE}` : 'home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)',
+    'redesign preview (/preview/): the redesigned home page; marked noindex and left out of the sitemap',
     `officials with a page: ${model.pages.length}`,
     `promises published on pages: ${model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0)}`,
     `current officials listed by name only (no publishable promises yet): ${model.roster.length}`,
