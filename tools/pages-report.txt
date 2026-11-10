@@ -1,6 +1,7 @@
 AOW static pages report (deterministic; no timestamps)
 data files read: 76
 home page (/): generated landing page; live headline numbers: on (the browser reads public.site_counts() and shows the live counts rounded down like the tracker)
+redesign preview (/preview/): the redesigned home page; marked noindex and left out of the sitemap
 officials with a page: 30
 promises published on pages: 64
 current officials listed by name only (no publishable promises yet): 707
