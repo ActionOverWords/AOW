@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* redesign preview switch: ?look=new turns it on for this visit, ?look=old turns it off */try{var _lk=/[?&]look=(new|old)(&|$)/.exec(location.search);if(_lk){if(_lk[1]==='new')sessionStorage.setItem('aow_look','2');else sessionStorage.removeItem('aow_look')}if(sessionStorage.getItem('aow_look')==='2')document.documentElement.setAttribute('data-look','2')}catch(e){}</script>
+<script>/* site design: the redesign ("The record") is the default. ?look=old shows the previous look for this visit, ?look=new brings the new one back */try{var _lk=/[?&]look=(new|old)(&|$)/.exec(location.search);if(_lk){if(_lk[1]==='old')sessionStorage.setItem('aow_look','1');else sessionStorage.removeItem('aow_look')}if(sessionStorage.getItem('aow_look')!=='1')document.documentElement.setAttribute('data-look','2')}catch(e){document.documentElement.setAttribute('data-look','2')}</script>
 <title>ActionOverWords Index — Federal & State Promise Tracker</title>
 <meta name="description" content="See what elected officials promised and what happened. Promises are rated from Completed to Broken, with sources. 700+ federal and state officials.">
 <link rel="canonical" href="https://action-over-words.com/aow-index.html">
@@ -806,8 +806,6 @@ html[data-look="2"]{--radius:14px;--radius-sm:10px;--shadow:none;--on-deep:#FFFF
 html[data-look="2"] body{max-width:none;margin:0;box-shadow:none;font-size:16px;line-height:1.5;overflow-x:clip}
 html[data-look="2"] .wrap{max-width:1168px;padding:0 24px}
 html[data-look="2"] a:focus-visible,html[data-look="2"] button:focus-visible,html[data-look="2"] input:focus-visible,html[data-look="2"] select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-html[data-look="2"] .r-preview{background:#171A21;color:#FFFFFF;font-size:13.5px;text-align:center;padding:7px 16px}
-html[data-look="2"] .r-preview a{color:#FFFFFF;font-weight:700}
 html[data-look="2"] .masthead-inner{max-width:1168px;min-height:70px;padding:0 24px;gap:8px 26px}
 html[data-look="2"] .account-btn{min-height:38px;padding:0 14px;border:2px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);font-size:14px}
 html[data-look="2"] .account-btn:hover{border-color:var(--text-faint);background:var(--bg)}
@@ -4043,9 +4041,10 @@ function promiseCardHTML(p, personName, canEdit){
       </div>
     </div>`;
 }
-// ---------- Redesign preview ("The record"), shown only with ?look=new ----------
-// Everything in this block runs only when LOOK2 is true (the <html data-look="2"> flag set in the page head).
-// Without the flag the page behaves exactly as before. See claude/aow-redesign-build.md.
+// ---------- The redesign ("The record"), the site's look since the Nov 2026 switch-over ----------
+// Everything in this block runs only when LOOK2 is true (the <html data-look="2"> flag set in the page head),
+// which is always, except on a visit opened with ?look=old (the previous look, kept for comparison and as a fallback).
+// See claude/aow-redesign-build.md.
 function look2Setup(){
   const inner = document.querySelector('.masthead-inner');
   const tabs = document.getElementById('tabs');
@@ -4063,10 +4062,6 @@ function look2Setup(){
     const el = document.getElementById(id);
     if(el) band.firstChild.appendChild(el);
   });
-  const strip = document.createElement('div');
-  strip.className = 'r-preview';
-  strip.innerHTML = 'Preview of the new design. Visitors still see the current site. <a href="?look=old">Back to the current look</a>';
-  document.body.insertBefore(strip, document.body.firstChild);
   if(window.MutationObserver) new MutationObserver(look2Decorate).observe(content, {childList:true});
 }
 // On a profile, add a bar of the promises by status and buttons that show one status at a time.

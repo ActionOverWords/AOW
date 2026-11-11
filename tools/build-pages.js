@@ -291,52 +291,6 @@ const tierOf = s => (s === null ? 'na' : s >= 70 ? 'high' : s >= 40 ? 'mid' : 'l
 function distOf(promises) { const d = {}; Object.keys(STATUS).forEach(k => d[k] = 0); promises.forEach(p => d[p.status]++); return d; }
 
 /* ---------------------------------- layout --------------------------------- */
-const CSS = `
-:root{--bg:#FFFFFF;--bg-alt:#F4F6F9;--border:#DFE3E9;--text:#171A21;--text-muted:#5B6472;--text-faint:#8992A3;--brand:#12836F;--brand-dark:#0C6355;--brand-tint:#E1F3EF;
---not_started:#8A93A3;--in_progress:#C2790F;--stalled:#5D7599;--compromise:#8A5CA8;--completed:#1E8E5A;--broken:#C0392B;
---not_started-bg:#EEF0F3;--in_progress-bg:#FBF0DF;--stalled-bg:#E9EDF4;--compromise-bg:#F3E9F6;--completed-bg:#E4F5EC;--broken-bg:#FBE7E4;
---party-d:#2058B0;--party-d-bg:#E7EFFC;--party-r:#B23A2F;--party-r-bg:#FBEAE7;--party-i:#8B5E00;--party-i-bg:#F7EEDA;--party-np:#6B7280;--party-np-bg:#EEF0F2;--radius:10px}
-@media (prefers-color-scheme:dark){:root{--bg:#1D222B;--bg-alt:#14171D;--border:#2B313C;--text:#E8EAED;--text-muted:#9CA3AF;--text-faint:#6B7280;--brand:#22A98A;--brand-dark:#1B8570;--brand-tint:#16332E;
---not_started:#9AA3B2;--in_progress:#E0993D;--stalled:#7C93C4;--compromise:#B084D1;--completed:#3DBE82;--broken:#E0685A;
---not_started-bg:#262B33;--in_progress-bg:#3A2E1B;--stalled-bg:#212A38;--compromise-bg:#2E2438;--completed-bg:#1A3327;--broken-bg:#3A2220;
---party-d:#5B9BF0;--party-d-bg:#1B2A42;--party-r:#F0776A;--party-r-bg:#3A2220;--party-i:#D9A93F;--party-i-bg:#332A16;--party-np:#9AA3B2;--party-np-bg:#262B33}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg-alt);color:var(--text);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--brand)}.wrap{max-width:860px;margin:0 auto;padding:0 20px}
-.masthead{background:var(--bg);border-bottom:1px solid var(--border)}.masthead .wrap{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}.logo-mark{width:46px;height:32px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap}.logo-word .lw-short{display:none}
-.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px;white-space:nowrap}
-@media (max-width:480px){.logo-word .lw-full{display:none}.logo-word .lw-short{display:inline}}
-/* AOW logo (logo kit v1.0, direction Ring): the supplied masters as inline SVG, in the page's own colors. */
-.masthead .logo{gap:0}.logo .logo-mark{width:auto;height:auto;background:none;border-radius:0;color:inherit;display:block;flex:none;font-size:0;line-height:0;letter-spacing:0}
-.logo .logo-word{font-size:0;line-height:0;letter-spacing:0}.logo svg{display:inline-block;vertical-align:top;flex:none;overflow:visible}.logo .logo-mark svg{display:block}
-.logo .aow-sym .s{fill:var(--brand)}.logo .aow-wm .w{fill:currentColor}.logo .aow-wm .i{fill:var(--brand)}
-@media (prefers-color-scheme:dark){.logo .aow-wm .i{fill:#7CE0C4}}
-nav.crumbs{font-size:13px;color:var(--text-muted);padding:16px 0 0}nav.crumbs a{color:var(--text-muted)}
-h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{font-size:20px;letter-spacing:-.01em;margin:30px 0 10px}h3{font-size:16.5px;line-height:1.4;margin:10px 0 8px}
-.sub{color:var(--text-muted);margin:0 0 6px}.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;vertical-align:middle;margin-left:6px}
-.role{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:18px 0}
-.role-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.role-head h2{margin:0;font-size:18px}
-.score{width:64px;height:64px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
-.score b{font-size:22px;line-height:1}.score span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
-.score.tier-high{border-color:var(--completed);color:var(--completed)}.score.tier-mid{border-color:var(--in_progress);color:var(--in_progress)}.score.tier-low{border-color:var(--broken);color:var(--broken)}
-.bar{display:flex;height:9px;border-radius:6px;overflow:hidden;background:var(--border);margin:12px 0 4px}.bar i{display:block;height:100%}
-.legend{font-size:12.5px;color:var(--text-muted);margin:0}
-.promise{border-top:1px solid var(--border);padding:16px 0 4px}.promise:first-of-type{border-top:0}
-.pill{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
-.cat{font-size:12.5px;color:var(--text-muted);margin-left:8px}.note{margin:0 0 10px;color:var(--text)}
-.sources{list-style:none;margin:6px 0 12px;padding:0;font-size:13.5px}.sources li{padding:3px 0}.stype{display:inline-block;min-width:175px;font-size:11.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
-.info{font-size:13.5px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:18px 0}
-.dir-sec h2,.dir-sec h3{font-size:17px;margin:26px 0 6px}.dir{list-style:none;margin:0;padding:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
-.dir li{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--border);flex-wrap:wrap}.dir li:first-child{border-top:0}.dir .meta{color:var(--text-muted);font-size:13px;margin-left:auto}
-footer{border-top:1px solid var(--border);margin-top:40px;padding:22px 0 40px;font-size:13px;color:var(--text-muted)}footer a{color:var(--text-muted);margin-right:14px}
-footer .follow{margin:0 0 12px}footer .follow b{color:var(--text);margin-right:10px}footer .follow a{color:var(--brand);font-weight:600}footer .follow .handle{color:var(--text-muted);font-weight:500}
-.related{margin-top:30px}.related .sub{font-size:14px}.summary{margin:14px 0 4px}
-.prose p{margin:0 0 14px}.prose h2{margin-top:34px}.prose ul{margin:0 0 14px;padding-left:22px}.prose li{margin:0 0 8px}.defs{margin:0 0 14px}.defs dt{margin-top:12px}.defs dd{margin:4px 0 0;color:var(--text-muted)}
-table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;background:var(--bg);border:1px solid var(--border)}th,td{padding:9px 12px;border-top:1px solid var(--border);text-align:left;vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);border-top:0}code{font-size:13px;background:var(--bg-alt);padding:1px 5px;border-radius:5px}
-`.replace(/\n/g, '\n').trim();
-const PARTY_CSS = ['d', 'r', 'i', 'np'].map(k => `.p-${k}{color:var(--party-${k});background:var(--party-${k}-bg)}`).join('') +
-  Object.keys(STATUS).map(k => `.s-${k}{color:var(--${k});background:var(--${k}-bg)}.b-${k}{background:var(--${k})}`).join('');
 const CSP = "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'";
 const LEGAL = [['privacy-policy.html', 'Privacy Policy'], ['terms-of-service.html', 'Terms of Service'], ['cookie-policy.html', 'Cookie Policy'], ['dmca-policy.html', 'Copyright / DMCA'], ['faq.html', 'FAQ']];
 
@@ -366,14 +320,38 @@ function shareImage(canonical) {
   return OG_DEFAULT;
 }
 
-function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss, mainClass, headExtra, csp }) {
+// The logo artwork (logo kit v1.0, direction Ring), used by the header and, as a faint picture, by the watermark.
+const LOGO_INNER = '<span class="logo-mark" aria-hidden="true"><svg class="aow-sym" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 166.55 181.3" width="29.4" height="32" aria-hidden="true" focusable="false"><path d="M146.33 56.97A41.65 41.65 0 0 1 147.23 65.62L147.23 102.64A41.65 41.65 0 0 1 105.59 144.28L61.09 144.28L12.72 179.75A7.99 7.99 0 0 1 0 173.31L0 65.62A41.65 41.65 0 0 1 41.65 23.97L105.59 23.97A41.65 41.65 0 0 1 113.08 24.65L100.03 39.95L41.65 39.95A25.66 25.66 0 0 0 15.98 65.62L15.98 157.53L53.75 129.84A7.99 7.99 0 0 1 58.47 128.3L105.59 128.3A25.66 25.66 0 0 0 131.25 102.64L131.25 74.66L146.33 56.97ZM36.37 83.3L66.41 113.33A13.88 13.88 0 0 0 86.79 112.53L163.23 22.89A13.88 13.88 0 0 0 142.11 4.88L75.41 83.08L56.01 63.67A13.88 13.88 0 0 0 36.37 83.3Z" class="s"/></svg></span><span class="logo-word"><span class="lw-full"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1147.4 181.3" width="202.52" height="32" role="img" aria-label="ActionOverWords Index"><g class="w"><path d="M40.15 120.63L65.85 48.33H83.5L109.25 120.63H92.35L87 105.23H62.6L57.15 120.63ZM66.3 90.58H83.05L74.7 64.68ZM138 121.63Q130.7 121.63 124.93 118.35Q119.15 115.08 115.83 109.08Q112.5 103.08 112.5 95.03Q112.5 86.98 115.75 80.88Q119 74.78 124.75 71.35Q130.5 67.93 138 67.93Q144.9 67.93 149.78 70.8Q154.65 73.68 157.33 78.45Q160 83.23 160.25 88.88H146.3Q146.05 87.13 145.18 85.23Q144.3 83.33 142.6 82Q140.9 80.68 138.15 80.68Q133.7 80.68 130.98 84.2Q128.25 87.73 128.25 94.83Q128.25 101.83 131.03 105.78Q133.8 109.73 138.45 109.73Q141.15 109.73 142.85 108.28Q144.55 106.83 145.4 104.93Q146.25 103.03 146.45 101.58H160.05Q159.9 107.03 157.18 111.58Q154.45 116.13 149.58 118.88Q144.7 121.63 138 121.63ZM191.7 121.28Q184.25 121.28 180.18 119.4Q176.1 117.53 174.53 114.25Q172.95 110.98 172.95 106.83V80.58H164.55V68.93H173.55L177.9 53.08H189.95V68.83H201.3V80.58H189.95L190 106.08Q190 108.38 191.03 109Q192.05 109.63 193.85 109.63H201.4V119.88Q200.35 120.38 198.15 120.83Q195.95 121.28 191.7 121.28ZM210.4 63.13V48.33H226.75V63.13ZM210.45 120.63V68.93H226.65V120.63ZM260.95 121.63Q253.15 121.63 247.4 118.3Q241.65 114.98 238.5 109.03Q235.35 103.08 235.35 95.08Q235.35 86.98 238.58 80.85Q241.8 74.73 247.58 71.33Q253.35 67.93 261.05 67.93Q268.9 67.93 274.63 71.35Q280.35 74.78 283.48 80.9Q286.6 87.03 286.6 95.08Q286.6 102.83 283.5 108.83Q280.4 114.83 274.65 118.23Q268.9 121.63 260.95 121.63ZM261.05 109.13Q264.5 109.13 266.45 106.95Q268.4 104.78 269.2 101.4Q270 98.03 270 94.53Q270 91.08 269.25 87.8Q268.5 84.53 266.55 82.38Q264.6 80.23 261.05 80.23Q257.5 80.23 255.53 82.3Q253.55 84.38 252.75 87.65Q251.95 90.93 251.95 94.53Q251.95 97.93 252.7 101.3Q253.45 104.68 255.43 106.9Q257.4 109.13 261.05 109.13ZM295.25 120.63V68.93H312.05V76.18Q313.75 73.53 317.08 71.05Q320.4 68.58 326.5 68.58Q331.15 68.58 335.28 70.38Q339.4 72.18 342 76.1Q344.6 80.03 344.6 86.38V120.63H327.5V88.63Q327.5 85.23 325.3 83.5Q323.1 81.78 320.25 81.78Q317.35 81.78 314.8 83.4Q312.25 85.03 312.25 88.23V120.63Z"/><path d="M386.75 121.63Q376.75 121.63 369.48 117.23Q362.2 112.83 358.23 104.55Q354.25 96.28 354.25 84.63Q354.25 72.93 358.25 64.58Q362.25 56.23 369.55 51.78Q376.85 47.33 386.75 47.33Q396.6 47.33 403.83 51.78Q411.05 56.23 415 64.58Q418.95 72.93 418.95 84.63Q418.95 96.23 415.05 104.5Q411.15 112.78 403.9 117.2Q396.65 121.63 386.75 121.63ZM386.75 111.43Q395.65 111.43 400.68 105.1Q405.7 98.78 405.7 84.78Q405.7 70.53 400.63 64.03Q395.55 57.53 386.75 57.53Q377.95 57.53 372.78 64.05Q367.6 70.58 367.6 84.78Q367.6 98.83 372.78 105.13Q377.95 111.43 386.75 111.43ZM444.55 120.63L425.45 68.93H436.6L449 105.13H449.65L462 68.93H473.2L454.15 120.63ZM503 121.63Q495.55 121.63 489.88 118.45Q484.2 115.28 481.03 109.38Q477.85 103.48 477.85 95.33Q477.85 87.38 480.73 81.2Q483.6 75.03 489.08 71.48Q494.55 67.93 502.3 67.93Q513.75 67.93 519.75 75.05Q525.75 82.18 525.75 93.88V97.58H490Q489.95 104.18 493.2 108.4Q496.45 112.63 502.75 112.63Q507.05 112.63 510.23 110.7Q513.4 108.78 514.45 104.83H525.55Q524.65 110.23 521.28 113.98Q517.9 117.73 513.08 119.68Q508.25 121.63 503 121.63ZM489.95 90.03H514.25Q514.25 84.43 511.3 80.55Q508.35 76.68 502.25 76.68Q498.25 76.68 495.5 78.63Q492.75 80.58 491.35 83.65Q489.95 86.73 489.95 90.03ZM536.95 120.63V68.93H548.6V80.13Q550.5 74.38 554.73 71.15Q558.95 67.93 564.5 67.93Q565.4 67.93 566.23 68.03Q567.05 68.13 567.5 68.38V80.03Q566.95 79.78 566.08 79.68Q565.2 79.58 564.55 79.58Q557.05 78.98 553.08 81.9Q549.1 84.83 549.1 90.58V120.63Z"/><path d="M593.05 120.63L572.2 48.33H581.55L597.55 105.88L613.85 48.33H621.1L637.35 105.88L653.65 48.33H662.95L641.85 120.63H633.3L617.45 64.58L601.35 120.63ZM688.65 121.63Q677.9 121.63 671.43 114.78Q664.95 107.93 664.95 94.98Q664.95 86.88 667.7 80.78Q670.45 74.68 675.75 71.3Q681.05 67.93 688.7 67.93Q699.35 67.93 705.78 74.93Q712.2 81.93 712.2 94.98Q712.2 102.88 709.53 108.88Q706.85 114.88 701.6 118.25Q696.35 121.63 688.65 121.63ZM688.7 114.33Q695.6 114.33 699.33 109.1Q703.05 103.88 703.05 94.78Q703.05 89.23 701.58 84.8Q700.1 80.38 696.93 77.78Q693.75 75.18 688.7 75.18Q681.65 75.18 677.9 80.35Q674.15 85.53 674.15 94.78Q674.15 100.23 675.63 104.68Q677.1 109.13 680.3 111.73Q683.5 114.33 688.7 114.33ZM724.1 120.63V68.93H732.9V78.88Q734.85 73.33 739.08 70.63Q743.3 67.93 748.2 67.93Q749.35 67.93 750.43 68.08Q751.5 68.23 752.15 68.58V77.53Q751.4 77.18 750.23 77.05Q749.05 76.93 748.25 76.93Q742.1 76.53 737.7 79.28Q733.3 82.03 733.3 88.48V120.63ZM780.85 121.63Q770.75 121.63 764.88 114.73Q759 107.83 759 94.58Q759 82.48 764.3 75.2Q769.6 67.93 780.1 67.93Q785.05 67.93 788.53 69.53Q792 71.13 794.1 73.28Q796.2 75.43 797.05 77.13V46.33H806.4V120.63H799.3L798.3 110.03Q797.65 112.03 795.88 114.78Q794.1 117.53 790.5 119.58Q786.9 121.63 780.85 121.63ZM782.5 114.53Q790.3 114.53 793.68 109.75Q797.05 104.98 797.05 94.13Q796.95 85.08 793.65 80.1Q790.35 75.13 782.65 75.13Q776.3 75.13 772.3 79.65Q768.3 84.18 768.3 94.13Q768.3 103.83 771.9 109.18Q775.5 114.53 782.5 114.53ZM839.85 121.63Q834.45 121.63 829.83 119.93Q825.2 118.23 822.15 114.7Q819.1 111.18 818.35 105.58H826.75Q827.75 110.13 831.33 112.43Q834.9 114.73 839.8 114.73Q845.05 114.73 848.25 112.78Q851.45 110.83 851.45 106.78Q851.45 101.33 844.55 99.68L833.85 97.03Q827.6 95.53 823.88 92.33Q820.15 89.13 820.1 83.38Q820.1 76.58 825.03 72.25Q829.95 67.93 839.8 67.93Q848.2 67.93 853.38 71.73Q858.55 75.53 858.8 82.78H850.6Q850.1 79.08 847.3 76.9Q844.5 74.73 839.7 74.73Q834.75 74.73 831.65 76.7Q828.55 78.68 828.55 82.83Q828.55 85.58 830.78 87.15Q833 88.73 837.25 89.78L847.65 92.38Q852.4 93.63 855.03 95.93Q857.65 98.23 858.7 100.98Q859.75 103.73 859.75 106.28Q859.75 113.43 854.53 117.53Q849.3 121.63 839.85 121.63Z"/></g><g class="i"><path d="M903.36 120.63V48.33H914.06V120.63ZM930.06 120.63V68.93H940.51V76.38Q942.36 73.28 946.28 70.78Q950.21 68.28 956.36 68.28Q961.21 68.28 965.33 70.2Q969.46 72.13 971.96 76.2Q974.46 80.28 974.46 86.73V120.63H963.76V87.88Q963.76 82.33 960.76 79.63Q957.76 76.93 953.11 76.93Q949.91 76.93 947.08 77.98Q944.26 79.03 942.51 81.15Q940.76 83.28 940.76 86.48V120.63ZM1006.86 121.63Q996.66 121.63 990.81 114.65Q984.96 107.68 984.96 94.53Q984.96 82.43 990.26 75.18Q995.56 67.93 1005.96 67.93Q1010.56 67.93 1013.91 69.38Q1017.26 70.83 1019.41 72.9Q1021.56 74.98 1022.51 76.78V46.33H1033.31V120.63H1025.26L1024.06 110.03Q1023.36 112.28 1021.53 114.98Q1019.71 117.68 1016.18 119.65Q1012.66 121.63 1006.86 121.63ZM1008.91 113.58Q1016.16 113.58 1019.33 109.05Q1022.51 104.53 1022.51 94.18Q1022.41 85.43 1019.28 80.75Q1016.16 76.08 1009.11 76.08Q1003.16 76.08 999.38 80.35Q995.61 84.63 995.61 94.18Q995.61 103.58 999.03 108.58Q1002.46 113.58 1008.91 113.58ZM1069.81 121.63Q1062.46 121.63 1056.86 118.45Q1051.26 115.28 1048.13 109.38Q1045.01 103.48 1045.01 95.33Q1045.01 87.28 1047.86 81.1Q1050.71 74.93 1056.08 71.43Q1061.46 67.93 1069.11 67.93Q1080.31 67.93 1086.23 74.95Q1092.16 81.98 1092.16 93.73V97.28H1055.76Q1055.71 104.23 1059.18 108.88Q1062.66 113.53 1069.56 113.53Q1074.21 113.53 1077.58 111.43Q1080.96 109.33 1082.01 105.18H1091.91Q1090.96 110.53 1087.66 114.18Q1084.36 117.83 1079.63 119.73Q1074.91 121.63 1069.81 121.63ZM1055.76 90.33H1081.96Q1081.96 84.23 1078.78 80Q1075.61 75.78 1069.06 75.78Q1064.61 75.78 1061.63 77.93Q1058.66 80.08 1057.21 83.43Q1055.76 86.78 1055.76 90.33ZM1095.81 120.63L1115.71 93.73L1097.46 68.93H1108.96L1121.66 86.08L1134.36 68.93H1145.86L1127.46 93.73L1147.41 120.63H1135.91L1121.61 101.28L1107.36 120.63Z"/></g></svg></span><span class="lw-short"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 571.45 181.3" width="100.86" height="32" role="img" aria-label="AOW Index"><g transform="scale(1.02778)"><g class="w"><path d="M36.16 119.7L61.85 47.4H79.5L105.25 119.7H88.36L83 104.3H58.6L53.16 119.7ZM62.3 89.65H79.06L70.7 63.75Z"/><path d="M144.1 120.7Q134.1 120.7 126.83 116.3Q119.56 111.9 115.58 103.62Q111.61 95.35 111.61 83.7Q111.61 72 115.61 63.65Q119.61 55.3 126.91 50.85Q134.21 46.4 144.1 46.4Q153.96 46.4 161.18 50.85Q168.41 55.3 172.35 63.65Q176.31 72 176.31 83.7Q176.31 95.3 172.41 103.57Q168.5 111.85 161.25 116.27Q154 120.7 144.1 120.7ZM144.1 110.5Q153 110.5 158.03 104.17Q163.06 97.85 163.06 83.85Q163.06 69.6 157.97 63.1Q152.91 56.6 144.1 56.6Q135.31 56.6 130.12 63.12Q124.95 69.65 124.95 83.85Q124.95 97.9 130.12 104.2Q135.31 110.5 144.1 110.5Z"/><path d="M203.75 119.7L182.91 47.4H192.25L208.25 104.95L224.56 47.4H231.81L248.06 104.95L264.36 47.4H273.65L252.56 119.7H244L228.16 63.65L212.06 119.7Z"/></g><g class="i"><path d="M310.7 119.7V47.4H322.86V119.7ZM337.7 119.7V68H349.61V75.4Q351.4 72.4 355.18 69.9Q358.95 67.4 365.15 67.4Q369.95 67.4 374.07 69.3Q378.2 71.2 380.73 75.25Q383.25 79.3 383.25 85.7V119.7H371.06V87.15Q371.06 82.1 368.23 79.6Q365.4 77.1 361.2 77.1Q356.81 77.1 353.32 79.3Q349.86 81.5 349.86 85.95V119.7ZM414.65 120.7Q404.4 120.7 398.56 113.65Q392.7 106.6 392.7 93.6Q392.7 81.45 398 74.22Q403.31 67 413.56 67Q419.95 67 424.06 69.8Q428.15 72.6 429.75 75.55V45.4H442V119.7H433L431.65 109.1Q430.86 111.55 428.98 114.25Q427.11 116.95 423.65 118.82Q420.2 120.7 414.65 120.7ZM417.15 111.75Q423.75 111.75 426.75 107.47Q429.75 103.2 429.75 93.3Q429.7 84.85 426.73 80.45Q423.75 76.05 417.31 76.05Q411.81 76.05 408.27 80.1Q404.75 84.15 404.75 93.3Q404.75 102.4 408 107.07Q411.25 111.75 417.15 111.75ZM477.81 120.7Q470.36 120.7 464.68 117.52Q459 114.35 455.82 108.45Q452.65 102.55 452.65 94.4Q452.65 86.45 455.52 80.27Q458.4 74.1 463.88 70.55Q469.36 67 477.11 67Q488.56 67 494.56 74.12Q500.56 81.25 500.56 92.95V96.65H464.81Q464.75 103.25 468 107.47Q471.25 111.7 477.56 111.7Q481.86 111.7 485.02 109.77Q488.2 107.85 489.25 103.9H500.36Q499.45 109.3 496.07 113.05Q492.7 116.8 487.88 118.75Q483.06 120.7 477.81 120.7ZM464.75 89.1H489.06Q489.06 83.5 486.11 79.62Q483.15 75.75 477.06 75.75Q473.06 75.75 470.31 77.7Q467.56 79.65 466.15 82.72Q464.75 85.8 464.75 89.1ZM503.06 119.7L522.9 92.8L504.7 68H517.61L529.55 84.15L541.5 68H554.46L536.11 92.8L556 119.7H543.11L529.5 101.3L515.96 119.7Z"/></g></g></svg></span></span>';
+// Links in the header of every page except the home page, which links to its own sections instead.
+const SITE_NAV = [['officials/', 'Officials'], ['methodology/', 'Methodology'], ['about/', 'About'], ['contact/', 'Contact']];
+const HUB_PATH = /^(officials|administration|congress|states)\//;
+
+// One page shell for every generated page (the redesign, "The record": see the V2_ section further down).
+// A normal page's body starts with its breadcrumbs, heading and .sub line; those go in the deep green title band and the
+// rest goes in the page column. `head` replaces that opening for a page with its own band (an official's page).
+// mainClass '' (the home page): the body brings its own sections and wrappers.
+// nav: the header links (the home page passes its own). wrapClass: a class on the page wrapper ('home').
+function layout({ depth, title, description, canonical, body, ld, lastmodToken, extraCss, mainClass, headExtra, csp, nav, head, wrapClass }) {
   const [ogImage, ogAlt] = shareImage(canonical);
   const up = '../'.repeat(depth);
-  const mainOpen = mainClass === undefined ? '<main class="wrap">' : (mainClass ? `<main class="${mainClass}">` : '<main>');
-  const legal = [`<a href="${up}about/">About</a>`, `<a href="${up}contact/">Contact</a>`, `<a href="${up}methodology/">Methodology</a>`,
-    `<a href="${up}aow-index.html#newsletter">Weekly email</a>`]   // the sign-up lives in the tracker (these pages run no scripts)
-    .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<a href="${up}${f}">${l}</a>`)).join('');
-  const follow = `<p class="follow"><b>Follow us</b>${SOCIAL.map(s => `<a href="${esc(s.url)}" target="_blank" rel="me noopener noreferrer">${esc(s.name)}${s.handle ? ` <span class="handle">${esc(s.handle)}</span>` : ''} <span aria-hidden="true">&#8599;</span></a>`).join('')}</p>`;
+  const here = String(canonical).slice(SITE.length + 1);
+  const section = HUB_PATH.test(here) ? 'officials/' : here;
+  const navHtml = nav || SITE_NAV.map(([href, label]) => `<a href="${up}${href}"${href === here ? ' aria-current="page"' : href === section ? ' aria-current="true"' : ''}>${label}</a>`).join('');
+  let main = body;
+  if (mainClass === undefined) {
+    let rest = body;
+    if (!head) {
+      const m = /^\s*(<nav class="crumbs"[^>]*>[\s\S]*?<\/nav>\s*<h1>[\s\S]*?<\/h1>\s*<p class="sub">[\s\S]*?<\/p>)\n/.exec(body);
+      if (!m) fatal('layout(): the body of "' + title + '" does not start with breadcrumbs, a heading and a .sub line.');
+      head = m[1];
+      rest = body.slice(m[0].length);
+    }
+    main = `<div class="band-top"><div class="wrap">\n${head}\n</div></div>\n<div class="wrap page">\n${rest}\n</div>`;
+  }
+  const legal = [`<li><a href="${up}about/">About</a></li>`, `<li><a href="${up}contact/">Contact</a></li>`, `<li><a href="${up}methodology/">Methodology</a></li>`,
+    `<li><a href="${up}aow-index.html#newsletter">Weekly email</a></li>`]   // the sign-up lives in the tracker (these pages run no scripts)
+    .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<li><a href="${up}${f}">${l}</a></li>`)).join('');
+  const follow = SOCIAL.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="me noopener noreferrer">${esc(s.name)}${s.handle ? ` ${esc(s.handle)}` : ''} <span aria-hidden="true">&#8599;</span></a></li>`).join('');
   return `<!DOCTYPE html>
 ${MARK}
 <html lang="en">
@@ -402,25 +380,44 @@ ${headExtra || ''}<link rel="canonical" href="${esc(canonical)}">
 <link rel="apple-touch-icon" href="${up}apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>${CSS}${PARTY_CSS}${extraCss || ''}</style>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>${v2StaticCss()}${v2WatermarkCss()}${V2_PAGE_CSS}${extraCss || ''}</style>
 ${ld ? `<script type="application/ld+json">${jsonLd(ld)}</script>` : ''}
 </head>
-<body>
-<header class="masthead"><div class="wrap"><a class="logo" href="${homeHref(up)}"><span class="logo-mark" aria-hidden="true"><svg class="aow-sym" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 166.55 181.3" width="29.4" height="32" aria-hidden="true" focusable="false"><path d="M146.33 56.97A41.65 41.65 0 0 1 147.23 65.62L147.23 102.64A41.65 41.65 0 0 1 105.59 144.28L61.09 144.28L12.72 179.75A7.99 7.99 0 0 1 0 173.31L0 65.62A41.65 41.65 0 0 1 41.65 23.97L105.59 23.97A41.65 41.65 0 0 1 113.08 24.65L100.03 39.95L41.65 39.95A25.66 25.66 0 0 0 15.98 65.62L15.98 157.53L53.75 129.84A7.99 7.99 0 0 1 58.47 128.3L105.59 128.3A25.66 25.66 0 0 0 131.25 102.64L131.25 74.66L146.33 56.97ZM36.37 83.3L66.41 113.33A13.88 13.88 0 0 0 86.79 112.53L163.23 22.89A13.88 13.88 0 0 0 142.11 4.88L75.41 83.08L56.01 63.67A13.88 13.88 0 0 0 36.37 83.3Z" class="s"/></svg></span><span class="logo-word"><span class="lw-full"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1147.4 181.3" width="202.52" height="32" role="img" aria-label="ActionOverWords Index"><g class="w"><path d="M40.15 120.63L65.85 48.33H83.5L109.25 120.63H92.35L87 105.23H62.6L57.15 120.63ZM66.3 90.58H83.05L74.7 64.68ZM138 121.63Q130.7 121.63 124.93 118.35Q119.15 115.08 115.83 109.08Q112.5 103.08 112.5 95.03Q112.5 86.98 115.75 80.88Q119 74.78 124.75 71.35Q130.5 67.93 138 67.93Q144.9 67.93 149.78 70.8Q154.65 73.68 157.33 78.45Q160 83.23 160.25 88.88H146.3Q146.05 87.13 145.18 85.23Q144.3 83.33 142.6 82Q140.9 80.68 138.15 80.68Q133.7 80.68 130.98 84.2Q128.25 87.73 128.25 94.83Q128.25 101.83 131.03 105.78Q133.8 109.73 138.45 109.73Q141.15 109.73 142.85 108.28Q144.55 106.83 145.4 104.93Q146.25 103.03 146.45 101.58H160.05Q159.9 107.03 157.18 111.58Q154.45 116.13 149.58 118.88Q144.7 121.63 138 121.63ZM191.7 121.28Q184.25 121.28 180.18 119.4Q176.1 117.53 174.53 114.25Q172.95 110.98 172.95 106.83V80.58H164.55V68.93H173.55L177.9 53.08H189.95V68.83H201.3V80.58H189.95L190 106.08Q190 108.38 191.03 109Q192.05 109.63 193.85 109.63H201.4V119.88Q200.35 120.38 198.15 120.83Q195.95 121.28 191.7 121.28ZM210.4 63.13V48.33H226.75V63.13ZM210.45 120.63V68.93H226.65V120.63ZM260.95 121.63Q253.15 121.63 247.4 118.3Q241.65 114.98 238.5 109.03Q235.35 103.08 235.35 95.08Q235.35 86.98 238.58 80.85Q241.8 74.73 247.58 71.33Q253.35 67.93 261.05 67.93Q268.9 67.93 274.63 71.35Q280.35 74.78 283.48 80.9Q286.6 87.03 286.6 95.08Q286.6 102.83 283.5 108.83Q280.4 114.83 274.65 118.23Q268.9 121.63 260.95 121.63ZM261.05 109.13Q264.5 109.13 266.45 106.95Q268.4 104.78 269.2 101.4Q270 98.03 270 94.53Q270 91.08 269.25 87.8Q268.5 84.53 266.55 82.38Q264.6 80.23 261.05 80.23Q257.5 80.23 255.53 82.3Q253.55 84.38 252.75 87.65Q251.95 90.93 251.95 94.53Q251.95 97.93 252.7 101.3Q253.45 104.68 255.43 106.9Q257.4 109.13 261.05 109.13ZM295.25 120.63V68.93H312.05V76.18Q313.75 73.53 317.08 71.05Q320.4 68.58 326.5 68.58Q331.15 68.58 335.28 70.38Q339.4 72.18 342 76.1Q344.6 80.03 344.6 86.38V120.63H327.5V88.63Q327.5 85.23 325.3 83.5Q323.1 81.78 320.25 81.78Q317.35 81.78 314.8 83.4Q312.25 85.03 312.25 88.23V120.63Z"/><path d="M386.75 121.63Q376.75 121.63 369.48 117.23Q362.2 112.83 358.23 104.55Q354.25 96.28 354.25 84.63Q354.25 72.93 358.25 64.58Q362.25 56.23 369.55 51.78Q376.85 47.33 386.75 47.33Q396.6 47.33 403.83 51.78Q411.05 56.23 415 64.58Q418.95 72.93 418.95 84.63Q418.95 96.23 415.05 104.5Q411.15 112.78 403.9 117.2Q396.65 121.63 386.75 121.63ZM386.75 111.43Q395.65 111.43 400.68 105.1Q405.7 98.78 405.7 84.78Q405.7 70.53 400.63 64.03Q395.55 57.53 386.75 57.53Q377.95 57.53 372.78 64.05Q367.6 70.58 367.6 84.78Q367.6 98.83 372.78 105.13Q377.95 111.43 386.75 111.43ZM444.55 120.63L425.45 68.93H436.6L449 105.13H449.65L462 68.93H473.2L454.15 120.63ZM503 121.63Q495.55 121.63 489.88 118.45Q484.2 115.28 481.03 109.38Q477.85 103.48 477.85 95.33Q477.85 87.38 480.73 81.2Q483.6 75.03 489.08 71.48Q494.55 67.93 502.3 67.93Q513.75 67.93 519.75 75.05Q525.75 82.18 525.75 93.88V97.58H490Q489.95 104.18 493.2 108.4Q496.45 112.63 502.75 112.63Q507.05 112.63 510.23 110.7Q513.4 108.78 514.45 104.83H525.55Q524.65 110.23 521.28 113.98Q517.9 117.73 513.08 119.68Q508.25 121.63 503 121.63ZM489.95 90.03H514.25Q514.25 84.43 511.3 80.55Q508.35 76.68 502.25 76.68Q498.25 76.68 495.5 78.63Q492.75 80.58 491.35 83.65Q489.95 86.73 489.95 90.03ZM536.95 120.63V68.93H548.6V80.13Q550.5 74.38 554.73 71.15Q558.95 67.93 564.5 67.93Q565.4 67.93 566.23 68.03Q567.05 68.13 567.5 68.38V80.03Q566.95 79.78 566.08 79.68Q565.2 79.58 564.55 79.58Q557.05 78.98 553.08 81.9Q549.1 84.83 549.1 90.58V120.63Z"/><path d="M593.05 120.63L572.2 48.33H581.55L597.55 105.88L613.85 48.33H621.1L637.35 105.88L653.65 48.33H662.95L641.85 120.63H633.3L617.45 64.58L601.35 120.63ZM688.65 121.63Q677.9 121.63 671.43 114.78Q664.95 107.93 664.95 94.98Q664.95 86.88 667.7 80.78Q670.45 74.68 675.75 71.3Q681.05 67.93 688.7 67.93Q699.35 67.93 705.78 74.93Q712.2 81.93 712.2 94.98Q712.2 102.88 709.53 108.88Q706.85 114.88 701.6 118.25Q696.35 121.63 688.65 121.63ZM688.7 114.33Q695.6 114.33 699.33 109.1Q703.05 103.88 703.05 94.78Q703.05 89.23 701.58 84.8Q700.1 80.38 696.93 77.78Q693.75 75.18 688.7 75.18Q681.65 75.18 677.9 80.35Q674.15 85.53 674.15 94.78Q674.15 100.23 675.63 104.68Q677.1 109.13 680.3 111.73Q683.5 114.33 688.7 114.33ZM724.1 120.63V68.93H732.9V78.88Q734.85 73.33 739.08 70.63Q743.3 67.93 748.2 67.93Q749.35 67.93 750.43 68.08Q751.5 68.23 752.15 68.58V77.53Q751.4 77.18 750.23 77.05Q749.05 76.93 748.25 76.93Q742.1 76.53 737.7 79.28Q733.3 82.03 733.3 88.48V120.63ZM780.85 121.63Q770.75 121.63 764.88 114.73Q759 107.83 759 94.58Q759 82.48 764.3 75.2Q769.6 67.93 780.1 67.93Q785.05 67.93 788.53 69.53Q792 71.13 794.1 73.28Q796.2 75.43 797.05 77.13V46.33H806.4V120.63H799.3L798.3 110.03Q797.65 112.03 795.88 114.78Q794.1 117.53 790.5 119.58Q786.9 121.63 780.85 121.63ZM782.5 114.53Q790.3 114.53 793.68 109.75Q797.05 104.98 797.05 94.13Q796.95 85.08 793.65 80.1Q790.35 75.13 782.65 75.13Q776.3 75.13 772.3 79.65Q768.3 84.18 768.3 94.13Q768.3 103.83 771.9 109.18Q775.5 114.53 782.5 114.53ZM839.85 121.63Q834.45 121.63 829.83 119.93Q825.2 118.23 822.15 114.7Q819.1 111.18 818.35 105.58H826.75Q827.75 110.13 831.33 112.43Q834.9 114.73 839.8 114.73Q845.05 114.73 848.25 112.78Q851.45 110.83 851.45 106.78Q851.45 101.33 844.55 99.68L833.85 97.03Q827.6 95.53 823.88 92.33Q820.15 89.13 820.1 83.38Q820.1 76.58 825.03 72.25Q829.95 67.93 839.8 67.93Q848.2 67.93 853.38 71.73Q858.55 75.53 858.8 82.78H850.6Q850.1 79.08 847.3 76.9Q844.5 74.73 839.7 74.73Q834.75 74.73 831.65 76.7Q828.55 78.68 828.55 82.83Q828.55 85.58 830.78 87.15Q833 88.73 837.25 89.78L847.65 92.38Q852.4 93.63 855.03 95.93Q857.65 98.23 858.7 100.98Q859.75 103.73 859.75 106.28Q859.75 113.43 854.53 117.53Q849.3 121.63 839.85 121.63Z"/></g><g class="i"><path d="M903.36 120.63V48.33H914.06V120.63ZM930.06 120.63V68.93H940.51V76.38Q942.36 73.28 946.28 70.78Q950.21 68.28 956.36 68.28Q961.21 68.28 965.33 70.2Q969.46 72.13 971.96 76.2Q974.46 80.28 974.46 86.73V120.63H963.76V87.88Q963.76 82.33 960.76 79.63Q957.76 76.93 953.11 76.93Q949.91 76.93 947.08 77.98Q944.26 79.03 942.51 81.15Q940.76 83.28 940.76 86.48V120.63ZM1006.86 121.63Q996.66 121.63 990.81 114.65Q984.96 107.68 984.96 94.53Q984.96 82.43 990.26 75.18Q995.56 67.93 1005.96 67.93Q1010.56 67.93 1013.91 69.38Q1017.26 70.83 1019.41 72.9Q1021.56 74.98 1022.51 76.78V46.33H1033.31V120.63H1025.26L1024.06 110.03Q1023.36 112.28 1021.53 114.98Q1019.71 117.68 1016.18 119.65Q1012.66 121.63 1006.86 121.63ZM1008.91 113.58Q1016.16 113.58 1019.33 109.05Q1022.51 104.53 1022.51 94.18Q1022.41 85.43 1019.28 80.75Q1016.16 76.08 1009.11 76.08Q1003.16 76.08 999.38 80.35Q995.61 84.63 995.61 94.18Q995.61 103.58 999.03 108.58Q1002.46 113.58 1008.91 113.58ZM1069.81 121.63Q1062.46 121.63 1056.86 118.45Q1051.26 115.28 1048.13 109.38Q1045.01 103.48 1045.01 95.33Q1045.01 87.28 1047.86 81.1Q1050.71 74.93 1056.08 71.43Q1061.46 67.93 1069.11 67.93Q1080.31 67.93 1086.23 74.95Q1092.16 81.98 1092.16 93.73V97.28H1055.76Q1055.71 104.23 1059.18 108.88Q1062.66 113.53 1069.56 113.53Q1074.21 113.53 1077.58 111.43Q1080.96 109.33 1082.01 105.18H1091.91Q1090.96 110.53 1087.66 114.18Q1084.36 117.83 1079.63 119.73Q1074.91 121.63 1069.81 121.63ZM1055.76 90.33H1081.96Q1081.96 84.23 1078.78 80Q1075.61 75.78 1069.06 75.78Q1064.61 75.78 1061.63 77.93Q1058.66 80.08 1057.21 83.43Q1055.76 86.78 1055.76 90.33ZM1095.81 120.63L1115.71 93.73L1097.46 68.93H1108.96L1121.66 86.08L1134.36 68.93H1145.86L1127.46 93.73L1147.41 120.63H1135.91L1121.61 101.28L1107.36 120.63Z"/></g></svg></span><span class="lw-short"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 571.45 181.3" width="100.86" height="32" role="img" aria-label="AOW Index"><g transform="scale(1.02778)"><g class="w"><path d="M36.16 119.7L61.85 47.4H79.5L105.25 119.7H88.36L83 104.3H58.6L53.16 119.7ZM62.3 89.65H79.06L70.7 63.75Z"/><path d="M144.1 120.7Q134.1 120.7 126.83 116.3Q119.56 111.9 115.58 103.62Q111.61 95.35 111.61 83.7Q111.61 72 115.61 63.65Q119.61 55.3 126.91 50.85Q134.21 46.4 144.1 46.4Q153.96 46.4 161.18 50.85Q168.41 55.3 172.35 63.65Q176.31 72 176.31 83.7Q176.31 95.3 172.41 103.57Q168.5 111.85 161.25 116.27Q154 120.7 144.1 120.7ZM144.1 110.5Q153 110.5 158.03 104.17Q163.06 97.85 163.06 83.85Q163.06 69.6 157.97 63.1Q152.91 56.6 144.1 56.6Q135.31 56.6 130.12 63.12Q124.95 69.65 124.95 83.85Q124.95 97.9 130.12 104.2Q135.31 110.5 144.1 110.5Z"/><path d="M203.75 119.7L182.91 47.4H192.25L208.25 104.95L224.56 47.4H231.81L248.06 104.95L264.36 47.4H273.65L252.56 119.7H244L228.16 63.65L212.06 119.7Z"/></g><g class="i"><path d="M310.7 119.7V47.4H322.86V119.7ZM337.7 119.7V68H349.61V75.4Q351.4 72.4 355.18 69.9Q358.95 67.4 365.15 67.4Q369.95 67.4 374.07 69.3Q378.2 71.2 380.73 75.25Q383.25 79.3 383.25 85.7V119.7H371.06V87.15Q371.06 82.1 368.23 79.6Q365.4 77.1 361.2 77.1Q356.81 77.1 353.32 79.3Q349.86 81.5 349.86 85.95V119.7ZM414.65 120.7Q404.4 120.7 398.56 113.65Q392.7 106.6 392.7 93.6Q392.7 81.45 398 74.22Q403.31 67 413.56 67Q419.95 67 424.06 69.8Q428.15 72.6 429.75 75.55V45.4H442V119.7H433L431.65 109.1Q430.86 111.55 428.98 114.25Q427.11 116.95 423.65 118.82Q420.2 120.7 414.65 120.7ZM417.15 111.75Q423.75 111.75 426.75 107.47Q429.75 103.2 429.75 93.3Q429.7 84.85 426.73 80.45Q423.75 76.05 417.31 76.05Q411.81 76.05 408.27 80.1Q404.75 84.15 404.75 93.3Q404.75 102.4 408 107.07Q411.25 111.75 417.15 111.75ZM477.81 120.7Q470.36 120.7 464.68 117.52Q459 114.35 455.82 108.45Q452.65 102.55 452.65 94.4Q452.65 86.45 455.52 80.27Q458.4 74.1 463.88 70.55Q469.36 67 477.11 67Q488.56 67 494.56 74.12Q500.56 81.25 500.56 92.95V96.65H464.81Q464.75 103.25 468 107.47Q471.25 111.7 477.56 111.7Q481.86 111.7 485.02 109.77Q488.2 107.85 489.25 103.9H500.36Q499.45 109.3 496.07 113.05Q492.7 116.8 487.88 118.75Q483.06 120.7 477.81 120.7ZM464.75 89.1H489.06Q489.06 83.5 486.11 79.62Q483.15 75.75 477.06 75.75Q473.06 75.75 470.31 77.7Q467.56 79.65 466.15 82.72Q464.75 85.8 464.75 89.1ZM503.06 119.7L522.9 92.8L504.7 68H517.61L529.55 84.15L541.5 68H554.46L536.11 92.8L556 119.7H543.11L529.5 101.3L515.96 119.7Z"/></g></g></svg></span></span></a><a class="cta" href="${up}aow-index.html">Open the tracker</a></div></header>
-${mainOpen}
-${body}
+<body class="${V2_BODY_CLASS}">
+<div${wrapClass ? ` class="${wrapClass}"` : ''}>
+<header class="top"><div class="wrap"><a class="logo" href="${homeHref(up)}">${LOGO_INNER}</a><nav class="nav" aria-label="Main">${navHtml}</nav><div class="acts"><a class="btn primary sm" href="${up}aow-index.html">Open the tracker</a></div></div></header>
+<main>
+${main}
 </main>
-<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated ${lastmodToken}. Spot an error? <a style="margin:0" href="mailto:${CONTACT}">${CONTACT}</a></p>${follow}<div>${legal}</div></div></footer>
+<footer class="foot"><div class="wrap foot-grid"><div><h2>ActionOverWords Index</h2><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated ${lastmodToken}. Spot an error? <a href="mailto:${CONTACT}">${CONTACT}</a></p></div><div><h2>Follow us</h2><ul>${follow}</ul></div><div><h2>The site</h2><ul>${legal}</ul></div></div></footer>
+</div>
 </body>
 </html>
 `;
 }
 
-function distBar(dist, total) {
-  const segs = Object.keys(STATUS).filter(k => dist[k]).map(k => `<i class="b-${k}" style="width:${(dist[k] / total * 100).toFixed(2)}%"></i>`).join('');
-  const label = Object.keys(STATUS).filter(k => dist[k]).map(k => `${dist[k]} ${STATUS[k].toLowerCase()}`).join(' · ');
-  return `<div class="bar" role="img" aria-label="${esc(label)}">${segs}</div><p class="legend">${esc(label)}</p>`;
+// Small pieces every page type shares.
+const v2Ring = (sc, cls) => `<div class="ring${cls ? ' ' + cls : ''} ${tierOf(sc)}" style="--p:${sc === null ? 0 : sc}" role="img" aria-label="${sc === null ? 'No AOW Score yet' : 'AOW Score ' + sc + ' out of 100'}"><b>${sc === null ? '—' : sc}</b></div>`;
+const v2Party = p => (p ? `<span class="party p${partyKey(p).charAt(0)}"><i></i>${esc(partyLabel(p))}</span>` : '<span class="party"></span>');
+function v2Mix(dist, total) {
+  const keys = Object.keys(STATUS).filter(k => dist[k]);
+  const label = keys.map(k => `${dist[k]} ${STATUS[k].toLowerCase()}`).join(', ');
+  return total ? `<div class="mix" role="img" aria-label="${esc(label)}">${keys.map(k => `<i class="b-${k}" style="flex:${dist[k]}"></i>`).join('')}</div>` : '';
+}
+function initialsOf(name) {
+  const parts = String(name).replace(/,?\s+(?:Jr|Sr|II|III|IV)\.?$/i, '').replace(/["“”(][^"“”)]*["“”)]/g, ' ').trim().split(/\s+/).filter(Boolean);
+  return ((parts[0] || '').charAt(0) + (parts.length > 1 ? parts[parts.length - 1].charAt(0) : '')).toUpperCase();
+}
+// Which of the three kinds of source the standard asks for a linked source is. Same lists as sourceKind() in
+// aow-index.html: an outlet on neither list is a plain news report and ticks nothing. Keep the two in step.
+const KIND_MAINSTREAM = /^(pbs|politifact|ms now|msnbc|allsides|nbc|the hill|bloomberg|cbs)\b/;
+const KIND_RIGHT = /^(fox news|fox business|fox ?\d+|national review|washington examiner|(the )?daily caller|townhall|(the )?american conservative|redstate|(the )?daily wire|washington free beacon|the federalist|(the )?washington times|cato institute)\b/;
+function sourceKind(s) {
+  if (PRIMARY_TYPES.has(s.type)) return 0;
+  if (s.type !== 'news_report') return -1;
+  const name = String(s.publisher || '').toLowerCase().trim();
+  return KIND_MAINSTREAM.test(name) ? 1 : KIND_RIGHT.test(name) ? 2 : -1;
 }
 
 // "Senate · Florida" is a U.S. Senate seat; "Florida Senate" is the state's. The data files store the
@@ -444,10 +441,10 @@ function roleLabel(e) {
 // One directory row, used by the directory and by every hub so they can never drift apart.
 function dirRow(pg, prefix) {
   const all = pg.roles.flatMap(r => r.all), sc = scoreOf(pg.roles[0].all);
-  return `<li><a href="${prefix}${esc(pg.slug)}/">${esc(pg.name)}</a>${pg.primary.party ? `<span class="chip p-${partyKey(pg.primary.party)}">${esc(partyLabel(pg.primary.party))}</span>` : ''}<span class="meta">${esc(seatText(pg.primary.seat))} · ${all.length} promise${all.length === 1 ? '' : 's'}${sc === null ? '' : ' · score ' + sc}</span></li>`;
+  return `<li class="row"><div class="who"><span class="mono" aria-hidden="true">${esc(initialsOf(pg.name))}</span><div><a class="name" href="${prefix}${esc(pg.slug)}/">${esc(pg.name)}</a><span class="seat">${esc(seatText(pg.primary.seat))}</span></div></div>${v2Party(pg.primary.party)}<div class="kept">${all.length} promise${all.length === 1 ? '' : 's'}${v2Mix(distOf(all), all.length)}</div>${v2Ring(sc)}</li>`;
 }
 function rosterRow(e) {
-  return `<li><span>${esc(e.name)}</span>${e.party ? `<span class="chip p-${partyKey(e.party)}">${esc(partyLabel(e.party))}</span>` : ''}<span class="meta">${esc(seatText(e.seat))}</span></li>`;
+  return `<li class="row"><span class="name">${esc(e.name)}</span>${v2Party(e.party)}<span class="seat">${esc(seatText(e.seat))}</span></li>`;
 }
 
 // "More from ..." on an official's page: the next few people in the same group, in the hub's order (by name;
@@ -464,7 +461,7 @@ function relatedHtml(pg, ctx) {
 <section class="related">
 <h2>${pick.length ? 'More from ' + esc(hubMeta(keys[0], ctx.model).from) : 'Browse'}</h2>
 ${hubLinks.length ? `<p class="sub">Everyone with promises published: ${hubLinks.join(' · ')}</p>` : ''}
-${pick.length ? `<ul class="dir">${pick.map(x => `<li><a href="../${esc(x.slug)}/">${esc(x.name)}</a><span class="meta">${esc(seatText(x.primary.seat))}</span></li>`).join('')}</ul>` : ''}
+${pick.length ? `<ul class="dir names">${pick.map(x => `<li class="row"><a class="name" href="../${esc(x.slug)}/">${esc(x.name)}</a>${v2Party(x.primary.party)}<span class="seat">${esc(seatText(x.primary.seat))}</span></li>`).join('')}</ul>` : ''}
 </section>`;
 }
 
@@ -500,32 +497,45 @@ function renderOfficial(pg, ctx) {
   if (desc.length > 300) desc = desc.slice(0, 297) + '...';
   const title = `${pg.name} — Campaign Promise Tracker | ActionOverWords`;
 
+  const multi = pg.roles.length > 1;
+  const entry = p => {
+    const found = [false, false, false];
+    p.sources.forEach(s => { const k = sourceKind(s); if (k >= 0) found[k] = true; });
+    const checks = V2_SOURCE_KINDS.filter((_, i) => found[i]).map(k => `<li>${V2_TICK}${k}</li>`).join('');
+    return `
+<article class="entry" id="${esc(p.id)}">
+<div class="said"><h3 class="q">${esc(p.text)}</h3>${p.category ? `<p class="cat">${esc(p.category)}</p>` : ''}${checks ? `<ul class="src3" aria-label="Kinds of sources found">${checks}</ul>` : ''}</div>
+<div class="did"><p class="pills"><span class="pill s-${p.status}">${esc(STATUS[p.status])}</span></p>
+${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
+<ul class="links">${p.sources.map(s => `<li><span>${esc(SRC_TYPE[s.type] || 'Source')}</span><a href="${esc(s.url)}" rel="noopener noreferrer">${esc(s.publisher)}</a></li>`).join('')}</ul></div>
+</article>`;
+  };
   const roles = pg.roles.map(r => {
     const sc = scoreOf(r.all), d = distOf(r.all);       // score uses ALL tracked promises, same as the interactive tracker
     const hidden = r.all.length - r.shown.length;
-    const cards = r.shown.map(p => `
-<article class="promise" id="${esc(p.id)}">
-<span class="pill s-${p.status}">${esc(STATUS[p.status])}</span>${p.category ? `<span class="cat">${esc(p.category)}</span>` : ''}
-<h3>${esc(p.text)}</h3>
-${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
-<ul class="sources">${p.sources.map(s => `<li><span class="stype">${esc(SRC_TYPE[s.type] || 'Source')}</span><a href="${esc(s.url)}" rel="noopener noreferrer">${esc(s.publisher)}</a></li>`).join('')}</ul>
-</article>`).join('');
     return `
 <section class="role" aria-labelledby="r-${esc(r.entry.id)}">
-<div class="role-head"><div class="score tier-${tierOf(sc)}" title="AOW Score, based on ${r.all.length} tracked promise${r.all.length === 1 ? '' : 's'}"><b>${sc === null ? '—' : sc}</b><span>Score</span></div>
-<div><h2 id="r-${esc(r.entry.id)}">${esc(roleLabel(r.entry))}</h2><p class="sub">${r.all.length} tracked promise${r.all.length === 1 ? '' : 's'}</p></div></div>
+<div class="sec-head">${multi ? v2Ring(sc) : ''}<div><h2 id="r-${esc(r.entry.id)}">${esc(roleLabel(r.entry))}</h2><p class="count">${r.all.length} tracked promise${r.all.length === 1 ? '' : 's'}</p></div></div>
 <p class="summary">${esc(roleSummary(pg.name, r, sc, d))}</p>
-${distBar(d, r.all.length)}
-${hidden ? `<p class="legend">${r.shown.length} of ${r.all.length} are listed on this page; the rest do not yet meet the three-publisher sourcing standard for publication here and appear only in the interactive tracker.</p>` : ''}
-${cards}
+${multi ? v2Mix(d, r.all.length) : ''}
+${hidden ? `<p class="held">${r.shown.length} of ${r.all.length} are listed on this page; the rest do not yet meet the three-publisher sourcing standard for publication here and appear only in the interactive tracker.</p>` : ''}
+${r.shown.length ? `<div class="ledger"><div class="ledger-head" aria-hidden="true"><span>What they said</span><span>What happened</span></div>${r.shown.map(entry).join('')}
+</div>` : ''}
 </section>`;
   }).join('\n');
 
-  const priors = pg.priors.length ? `<h2>Earlier offices</h2><p class="sub">${pg.priors.map(e => esc(seatText(e.seat) + (e.years ? ' (' + e.years + ')' : ''))).join(' · ')}</p>` : '';
+  // The band: the name, the facts, and the score box for the first role listed (the current one when there is one).
+  const r0 = pg.roles[0], sc0 = scoreOf(r0.all), d0 = distOf(r0.all);
+  const head = `<nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref('../../')}">Home</a> › <a href="../">Officials</a> › ${esc(pg.name)}</nav>
+<div class="profile">
+<div><h1>${esc(pg.name)}</h1>
+<ul class="facts">${p0.party ? `<li>${v2Party(p0.party)}</li>` : ''}<li><strong>${esc(seatText(p0.seat))}</strong></li>${p0.termStart && p0.kind === 'current' ? `<li>In this role since ${esc(p0.termStart)}</li>` : ''}</ul></div>
+<div class="scorebox"><div class="head">${v2Ring(sc0, 'lg')}<div><b class="t">AOW Score</b><span class="d">Based on ${r0.all.length} tracked promise${r0.all.length === 1 ? '' : 's'}${multi ? ' as ' + esc(roleWhere(r0.entry)) : ''}</span></div></div>
+${v2Mix(d0, r0.all.length)}
+<ul class="tally">${Object.keys(STATUS).filter(k => d0[k]).map(k => `<li><i class="b-${k}"></i>${esc(STATUS[k])}<b>${d0[k]}</b></li>`).join('')}</ul></div>
+</div>`;
+  const priors = pg.priors.length ? `<section class="role"><h2>Earlier offices</h2><p class="summary">${pg.priors.map(e => esc(seatText(e.seat) + (e.years ? ' (' + e.years + ')' : ''))).join(' · ')}</p></section>` : '';
   const body = `
-<nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref('../../')}">Home</a> › <a href="../">Officials</a> › ${esc(pg.name)}</nav>
-<h1>${esc(pg.name)}${p0.party ? `<span class="chip p-${partyKey(p0.party)}">${esc(partyLabel(p0.party))}</span>` : ''}</h1>
-<p class="sub">${esc(seatText(p0.seat))}${p0.termStart && p0.kind === 'current' ? ' · in this role since ' + esc(p0.termStart) : ''}</p>
 ${roles}
 ${priors}
 ${relatedHtml(pg, ctx)}
@@ -541,7 +551,7 @@ ${relatedHtml(pg, ctx)}
         { '@type': 'ListItem', position: 3, name: pg.name, item: canonical }] }
     ]
   };
-  return layout({ depth: 2, title, description: desc, canonical, body, ld, lastmodToken: '{{LASTMOD}}' });
+  return layout({ depth: 2, title, description: desc, canonical, body, head, ld, lastmodToken: '{{LASTMOD}}' });
 }
 
 function renderDirectory(pages, roster, hubs) {
@@ -569,7 +579,7 @@ function renderDirectory(pages, roster, hubs) {
   const rosterHtml = roster.length ? `
 <h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
 <p class="sub">${roster.length} more current officials are tracked in <a href="../aow-index.html">the interactive tracker</a> and have no promises published on this site yet. A page appears here automatically once an official has promises that meet the sourcing standard.</p>
-${rKeys.map(k => `<section class="dir-sec"><h3>${hubLink(k, k.split('|')[1])}</h3><ul class="dir">${rBy.get(k).map(rosterRow).join('')}</ul></section>`).join('')}` : '';
+${rKeys.map(k => `<section class="dir-sec"><h3>${hubLink(k, k.split('|')[1])}</h3><ul class="dir names">${rBy.get(k).map(rosterRow).join('')}</ul></section>`).join('')}` : '';
   const canonical = SITE + '/officials/';
   const title = 'Officials With Tracked Promises | ActionOverWords';
   const description = `${pages.length + roster.length} current and past officials tracked, ${pages.length} with ${total} sourced promises published: what was promised, what happened, and the evidence.`;
@@ -641,7 +651,7 @@ function renderHub(h, ctx) {
   const rosterHtml = h.roster.length ? `
 <h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
 <p class="sub">${h.roster.length} more current ${esc(h.roster.length === 1 ? m.one : m.who)} ${h.roster.length === 1 ? 'is' : 'are'} tracked in <a href="${up}aow-index.html">the interactive tracker</a> and ${h.roster.length === 1 ? 'has' : 'have'} no promises published on this site yet. A page appears here automatically once an official has promises that meet the sourcing standard.</p>
-${rosterSecs.map(([l, xs]) => `<section class="dir-sec">${secs ? `<h3>${esc(l)}</h3>` : ''}<ul class="dir">${xs.map(rosterRow).join('')}</ul></section>`).join('')}` : '';
+${rosterSecs.map(([l, xs]) => `<section class="dir-sec">${secs ? `<h3>${esc(l)}</h3>` : ''}<ul class="dir names">${xs.map(rosterRow).join('')}</ul></section>`).join('')}` : '';
 
   const body = `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref(up)}">Home</a> › <a href="${up}officials/">Officials</a> › ${esc(m.label)}</nav>
@@ -792,115 +802,6 @@ const ICON = {
 };
 const icon = k => `<svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICON[k]}</svg>`;
 
-const HOME_CSS = `
-:root{--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);--shadow-md:0 8px 20px rgba(16,24,40,.10),0 2px 6px rgba(16,24,40,.06);--on-tint:#0C6355;--hero-top:#0D4A43}
-@media (prefers-color-scheme:dark){:root{--shadow:0 1px 2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.45);--shadow-md:0 8px 20px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.35);--on-tint:#6FD6BC;--hero-top:#0A332E}}
-.wrap{max-width:1080px}
-.hero{background:radial-gradient(820px 300px at 90% -10%,rgba(255,255,255,.10),transparent 70%),linear-gradient(180deg,var(--hero-top),#12594F);color:#fff;padding:50px 0 36px}
-.eyebrow{margin:0 0 12px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#B7E0D8}
-.hero h1{margin:0 0 14px;max-width:19ch;font-size:clamp(32px,5.4vw,52px);line-height:1.08;letter-spacing:-.025em;font-weight:800;text-wrap:balance}
-.hero .lede{margin:0 0 26px;max-width:62ch;font-size:clamp(16px,2.1vw,18.5px);line-height:1.55;color:#C9E8E1;text-wrap:pretty}
-.btns{display:flex;gap:10px;flex-wrap:wrap}
-.btn{display:inline-block;padding:12px 20px;border-radius:9px;border:1.5px solid transparent;font-size:15px;font-weight:700;line-height:1.2;text-decoration:none;text-align:center}
-.btn.light{background:#fff;color:#0D4A43}.btn.light:hover{background:#E1F3EF}
-.btn.ghost{color:#fff;border-color:rgba(255,255,255,.55)}.btn.ghost:hover{background:rgba(255,255,255,.12)}
-.hero a:focus-visible{outline:2px solid #fff;outline-offset:3px}
-.stat-row{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.18);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-md)}
-.stat-row li{background:#135951;padding:15px 14px}
-.stat-row .n{display:block;font-size:clamp(24px,4.4vw,34px);line-height:1.1;font-weight:800;letter-spacing:-.01em}
-.stat-row .l{display:block;margin-top:3px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#B7E0D8}
-.hero .fine{margin:10px 0 0;font-size:12.5px;color:#9FCFC5}
-
-.sec{--card-bg:var(--bg);padding:56px 0 16px}
-.sec.white{--card-bg:var(--bg-alt);background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding-bottom:56px;margin-top:40px}
-.sec h2{margin:0 0 8px;font-size:clamp(24px,3.3vw,31px);line-height:1.2;letter-spacing:-.02em}
-.sec h3{margin:0 0 6px;font-size:16.5px;line-height:1.3}
-.sec p{margin:0}
-.sec .lede2{margin:0 0 28px;max-width:66ch;color:var(--text-muted);font-size:16.5px}
-.sec .more{margin-top:22px;font-size:14.5px}
-.sec a:focus-visible,.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
-
-.split{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:start}
-.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:24px}
-.steps li{counter-increment:s;position:relative;padding-left:54px}
-.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:38px;height:38px;border-radius:50%;background:var(--brand-tint);color:var(--on-tint);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.steps p{color:var(--text-muted)}
-
-.home .pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;font-size:11.5px;font-weight:700;letter-spacing:.02em;text-transform:none;white-space:nowrap}
-.home .pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-.home .pill.sourcing{background:var(--in_progress-bg);color:var(--in_progress);border:1px dashed currentColor}
-.entries{margin:0;display:grid;gap:14px}
-.entry{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-md)}
-.entry .tag{margin:0 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
-.entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px 14px;flex-wrap:wrap}
-.entry-text{flex:1 1 210px;font-size:16px;font-weight:600;line-height:1.4}
-.pills{display:flex;gap:8px;flex-wrap:wrap}
-.entry-cat{margin-top:8px!important;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint)}
-.entry-src{list-style:none;margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--border);display:grid;gap:7px;font-size:12.5px;color:var(--text-muted)}
-.entry-src li{display:flex;align-items:center;gap:8px}
-.src-type{display:inline-block;min-width:98px;text-align:center;border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-weight:600;color:var(--text-faint)}
-.cap{margin:2px 2px 0;font-size:12.5px;color:var(--text-faint)}
-
-.eq{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr) .95fr;gap:0 34px}
-.eq>li{position:relative;display:block}
-.eq>li+li::before{content:'+';position:absolute;left:-34px;top:50%;width:34px;margin-top:-14px;text-align:center;font-size:22px;font-weight:700;line-height:28px;color:var(--text-faint)}
-.eq>li.result::before{content:'\\2192'}
-.eq .result{display:flex;flex-direction:column;justify-content:center;background:var(--brand);color:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-md)}
-.eq .result h3{color:#fff;margin:0 0 4px}.eq .result p{color:rgba(255,255,255,.88);font-size:14.5px}
-.notes{list-style:none;margin:34px 0 0;padding:0;display:grid;gap:22px 30px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
-.notes li{border-left:3px solid var(--brand);padding:2px 0 2px 16px}
-.notes li.amber{border-color:var(--in_progress)}.notes li.slate{border-color:var(--stalled)}
-.notes p{color:var(--text-muted);font-size:15px}
-
-.cards{list-style:none;margin:0;padding:0;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
-.cards.two{grid-template-columns:repeat(2,1fr)}
-.cards.browse{grid-template-columns:repeat(3,1fr)}
-.cards.browse>li:first-child{grid-column:span 2}
-.cards>li{display:grid}
-.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 17px;box-shadow:var(--shadow)}
-.card p{color:var(--text-muted);font-size:15px}
-.card .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-bottom:10px;border-radius:50%;background:var(--brand-tint);color:var(--on-tint);font-size:14px;font-weight:800}
-.card .ico{display:block;margin-bottom:10px;color:var(--brand)}
-a.card{display:block;color:inherit;text-decoration:none}
-a.card h3{color:var(--brand)}
-a.card:hover{border-color:var(--brand);box-shadow:var(--shadow-md)}
-a.card:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
-a.card.feature{background:linear-gradient(180deg,#0D4A43,#12594F);border-color:transparent;color:#fff;padding:22px}
-a.card.feature h3{color:#fff;font-size:19px}a.card.feature p{color:#C9E8E1;font-size:15.5px;max-width:52ch}
-a.card.feature:hover{box-shadow:var(--shadow-md);filter:brightness(1.08)}
-
-.legend-grid{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.legend-grid li{display:flex;align-items:center;gap:14px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
-.legend-grid .pill{flex:none;min-width:116px}
-.legend-grid p{color:var(--text-muted);font-size:14.5px;line-height:1.4}
-.fine2{margin-top:18px!important;max-width:70ch;color:var(--text-muted);font-size:14.5px}
-
-.two-col{display:grid;gap:16px;grid-template-columns:1fr 1fr}
-.panel{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
-.panel h3{margin:0 0 14px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
-.panel ul{list-style:none;margin:0;padding:0;display:grid;gap:13px}
-.panel li{position:relative;padding-left:22px;font-size:15px;line-height:1.5}
-.panel li::before{content:'';position:absolute;left:1px;top:.5em;width:9px;height:9px;border-radius:50%;background:var(--brand)}
-.panel.not li::before{background:transparent;border:2px solid var(--text-faint);box-sizing:border-box}
-.panel.not li{color:var(--text-muted)}
-
-.callout{display:flex;align-items:center;justify-content:space-between;gap:18px 28px;flex-wrap:wrap;background:var(--brand-tint);border:1px solid var(--border);border-radius:var(--radius);padding:24px 26px}
-.callout>div{flex:1 1 420px}
-.callout h2{font-size:22px!important;margin:0 0 6px!important}
-.callout p{color:var(--text);font-size:15.5px}
-.callout .btn{flex:none;background:var(--brand);color:#fff}.callout .btn:hover{background:var(--brand-dark)}
-
-@media (max-width:980px){.eq{grid-template-columns:1fr;gap:34px 0}.eq>li+li::before{left:0;right:0;top:-34px;width:auto;margin-top:0;height:34px;line-height:34px}.eq>li.result::before{content:'\\2193'}.cards.browse{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:860px){.split{grid-template-columns:1fr;gap:30px}}
-@media (max-width:700px){.two-col,.cards.two,.cards.browse{grid-template-columns:1fr}.cards.browse>li:first-child{grid-column:auto}.hero{padding:34px 0 26px}.sec{padding-top:40px}.sec.white{padding-bottom:40px;margin-top:28px}.stat-row li{padding:13px 10px}.stat-row .l{font-size:10px;letter-spacing:.04em}.card{padding:16px}.sec .lede2{font-size:16px;margin-bottom:22px}}
-@media (max-width:480px){.btns .btn{flex:1 1 100%}.legend-grid li{flex-wrap:wrap;gap:8px}}
-@media (max-width:359px){.stat-row li{padding:13px 6px}.stat-row .n{font-size:21px}}
-`.trim();
-
-// Plain visits to the bare domain read this page. Visits that carry a query string (utm_..., fbclid, ...) or a key=value
-// hash (a sign-in or password-reset link: #access_token=...) still go straight to the tracker with both parts intact,
-// as the old redirect did. Anchors on this page (#sourcing, #how-it-works) have no "=", so they stay here. The page's
-// CSP allows this one inline script by its hash and nothing else.
 const HOME_REDIRECT_JS = "if(location.search||location.hash.indexOf('=')>-1){location.replace('aow-index.html'+location.search+location.hash)}";
 
 // ---- live headline numbers ----
@@ -914,7 +815,7 @@ const HOME_REDIRECT_JS = "if(location.search||location.hash.indexOf('=')>-1){loc
 // rule as roundedPlus() above and the tracker's roundedPlus() in aow-index.html.
 // Layout: the three hero cells were checked from 320 px wide up for officials up to 9,999 ("9,000+") and promises up to
 // 99,999 ("90,000+"); the script's own sanity limits are wider than that, so if the counts ever get past those figures,
-// look at the .stat-row rules in HOME_CSS (the phone sizes are the tight ones).
+// look at the .figures rules in V2_CSS (the phone sizes are the tight ones).
 // It makes one read-only lookup, GET <project address>/rest/v1/rpc/site_counts (the browser adds its own automatic OPTIONS
 // permission check first), to a database function that returns three whole numbers
 // (tools/site_counts.sql holds it). The request carries only the publishable key in an "apikey" header: no cookies, no
@@ -981,174 +882,10 @@ function homeCsp(scripts, connectOrigin) {
   return CSP.replace("default-src 'none';", `default-src 'none'; script-src ${hashes};${connectOrigin ? ` connect-src ${connectOrigin};` : ''}`);
 }
 
-function renderHome(ctx) {
-  const { model, hubs } = ctx;
-  const canonical = SITE + '/';
-  const title = 'ActionOverWords Index: Did Officials Keep Their Promises?';
-  const description = 'Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.';
-  const current = [...model.entries.values()].filter(e => e.kind === 'current');
-  const states = new Set(current.filter(e => e.level === 'state' && STATE_NAMES[e.state] && !NOT_A_STATE.has(e.state)).map(e => e.state)).size;
-  const people = model.pages.length;
-  const total = model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0);
-  const faq = fs.existsSync(path.join(ROOT, 'faq.html'));
-  const live = liveCountsConfig();
-  const liveJs = live.origin ? homeLiveJs(live) : null;
-  HOME_LIVE_STATE = liveJs ? 'on (the browser reads public.site_counts() and shows the live counts rounded down like the tracker)' : `off, rounded-down figures only (${live.why})`;
-  if (!liveJs) warn('Home page: live headline numbers are off: ' + live.why + '.');
-  const liveId = k => (liveJs ? ` id="live-${k}"` : '');
-
-  const browse = [`<li><a class="card feature" href="aow-index.html"><h3>The interactive tracker</h3><p>Search officials by name or state, filter by status and read each promise with its sources.</p></a></li>`,
-    `<li><a class="card" href="officials/"><h3>Officials directory</h3><p>${esc(nOf(people, 'person', 'people'))} and ${esc(nOf(total, 'promise', 'promises'))}, each promise with sources from at least three distinct publishers, including a primary record.</p></a></li>`]
-    .concat([...hubs.values()].map(h => `<li><a class="card" href="${esc(h.key)}/"><h3>${esc(cap(hubMeta(h.key, model).label))}</h3><p>${esc(nOf(h.pages.length, 'person', 'people'))} with promises published here.</p></a></li>`))
-    .concat([`<li><a class="card" href="methodology/"><h3>Methodology</h3><p>Sources, statuses, the AOW Score and how the tracker stays nonpartisan.</p></a></li>`,
-      `<li><a class="card" href="about/"><h3>About</h3><p>Who runs the Index, how it is paid for and what its limits are.</p></a></li>`,
-      `<li><a class="card" href="contact/"><h3>Contact</h3><p>Suggest a correction, appeal a status or ask a question.</p></a></li>`,
-      `<li><a class="card" href="aow-index.html#newsletter"><h3>The weekly email</h3><p>What changed on the tracker this week, in one free email every Monday.</p></a></li>`])
-    .concat(faq ? [`<li><a class="card" href="faq.html"><h3>Frequently asked questions</h3><p>Straight answers about how the site works.</p></a></li>`] : []);
-
-  const body = `
-<div class="home">
-<section class="hero" aria-labelledby="top">
-<div class="wrap">
-<p class="eyebrow">What they said. What happened.</p>
-<h1 id="top">Did U.S. officials keep their promises?</h1>
-<p class="lede">ActionOverWords Index tracks the specific promises made by U.S. officials, federal and state, and shows what actually happened to each one: kept, broken, or somewhere in between. Every promise is held to the same standard, whatever the official's party.</p>
-<div class="btns"><a class="btn light" href="aow-index.html">Open the interactive tracker</a><a class="btn ghost" href="#how-it-works">How it works</a></div>
-<ul class="stat-row" aria-label="The size of the tracker">
-<li><b class="n"${liveId('officials')}>${roundedPlus(current.length)}</b><span class="l">Officials</span></li>
-<li><b class="n"${liveId('promises')}>${fmtInt(PROMISES_FLOOR)}+</b><span class="l">Promises</span></li>
-<li><b class="n"${liveId('states')}>${states}</b><span class="l">States covered</span></li>
-</ul>
-<p class="fine">Counts are rounded down. The interactive tracker has the full, current roster.</p>
-</div>
-</section>
-${liveJs ? `<script>${liveJs}</script>\n` : ''}
-<section class="sec" id="how-it-works" aria-labelledby="h-how">
-<div class="wrap">
-<h2 id="h-how">How it works</h2>
-<p class="lede2">Each entry is one specific promise, rated on what has actually happened, with the sources we found for it shown right on the entry.</p>
-<div class="split">
-<ol class="steps">
-<li><h3>One specific promise at a time</h3><p>Each entry is a single promise an official made: a bill to introduce, a policy to carry out, a commitment to keep.</p></li>
-<li><h3>Checked against sources</h3><p>Our standard is three kinds of sources for each promise: a government record, mainstream or left-leaning news, and right-leaning news. The aim is that a status never rests on one side's account.</p></li>
-<li><h3>Rated on what happened</h3><p>Six statuses, from Not started to Completed or Broken, based on what has actually happened, not on intent.</p></li>
-<li><h3>Scored the same way for everyone</h3><p>The AOW Score is a 0 to 100 average of an official's tracked promises, weighted by status. The formula is fixed and published, so anyone can recompute it.</p></li>
-</ol>
-<figure class="entries" aria-label="Two made-up example entries">
-<div class="entry">
-<p class="tag">Example · fully sourced</p>
-<div class="entry-top"><p class="entry-text">Cut permit wait times for new housing in half</p><span class="pills"><span class="pill s-in_progress">In progress</span></span></div>
-<p class="entry-cat">Housing</p>
-<ul class="entry-src"><li><span class="src-type">Official record</span>Agency filing</li><li><span class="src-type">News report</span>Mainstream outlet</li><li><span class="src-type">News report</span>Right-leaning outlet</li></ul>
-</div>
-<div class="entry">
-<p class="tag">Example · still being sourced</p>
-<div class="entry-top"><p class="entry-text">Bring high-speed internet to every rural county</p><span class="pills"><span class="pill sourcing">Still finding sources</span><span class="pill s-not_started">Not started</span></span></div>
-<p class="entry-cat">Infrastructure</p>
-<ul class="entry-src"><li><span class="src-type">News report</span>One outlet so far</li></ul>
-</div>
-<figcaption class="cap">Made-up examples to show the layout. Real entries link to each source.</figcaption>
-</figure>
-</div>
-</div>
-</section>
-
-<section class="sec white" id="sourcing" aria-labelledby="h-src">
-<div class="wrap">
-<h2 id="h-src">Our sourcing standard</h2>
-<p class="lede2">For each promise we look for three kinds of sources. The standard exists so a status doesn't rest on reporting from only one side of the aisle.</p>
-<ul class="eq">
-<li class="card"><span class="num">1</span><h3>A government record</h3><p>A vote record, a signed bill, an agency filing or a similar primary record.</p></li>
-<li class="card"><span class="num">2</span><h3>Mainstream or left-leaning news</h3><p>At least one outlet from the mainstream or left-leaning press.</p></li>
-<li class="card"><span class="num">3</span><h3>Right-leaning news</h3><p>At least one outlet from the right-leaning press.</p></li>
-<li class="result"><h3>Sources you can check</h3><p>Every source we list is linked and labeled by type.</p></li>
-</ul>
-<ul class="notes">
-<li><h3>When the record is the proof</h3><p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. Many entries in the tracker are of this kind.</p></li>
-<li class="amber"><h3>Still being sourced</h3><p>This is a new dataset, and sourcing is still being completed for many entries. Many of them carry a <span class="pill sourcing">Still finding sources</span> tag in the tracker instead of being presented as fully verified.</p></li>
-<li class="slate"><h3>A good-faith reading, open to appeal</h3><p>A status is our reading of the sources linked on the entry, not an audited record. If you think one is wrong, you can appeal it with a named source.</p></li>
-</ul>
-<p class="more">Read the <a href="methodology/#sourcing">full sourcing rules</a>.</p>
-</div>
-</section>
-
-<section class="sec" id="statuses" aria-labelledby="h-status">
-<div class="wrap">
-<h2 id="h-status">Six statuses</h2>
-<p class="lede2">Every promise gets one of six statuses, based on what has actually happened so far.</p>
-<ul class="legend-grid">
-${Object.keys(STATUS).map(k => `<li><span class="pill s-${k}">${esc(STATUS[k])}</span><p>${esc(STATUS_MEANING[k])}</p></li>`).join('\n')}
-</ul>
-<p class="fine2">A promise whose outcome has not been fully verified can show <strong>Undetermined</strong> instead. That is a placeholder, not a verdict, and it is left out of the AOW Score until it is resolved. A candidate's promises show <strong>Campaign promise</strong> from 60 days before their election, and a pledge made for that race keeps the label after election day, also left out of the score.</p>
-</div>
-</section>
-
-<section class="sec white" id="nonpartisan" aria-labelledby="h-fair">
-<div class="wrap">
-<h2 id="h-fair">The same standard for everyone</h2>
-<p class="lede2">How the Index is run, in four commitments.</p>
-<ul class="cards two">
-<li class="card">${icon('tag')}<h3>Party is a fact, not a verdict</h3><p>A party badge is shown the way an election map shows one, and party is never assumed from context. Status colors are earned by outcome, never by party.</p></li>
-<li class="card">${icon('check')}<h3>One standard, every official</h3><p>The same six statuses, the same sourcing standard and the same score formula apply to every official, current or former.</p></li>
-<li class="card">${icon('list')}<h3>No ranking by party or score</h3><p>On these pages, officials are grouped by where they serve and listed alphabetically, or for the administration in the official order of office.</p></li>
-<li class="card">${icon('shield')}<h3>Independent and openly funded</h3><p>Run by Action Over Words LLC and supported by memberships, optional tips and advertising. None of those changes a status or a score, and we don't knowingly accept money from elected officials, candidates, campaigns, parties or PACs.</p></li>
-</ul>
-</div>
-</section>
-
-<section class="sec" id="coverage" aria-labelledby="h-cov">
-<div class="wrap">
-<h2 id="h-cov">What is covered</h2>
-<p class="lede2">Federal and state officials. Appointed officials such as Cabinet secretaries are included and marked Appointed in the tracker.</p>
-<div class="two-col">
-<div class="panel"><h3>Covered</h3><ul>
-<li><strong>Federal:</strong> the President, the Vice President, Cabinet and senior White House officials, a set of sub-Cabinet law-enforcement and agency heads, and the U.S. Congress, including its non-voting members.</li>
-<li><strong>State:</strong> in every state, the Governor, the Lieutenant Governor (or whichever office is first in succession) and the Attorney General. Some larger states go deeper into their other executive offices.</li>
-<li><strong>Former officeholders</strong> and candidates who ran and lost are kept in the Archive, and past administrations are kept alongside the current one, under the same statuses and the same sourcing standard.</li>
-</ul></div>
-<div class="panel not"><h3>Not covered yet</h3><ul>
-<li>County and city government, school boards and special districts.</li>
-<li>State legislatures and judiciaries.</li>
-<li>Federal judges and independent regulatory boards such as the Federal Reserve, which are a different category: appointed, often deliberately apolitical, and with less to track in the same way.</li>
-</ul></div>
-</div>
-<p class="more"><a href="methodology/#coverage">What is and is not covered</a> in full.</p>
-</div>
-</section>
-
-<section class="sec white" id="browse" aria-labelledby="h-browse">
-<div class="wrap">
-<h2 id="h-browse">Browse</h2>
-<p class="lede2">Start in the interactive tracker, or browse the pages published here.</p>
-<ul class="cards browse">${browse.join('')}</ul>
-</div>
-</section>
-
-<section class="sec" id="corrections" aria-labelledby="h-fix">
-<div class="wrap">
-<div class="callout">
-<div><h2 id="h-fix">Spot something wrong?</h2><p>If a status looks wrong, or you want to suggest a promise to track, write to <a href="mailto:${CONTACT}">${CONTACT}</a> or use the Contact form in the tracker (details on the <a href="contact/">contact page</a>). Appeals need a named source, the outlet and headline being cited, so they can be checked the same way every other entry is. <a href="methodology/#corrections">How corrections work</a>.</p></div>
-<a class="btn" href="aow-index.html">Open the tracker</a>
-</div>
-</div>
-</section>
-</div>`;
-  const ld = {
-    '@context': 'https://schema.org',
-    '@graph': SITE_LD.concat([
-      { '@type': 'WebPage', '@id': canonical + '#webpage', url: canonical, name: title, description, isPartOf: { '@id': SITE + '/#website' },
-        about: { '@id': SITE + '/#organization' }, dateModified: '{{LASTMOD}}', inLanguage: 'en-US' }
-    ])
-  };
-  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', extraCss: HOME_CSS, mainClass: '', headExtra: `<script>${HOME_REDIRECT_JS}</script>\n`,
-    csp: homeCsp([HOME_REDIRECT_JS].concat(liveJs ? [liveJs] : []), liveJs ? live.origin : null) });
-}
-
-/* ------------------------------ redesign preview ("The record") ------------------------------ */
-// The redesign chosen in the Look Studio (Nov 2026), built as a PREVIEW first. Nothing in this section changes a page
-// visitors see today. It writes one extra file, preview/index.html (the redesigned home page), which carries
-// "noindex, nofollow", is left out of sitemap.xml and the manifest, and links back into the live site. When the
-// redesign is approved, these templates replace the current ones and the preview folder goes away.
+/* ------------------------------ the design ("The record") ------------------------------ */
+// The redesign chosen in the Look Studio (Nov 2026). It was built as a preview first (a /preview/ folder and a
+// switch in the tracker's address) and became the site's look at the switch-over on Nov 10, 2026. layout() uses the
+// stylesheet and helpers in this section for every generated page.
 //
 // V2_CSS is the redesign's one stylesheet. It is written for the tracker's theme switch (html[data-theme="dark"]);
 // v2StaticCss() turns those rules into a prefers-color-scheme block for these script-free pages.
@@ -1458,15 +1195,13 @@ function v2StaticCss() {
   return `${light}\n@media (prefers-color-scheme:dark){\n${dark.join('\n')}\n}\n`;
 }
 
-// The header logo and the watermark both come from the artwork already in layout(), so there is one copy of it.
+// The watermark is drawn from the header logo's own artwork (LOGO_INNER), so there is one copy of it.
 let V2_LOGO = null;
 function v2Logo() {
   if (V2_LOGO) return V2_LOGO;
-  const page = layout({ depth: 0, title: '', description: '', canonical: SITE + '/', body: '' });
-  const m = /<a class="logo"[^>]*>([\s\S]*?)<\/a><a class="cta"/.exec(page);
-  const sym = m && /<svg class="aow-sym"[^>]*viewBox="0 0 ([\d.]+) ([\d.]+)"[^>]*><path d="([^"]+)"/.exec(m[1]);
-  if (!m || !sym) fatal('Redesign preview: could not read the header logo out of layout().');
-  V2_LOGO = { inner: m[1], w: +sym[1], h: +sym[2], d: sym[3] };
+  const sym = /<svg class="aow-sym"[^>]*viewBox="0 0 ([\d.]+) ([\d.]+)"[^>]*><path d="([^"]+)"/.exec(LOGO_INNER);
+  if (!sym) fatal('Could not read the logo symbol out of LOGO_INNER.');
+  V2_LOGO = { w: +sym[1], h: +sym[2], d: sym[3] };
   return V2_LOGO;
 }
 function v2WatermarkCss() {
@@ -1485,6 +1220,75 @@ function v2WatermarkCss() {
   return `${vars('#12836F')}\n@media (prefers-color-scheme:dark){${vars('#22A98A')}}\n`;
 }
 
+// What the generated pages need on top of V2_CSS: the title band's heading, the reading column, an official's roles,
+// and the directory rows. Colors come from the same tokens, so the dark theme needs nothing extra here.
+const V2_PAGE_CSS = `
+body.wm-mark main::after{display:none}
+body.wm-mark .page{position:relative}
+body.wm-mark .page::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;opacity:var(--wm-o,.09);background:var(--wm-mark) center center/clamp(260px,46vw,600px) auto;background-repeat:no-repeat space}
+.band-top h1{margin-top:14px;font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.02;letter-spacing:-.04em;text-wrap:balance}
+.band-top .profile h1{margin-top:0;font-size:clamp(36px,6vw,72px);line-height:.98;letter-spacing:-.045em}
+.band-top .sub{margin-top:14px;max-width:72ch;font-size:17px;color:var(--text-muted);text-wrap:pretty}
+.band-top a{color:var(--text)}
+.facts .party{font-size:inherit}
+.page{padding-top:clamp(28px,4vw,48px)}
+.page h2{font-size:24px;font-weight:800;line-height:1.2;letter-spacing:-.025em;scroll-margin-top:16px}
+.page .sub{max-width:78ch;margin-top:8px;color:var(--text-muted)}
+.prose{max-width:72ch;font-size:17px;line-height:1.65}
+.prose h2{margin:44px 0 12px}
+.prose h2:first-child{margin-top:0}
+.prose p{margin:0 0 16px}
+.prose ul,.prose ol{margin:0 0 16px;padding-left:22px}
+.prose ul{list-style:disc}
+.prose ol{list-style:decimal}
+.prose li{margin:0 0 8px}
+.defs{margin:0 0 16px}
+.defs dt{margin-top:14px;font-weight:700}
+.defs dd{margin-top:4px;color:var(--text-muted)}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;border:2px solid var(--border);background:var(--bg);font-size:15px;line-height:1.5}
+th,td{padding:10px 14px;border-top:1px solid var(--border);text-align:left;vertical-align:top}
+th{border-top:0;border-bottom:3px solid var(--text);font-size:14px;font-weight:600;color:var(--text-muted)}
+code{padding:1px 6px;border-radius:5px;background:var(--bg-alt);font-size:.9em}
+.role{margin-top:clamp(36px,5vw,60px)}
+.role:first-child{margin-top:0}
+.role .sec-head{justify-content:flex-start;margin:0 0 12px}
+.role .sec-head h2{font-size:28px;letter-spacing:-.03em}
+.role .count{font-size:15px;color:var(--text-muted)}
+.role .summary{max-width:80ch;margin-top:10px;color:var(--text-muted)}
+.role .mix{max-width:560px;height:10px;margin-top:16px;border-radius:5px}
+.role .held{max-width:80ch;margin-top:12px;font-size:14.5px;color:var(--text-muted)}
+.role .ledger{margin-top:20px}
+.entry{scroll-margin-top:16px}
+.entry:target{box-shadow:inset 4px 0 0 var(--brand)}
+.info{margin-top:clamp(36px,5vw,56px);padding:18px 20px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:15px;color:var(--text-muted)}
+.info strong{color:var(--text)}
+.related{margin-top:clamp(36px,5vw,60px)}
+.related .dir{margin-top:14px}
+.dir-sec{margin-top:clamp(28px,4vw,44px)}
+.dir-sec>h2,.dir-sec>h3{padding-bottom:10px;border-bottom:3px solid var(--text);font-size:24px;font-weight:800;letter-spacing:-.025em}
+.dir-sec>h3{font-size:20px}
+.dir-sec>:is(h2,h3) a{color:inherit;text-decoration:none}
+.dir-sec>:is(h2,h3) a:hover{text-decoration:underline}
+.dir .row{grid-template-columns:minmax(0,2.3fr) 130px minmax(0,1.5fr) 56px}
+.dir .kept .mix{max-width:320px}
+.dir.names{border-top:1px solid var(--border)}
+.related .dir.names{border-top:3px solid var(--text)}
+.dir.names .row{grid-template-columns:minmax(0,1.5fr) 130px minmax(0,1.6fr);padding:10px 8px}
+.dir.names .name{font-size:16px;font-weight:600;color:var(--text)}
+.dir.names a.name{color:var(--brand);text-decoration:none}
+.dir.names a.name:hover{text-decoration:underline}
+.dir.names .seat{font-size:14.5px;color:var(--text-muted)}
+.foot ul a span{font-size:.85em}
+@media (max-width:720px){
+  .dir .row{grid-template-columns:minmax(0,1fr) 56px}
+  .dir.names .row{grid-template-columns:minmax(0,1fr);gap:2px;padding:10px 2px}
+  .dir.names .row .party{grid-row:auto;padding-left:0;font-size:14.5px}
+  .prose{font-size:16.5px}
+  table{font-size:14px}
+  th,td{padding:8px 10px}
+}
+`;
+
 const V2_TICK = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const V2_OPEN = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5" stroke-dasharray="3 2.6"/></svg>';
 const V2_BIGTICK = '<svg width="30" height="30" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.2"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1493,53 +1297,14 @@ const V2_SOURCE_KINDS = ['Official record', 'Mainstream news', 'Right-leaning ne
 const v2Src3 = found => `<ul class="src3" aria-label="Sources found">${V2_SOURCE_KINDS.map((k, i) => found[i]
   ? `<li>${V2_TICK}${k}</li>` : `<li class="missing">${V2_OPEN}${k} (not yet)</li>`).join('')}</ul>`;
 
-// One page shell for every redesigned page: header with the page's own links, the body, and the footer.
-function v2Layout({ depth, title, description, body, nav, cta, bodyClass, csp, wrapClass }) {
-  const up = '../'.repeat(depth);
-  const logo = v2Logo();
-  const legal = [`<li><a href="${up}about/">About</a></li>`, `<li><a href="${up}contact/">Contact</a></li>`, `<li><a href="${up}methodology/">Methodology</a></li>`,
-    `<li><a href="${up}aow-index.html#newsletter">Weekly email</a></li>`]
-    .concat(LEGAL.filter(([f]) => fs.existsSync(path.join(ROOT, f))).map(([f, l]) => `<li><a href="${up}${f}">${l}</a></li>`)).join('');
-  const follow = SOCIAL.map(s => `<li><a href="${esc(s.url)}" target="_blank" rel="me noopener noreferrer">${esc(s.name)}${s.handle ? ` ${esc(s.handle)}` : ''}</a></li>`).join('');
-  return `<!DOCTYPE html>
-${MARK}
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="${esc(csp || CSP)}">
-<title>${esc(title)}</title>
-<meta name="description" content="${esc(description)}">
-<meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0D4A43">
-<link rel="icon" href="${up}favicon.ico" sizes="32x32">
-<link rel="icon" href="${up}favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="${up}apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>${v2StaticCss()}${v2WatermarkCss()}</style>
-</head>
-<body class="${bodyClass || V2_BODY_CLASS}">
-<div class="${wrapClass || ''}">
-<header class="top"><div class="wrap"><a class="logo" href="${up}preview/">${logo.inner}</a><nav class="nav" aria-label="On this page">${nav || ''}</nav><div class="acts">${cta || ''}</div></div></header>
-<div class="notice"><div class="wrap"><span><strong>Preview of the new design.</strong> Visitors still see the current site. <a href="${up || './'}">Back to the live home page</a></span></div></div>
-<main>
-${body}
-</main>
-<footer class="foot"><div class="wrap foot-grid"><div><h2>ActionOverWords Index</h2><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated {{LASTMOD}}. Spot an error? <a href="mailto:${CONTACT}">${CONTACT}</a></p></div><div><h2>Follow</h2><ul>${follow}</ul></div><div><h2>The site</h2><ul>${legal}</ul></div></div></footer>
-</div>
-</body>
-</html>
-`;
-}
-
-// The redesigned home page. Every sentence is the current home page's own (see renderHome); only the layout is new.
-// Keep the two in step until this one replaces it.
-function renderHomeV2(ctx) {
+// The home page.
+function renderHome(ctx) {
   const { model, hubs } = ctx;
-  const up = '../';
-  const tracker = up + 'aow-index.html?look=new';   // the tracker's own preview switch (see LOOK2 in aow-index.html)
+  const canonical = SITE + '/';
+  const title = 'ActionOverWords Index: Did Officials Keep Their Promises?';
+  const description = 'Tracking what U.S. officials promised and what happened: specific promises, six plain statuses, sources shown, and one standard for every official.';
+  const up = '';
+  const tracker = 'aow-index.html';
   const current = [...model.entries.values()].filter(e => e.kind === 'current');
   const states = new Set(current.filter(e => e.level === 'state' && STATE_NAMES[e.state] && !NOT_A_STATE.has(e.state)).map(e => e.state)).size;
   const people = model.pages.length;
@@ -1547,6 +1312,8 @@ function renderHomeV2(ctx) {
   const faq = fs.existsSync(path.join(ROOT, 'faq.html'));
   const live = liveCountsConfig();
   const liveJs = live.origin ? homeLiveJs(live) : null;
+  HOME_LIVE_STATE = liveJs ? 'on (the browser reads public.site_counts() and shows the live counts rounded down like the tracker)' : `off, rounded-down figures only (${live.why})`;
+  if (!liveJs) warn('Home page: live headline numbers are off: ' + live.why + '.');
   const liveId = k => (liveJs ? ` id="live-${k}"` : '');
 
   const link = (href, name, text, lead) => `<li${lead ? ' class="lead"' : ''}><a href="${href}"><b>${name}</b><span>${text}</span></a></li>`;
@@ -1639,14 +1406,17 @@ ${band('browse', 'h-browse', 'Browse', 'Start in the interactive tracker, or bro
 </div>
 </div>
 </section>`;
-  return v2Layout({
-    depth: 1, wrapClass: 'home', body,
-    title: 'Redesign preview | ActionOverWords Index',
-    description: 'A preview of the redesigned ActionOverWords Index home page. Not public yet.',
-    nav: '<a href="#how-it-works">How it works</a><a href="#sourcing">Sourcing</a><a href="#statuses">Statuses</a><a href="#coverage">Coverage</a>',
-    cta: `<a class="btn primary sm" href="${tracker}">Open the tracker</a>`,
-    csp: liveJs ? homeCsp([liveJs], live.origin) : CSP
-  });
+  const ld = {
+    '@context': 'https://schema.org',
+    '@graph': SITE_LD.concat([
+      { '@type': 'WebPage', '@id': canonical + '#webpage', url: canonical, name: title, description, isPartOf: { '@id': SITE + '/#website' },
+        about: { '@id': SITE + '/#organization' }, dateModified: '{{LASTMOD}}', inLanguage: 'en-US' }
+    ])
+  };
+  return layout({ depth: 0, title, description, canonical, body, ld, lastmodToken: '{{LASTMOD}}', mainClass: '', wrapClass: 'home',
+    nav: '<a href="#how-it-works">How it works</a><a href="#sourcing">Sourcing</a><a href="#statuses">Statuses</a><a href="#coverage">Coverage</a><a href="officials/">Officials</a>',
+    headExtra: `<script>${HOME_REDIRECT_JS}</script>\n`,
+    csp: homeCsp([HOME_REDIRECT_JS].concat(liveJs ? [liveJs] : []), liveJs ? live.origin : null) });
 }
 
 /* ------------------------------ about and contact ----------------------------- */
@@ -1788,7 +1558,6 @@ function main() {
   guard(path.join(ROOT, 'methodology', 'index.html'));
   guard(path.join(ROOT, 'about', 'index.html'));
   guard(path.join(ROOT, 'contact', 'index.html'));
-  guard(path.join(ROOT, 'preview', 'index.html'));
   hubs.forEach((_, k) => guard(path.join(ROOT, k, 'index.html')));
   model.pages.forEach(pg => guard(path.join(ROOT, 'officials', pg.slug, 'index.html')));
 
@@ -1804,8 +1573,6 @@ function main() {
   };
   const emit = (key, rel, raw) => { const lm = stamp(key, raw); out.set(rel, raw.split('{{LASTMOD}}').join(lm)); };   // every occurrence, not just the first
   if (HOME_LANDING) emit('home', 'index.html', renderHome(ctx));
-  // The redesign preview is not a public page: no manifest entry, no sitemap line. Its "Last updated" date follows the home page's.
-  out.set('preview/index.html', renderHomeV2(ctx).split('{{LASTMOD}}').join(HOME_LANDING ? next['home'].lastmod : TODAY));
   model.pages.forEach(pg => emit(`officials/${pg.slug}/`, `officials/${pg.slug}/index.html`, renderOfficial(pg, ctx)));
   emit('officials/', 'officials/index.html', renderDirectory(model.pages, model.roster, hubs));
   emit('methodology/', 'methodology/index.html', renderMethodology());
@@ -1849,7 +1616,7 @@ Sitemap: ${SITE}/sitemap.xml
     'AOW static pages report (deterministic; no timestamps)',
     `data files read: ${fileCount}`,
     HOME_LANDING ? `home page (/): generated landing page; live headline numbers: ${HOME_LIVE_STATE}` : 'home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)',
-    'redesign preview (/preview/): the redesigned home page; marked noindex and left out of the sitemap',
+    'design: the redesign ("The record") on every generated page; the /preview/ folder from before the switch-over is removed when found',
     `officials with a page: ${model.pages.length}`,
     `promises published on pages: ${model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0)}`,
     `current officials listed by name only (no publishable promises yet): ${model.roster.length}`,
@@ -1889,6 +1656,12 @@ Sitemap: ${SITE}/sitemap.xml
     else warn(`Leaving ${rel}/ in place (not exclusively generated).`);
   });
   ['congress', 'states'].forEach(d => { const p = path.join(ROOT, d); if (fs.existsSync(p) && fs.readdirSync(p).length === 0) fs.rmSync(p, { recursive: true }); });
+  // the redesign's preview folder (Nov 2026) is not needed once the redesign is the site: remove it if this script made it
+  const previewDir = path.join(ROOT, 'preview');
+  if (fs.existsSync(previewDir)) {
+    if (isOurs(path.join(previewDir, 'index.html')) && fs.readdirSync(previewDir).length === 1) { fs.rmSync(previewDir, { recursive: true }); removed++; }
+    else warn('Leaving preview/ in place (not exclusively generated).');
+  }
 
   if (writeIfChanged(path.join(ROOT, 'sitemap.xml'), sitemap) ) changed++;
   const robotsFile = path.join(ROOT, 'robots.txt');
