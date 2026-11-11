@@ -978,6 +978,47 @@ html[data-look="2"] footer .btn-primary{background:var(--on-deep);color:var(--de
   html[data-look="2"] .r-band #tally div+div{padding-left:12px}
   html[data-look="2"] .r-band #tally .l{font-size:13.5px}
 }
+html[data-look="2"] #content > .detail-head{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,340px);align-items:start;gap:20px clamp(20px,4vw,48px)}
+html[data-look="2"] #content > .detail-head .detail-head-actions{grid-column:1/-1;margin-left:0}
+html[data-look="2"] .back-btn.r-crumb{text-decoration:none}
+html[data-look="2"] .back-btn.r-crumb u{text-underline-offset:3px}
+html[data-look="2"] .back-btn.r-crumb span{color:var(--on-deep-faint)}
+html[data-look="2"] .r-scorebox{padding:20px;border-radius:var(--radius);background:var(--bg);color:var(--t0);--text:var(--t0);--text-muted:var(--m0);--border:var(--b0)}
+html[data-look="2"] .r-sb-head{display:flex;align-items:center;gap:16px}
+html[data-look="2"] .r-sb-head .t{display:block;font-size:17px;font-weight:800}
+html[data-look="2"] .r-sb-head .d{display:block;font-size:14.5px;line-height:1.4;color:var(--text-muted)}
+html[data-look="2"] .r-ring{--tier:var(--border);position:relative;display:grid;place-items:center;flex:none;width:84px;height:84px;border-radius:50%;background:conic-gradient(var(--tier) calc(var(--p) * 1%),var(--border) 0)}
+html[data-look="2"] .r-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--bg)}
+html[data-look="2"] .r-ring b{position:relative;font-size:30px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+html[data-look="2"] .r-ring.tier-high{--tier:var(--completed)}
+html[data-look="2"] .r-ring.tier-mid{--tier:var(--in_progress)}
+html[data-look="2"] .r-ring.tier-low{--tier:var(--broken)}
+html[data-look="2"] .r-ring.tier-na b{font-weight:600;color:var(--m0)}
+html[data-look="2"] .r-scorebox .r-status-bar{margin-top:18px}
+html[data-look="2"] .r-tally{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;margin:14px 0 0;padding:0;list-style:none;font-size:14px;color:var(--text-muted)}
+html[data-look="2"] .r-tally li{display:flex;align-items:center;gap:8px}
+html[data-look="2"] .r-tally i{flex:none;width:10px;height:10px;border-radius:50%}
+html[data-look="2"] .r-tally b{margin-left:auto;color:var(--text);font-variant-numeric:tabular-nums}
+html[data-look="2"] #content > .detail-head .party-dot{margin:0 7px 0 3px}
+html[data-look="2"] #content > .detail-head .member-tools{margin-top:20px}
+html[data-look="2"] #content > .detail-head .member-tools .btn-sm{border-color:var(--on-deep-border);background:transparent;color:var(--on-deep)}
+html[data-look="2"] #content > .detail-head .member-tools .btn-sm:hover{border-color:var(--on-deep)}
+html[data-look="2"] #content > .detail-head .member-tools .btn-sm:first-child,html[data-look="2"] #content > .detail-head .member-tools .btn-sm.is-on{border-color:var(--on-deep);background:var(--on-deep);color:var(--deep)}
+html[data-look="2"] #content > .detail-head .trend-locked{max-width:640px;margin-top:18px;padding:14px 16px;border:2px dashed var(--on-deep-border);background:transparent}
+html[data-look="2"] #content > .detail-head .trend-locked h3{display:inline;margin:0;font-size:15px;color:var(--on-deep)}
+html[data-look="2"] #content > .detail-head .trend-locked h3::after{content:'. '}
+html[data-look="2"] #content > .detail-head .trend-locked p{display:inline;font-size:15px;color:var(--on-deep-muted)}
+html[data-look="2"] #content > .detail-head .trend-locked .btn-sm{display:flex;align-items:center;width:max-content;margin-top:12px;border-color:var(--on-deep);background:transparent;color:var(--on-deep)}
+html[data-look="2"] #content > .detail-head .trend-locked .btn-sm:hover{background:var(--on-deep);color:var(--deep)}
+@media (max-width:1000px){
+  html[data-look="2"] #content > .detail-head{grid-template-columns:auto minmax(0,1fr)}
+  html[data-look="2"] #content > .detail-head .r-scorebox{grid-column:1/-1}
+}
+@media (max-width:720px){
+  html[data-look="2"] #content > .detail-head{gap:16px}
+  html[data-look="2"] .r-ring{width:72px;height:72px}
+  html[data-look="2"] .r-ring b{font-size:26px}
+}
 @media (prefers-reduced-motion:reduce){html[data-look="2"] *{transition:none!important}}
 </style>
 </head>
@@ -4064,19 +4105,71 @@ function look2Setup(){
   });
   if(window.MutationObserver) new MutationObserver(look2Decorate).observe(content, {childList:true});
 }
-// On a profile, add a bar of the promises by status and buttons that show one status at a time.
-// Built from the entries on the page, so it works for every kind of profile.
+// On a profile: the green band gets the breadcrumb, this visitor's tools, the "Score over time" offer and the score
+// box (ring filled to the score, the promises by status as a bar and as counts). Under the band, buttons show one
+// status at a time. Built from what the page already rendered, so it works for every kind of profile.
 function look2Decorate(){
   const content = document.getElementById('content');
-  if(!content || !content.querySelector(':scope > .detail-head') || content.querySelector('.r-status')) return;
+  const head = content && content.querySelector(':scope > .detail-head');
+  if(!head || head.hasAttribute('data-r')) return;
+  head.setAttribute('data-r', '1');
   const entries = Array.from(content.querySelectorAll('.r-entry'));
-  if(entries.length < 2) return;
   const counts = {};
   entries.forEach(e => { const k = e.getAttribute('data-status'); counts[k] = (counts[k] || 0) + 1; });
   const keys = Object.keys(STATUS_META).filter(k => counts[k]);
+  const barHTML = `<div class="r-status-bar" aria-hidden="true">${keys.map(k => `<span style="flex:${counts[k]};background:var(--${k})"></span>`).join('')}</div>`;
+
+  const back = head.previousElementSibling, h2 = head.querySelector('h2');
+  const from = back && back.classList.contains('back-btn') ? /Back to (.+)$/.exec(back.textContent.trim()) : null;
+  if(from && h2 && h2.firstChild){
+    back.classList.add('r-crumb');
+    back.setAttribute('aria-label', 'Back to ' + from[1]);
+    back.innerHTML = `<u>${escAttr(from[1])}</u> <span>/ ${escAttr(h2.firstChild.textContent.trim())}</span>`;
+  }
+  const col = h2 && h2.parentNode !== head ? h2.parentNode : null;
+  if(col){
+    const tools = content.querySelector(':scope > .member-tools');
+    if(tools) col.appendChild(tools);
+    const offer = content.querySelector(':scope > .trend-locked');
+    if(offer) col.appendChild(offer);
+  }
+  const badge = head.querySelector(':scope > .aow-score-lg');
+  if(badge){
+    const num = (badge.querySelector('.num') || badge).textContent.trim();
+    const sc = /^\d+$/.test(num) ? Number(num) : null;
+    const why = badge.getAttribute('title') || '';
+    const n = (/based on (\d+) tracked/.exec(why) || [])[1];
+    const tier = (/tier-(high|mid|low|na)/.exec(badge.className) || [])[1] || 'na';
+    const box = document.createElement('div');
+    box.className = 'r-scorebox';
+    box.innerHTML = `<div class="r-sb-head"><div class="r-ring tier-${tier}" style="--p:${sc === null ? 0 : sc}" role="img" aria-label="${sc === null ? 'No AOW Score yet' : 'AOW Score ' + sc + ' out of 100'}"><b>${sc === null ? '—' : sc}</b></div>`
+      + `<div><b class="t">AOW Score</b><span class="d">${n ? 'Out of 100, from ' + n + ' tracked promise' + (n === '1' ? '' : 's') : escAttr(why)}</span></div></div>`
+      + (entries.length ? barHTML + `<ul class="r-tally">${keys.map(k => `<li><i style="background:var(--${k})"></i>${STATUS_META[k].label}<b>${counts[k]}</b></li>`).join('')}</ul>` : '');
+    head.replaceChild(box, badge);
+  } else {
+    // someone with more than one office on one profile: the box shows the first office listed, whose own score stays on its block
+    const role = content.querySelector(':scope > .role-block');
+    const small = role && role.querySelector('.role-block-head .aow-score');
+    const title = role && role.querySelector('.role-block-head h3');
+    if(small && title && title.firstChild){
+      const num = (small.querySelector('.num') || small).textContent.trim();
+      const sc = /^\d+$/.test(num) ? Number(num) : null;
+      const tier = (/tier-(high|mid|low|na)/.exec(small.className) || [])[1] || 'na';
+      const mine = {};
+      role.querySelectorAll('.r-entry').forEach(e => { const k = e.getAttribute('data-status'); mine[k] = (mine[k] || 0) + 1; });
+      const mk = Object.keys(STATUS_META).filter(k => mine[k]);
+      const box = document.createElement('div');
+      box.className = 'r-scorebox';
+      box.innerHTML = `<div class="r-sb-head"><div class="r-ring tier-${tier}" style="--p:${sc === null ? 0 : sc}" role="img" aria-label="${sc === null ? 'No AOW Score yet' : 'AOW Score ' + sc + ' out of 100'}"><b>${sc === null ? '—' : sc}</b></div>`
+        + `<div><b class="t">AOW Score</b><span class="d">Out of 100, as ${escAttr(title.firstChild.textContent.trim())}</span></div></div>`
+        + (mk.length ? `<div class="r-status-bar" aria-hidden="true">${mk.map(k => `<span style="flex:${mine[k]};background:var(--${k})"></span>`).join('')}</div><ul class="r-tally">${mk.map(k => `<li><i style="background:var(--${k})"></i>${STATUS_META[k].label}<b>${mine[k]}</b></li>`).join('')}</ul>` : '');
+      head.appendChild(box);
+    }
+  }
+  if(entries.length < 2) return;
   const box = document.createElement('div');
   box.className = 'r-status';
-  box.innerHTML = `<div class="r-status-bar" aria-hidden="true">${keys.map(k => `<span style="flex:${counts[k]};background:var(--${k})"></span>`).join('')}</div>`
+  box.innerHTML = (badge ? '' : barHTML)
     + `<div class="r-chips" role="group" aria-label="Show promises by status"><button type="button" aria-pressed="true" data-k="">All ${entries.length}</button>`
     + keys.map(k => `<button type="button" aria-pressed="false" data-k="${k}"><i style="background:var(--${k})"></i>${STATUS_META[k].label} ${counts[k]}</button>`).join('') + '</div>';
   box.addEventListener('click', ev => {
