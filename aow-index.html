@@ -881,6 +881,32 @@ html[data-look="2"] .aow-score .num{color:var(--text)}
 html[data-look="2"] .aow-score:not(.aow-score-lg) .num{font-size:17px}
 html[data-look="2"] .aow-score:not(.aow-score-lg) .lbl{display:none}
 html[data-look="2"] .watch-star{width:40px;height:40px;border-color:transparent;background:none;font-size:20px}
+html[data-look="2"] .mcard .party-chip{display:inline-flex;align-items:center;gap:7px;min-width:0;height:auto;padding:0;border:0;border-radius:0;background:none;font-size:0}
+html[data-look="2"] .mcard .party-chip::before{content:'';width:10px;height:10px;border-radius:50%;background:currentColor}
+html[data-look="2"] .mcard .party-chip::after{font-size:14.5px;font-weight:500;color:var(--text-muted)}
+html[data-look="2"] .mcard .party-D::after{content:'Democrat'}
+html[data-look="2"] .mcard .party-R::after{content:'Republican'}
+html[data-look="2"] .mcard .party-I::after{content:'Independent'}
+html[data-look="2"] .mcard .party-NP::after{content:'Nonpartisan'}
+html[data-look="2"] .r-status{margin-top:26px}
+html[data-look="2"] .r-status-bar{display:flex;gap:2px;height:10px;border-radius:5px;overflow:hidden;background:var(--border)}
+html[data-look="2"] .r-status-bar span{display:block;height:100%;min-width:4px}
+html[data-look="2"] .r-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+html[data-look="2"] .r-chips button{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px;border:2px solid var(--border);border-radius:999px;background:var(--bg);color:var(--text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+html[data-look="2"] .r-chips button i{width:10px;height:10px;border-radius:50%}
+html[data-look="2"] .r-chips button[aria-pressed="true"]{border-color:var(--text);background:var(--text);color:var(--bg)}
+html[data-look="2"] .r-entry[hidden]{display:none}
+html[data-look="2"] .about-page{max-width:68ch}
+html[data-look="2"] .about-page h2{margin:36px 0 10px;font-size:24px;font-weight:800;letter-spacing:-.025em}
+html[data-look="2"] .about-page p{font-size:16.5px;line-height:1.65}
+html[data-look="2"] .races-rotator{border-width:2px;background:var(--bg)}
+html[data-look="2"] .race-click:hover{box-shadow:none;transform:none}
+html[data-look="2"] .race-label{font-size:16px}
+html[data-look="2"] .race-result{font-size:15px}
+html[data-look="2"] .race-promise .rp-text{font-size:14px}
+html[data-look="2"] .race-promise .pill{gap:6px;padding:3px 9px 3px 7px;font-size:12px}
+html[data-look="2"] .race-promise .pill::before{width:8px;height:8px}
+html[data-look="2"] .race-src,html[data-look="2"] .race-noprom{font-size:13px}
 html[data-look="2"] .pill{gap:8px;padding:5px 13px 5px 10px;border-radius:999px;color:var(--text);font-size:14px;line-height:1.3;letter-spacing:0}
 html[data-look="2"] .pill::before{content:'';flex:none;width:10px;height:10px;border-radius:50%;background:var(--pc,var(--text-faint))}
 html[data-look="2"] .p-not_started{--pc:var(--not_started)}
@@ -4041,6 +4067,33 @@ function look2Setup(){
   strip.className = 'r-preview';
   strip.innerHTML = 'Preview of the new design. Visitors still see the current site. <a href="?look=old">Back to the current look</a>';
   document.body.insertBefore(strip, document.body.firstChild);
+  if(window.MutationObserver) new MutationObserver(look2Decorate).observe(content, {childList:true});
+}
+// On a profile, add a bar of the promises by status and buttons that show one status at a time.
+// Built from the entries on the page, so it works for every kind of profile.
+function look2Decorate(){
+  const content = document.getElementById('content');
+  if(!content || !content.querySelector(':scope > .detail-head') || content.querySelector('.r-status')) return;
+  const entries = Array.from(content.querySelectorAll('.r-entry'));
+  if(entries.length < 2) return;
+  const counts = {};
+  entries.forEach(e => { const k = e.getAttribute('data-status'); counts[k] = (counts[k] || 0) + 1; });
+  const keys = Object.keys(STATUS_META).filter(k => counts[k]);
+  const box = document.createElement('div');
+  box.className = 'r-status';
+  box.innerHTML = `<div class="r-status-bar" aria-hidden="true">${keys.map(k => `<span style="flex:${counts[k]};background:var(--${k})"></span>`).join('')}</div>`
+    + `<div class="r-chips" role="group" aria-label="Show promises by status"><button type="button" aria-pressed="true" data-k="">All ${entries.length}</button>`
+    + keys.map(k => `<button type="button" aria-pressed="false" data-k="${k}"><i style="background:var(--${k})"></i>${STATUS_META[k].label} ${counts[k]}</button>`).join('') + '</div>';
+  box.addEventListener('click', ev => {
+    const b = ev.target.closest('button');
+    if(!b) return;
+    const k = b.getAttribute('data-k');
+    box.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    content.querySelectorAll('.r-entry').forEach(e => { e.hidden = !!k && e.getAttribute('data-status') !== k; });
+  });
+  let anchor = entries[0];
+  while(anchor.parentNode !== content) anchor = anchor.parentNode;
+  content.insertBefore(box, anchor);
 }
 function look2AfterRender(){
   const band = document.getElementById('rBand');
@@ -4084,7 +4137,7 @@ function promiseEntryHTML(p, personName, canEdit){
     return `<li><span>${SRC_TYPE_LABEL[src.type]||'Source'}</span>${href ? `<a href="${escAttr(href)}" target="_blank" rel="noopener">${escAttr(src.publisher)} ↗</a>` : `<span>${escAttr(src.publisher)}</span>`}</li>`;
   }).join('');
   return `
-    <div class="r-entry">
+    <div class="r-entry" data-status="${statusClass(p.status)}">
       <div class="r-said">
         <p class="r-q">${escAttr(p.text)}</p>
         ${p.category ? `<p class="r-cat">${escAttr(p.category)}</p>` : ''}
