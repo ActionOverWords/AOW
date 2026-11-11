@@ -26,82 +26,414 @@
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>:root{--bg:#FFFFFF;--bg-alt:#F4F6F9;--border:#DFE3E9;--text:#171A21;--text-muted:#5B6472;--text-faint:#8992A3;--brand:#12836F;--brand-dark:#0C6355;--brand-tint:#E1F3EF;
---not_started:#8A93A3;--in_progress:#C2790F;--stalled:#5D7599;--compromise:#8A5CA8;--completed:#1E8E5A;--broken:#C0392B;
---not_started-bg:#EEF0F3;--in_progress-bg:#FBF0DF;--stalled-bg:#E9EDF4;--compromise-bg:#F3E9F6;--completed-bg:#E4F5EC;--broken-bg:#FBE7E4;
---party-d:#2058B0;--party-d-bg:#E7EFFC;--party-r:#B23A2F;--party-r-bg:#FBEAE7;--party-i:#8B5E00;--party-i-bg:#F7EEDA;--party-np:#6B7280;--party-np-bg:#EEF0F2;--radius:10px}
-@media (prefers-color-scheme:dark){:root{--bg:#1D222B;--bg-alt:#14171D;--border:#2B313C;--text:#E8EAED;--text-muted:#9CA3AF;--text-faint:#6B7280;--brand:#22A98A;--brand-dark:#1B8570;--brand-tint:#16332E;
---not_started:#9AA3B2;--in_progress:#E0993D;--stalled:#7C93C4;--compromise:#B084D1;--completed:#3DBE82;--broken:#E0685A;
---not_started-bg:#262B33;--in_progress-bg:#3A2E1B;--stalled-bg:#212A38;--compromise-bg:#2E2438;--completed-bg:#1A3327;--broken-bg:#3A2220;
---party-d:#5B9BF0;--party-d-bg:#1B2A42;--party-r:#F0776A;--party-r-bg:#3A2220;--party-i:#D9A93F;--party-i-bg:#332A16;--party-np:#9AA3B2;--party-np-bg:#262B33}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg-alt);color:var(--text);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--brand)}.wrap{max-width:860px;margin:0 auto;padding:0 20px}
-.masthead{background:var(--bg);border-bottom:1px solid var(--border)}.masthead .wrap{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}.logo-mark{width:46px;height:32px;border-radius:7px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.logo-word{font-weight:800;font-size:18px;letter-spacing:-.01em;white-space:nowrap}.logo-word .lw-short{display:none}
-.cta{margin-left:auto;font-size:13px;font-weight:700;text-decoration:none;color:#fff;background:var(--brand);padding:7px 13px;border-radius:8px;white-space:nowrap}
-@media (max-width:480px){.logo-word .lw-full{display:none}.logo-word .lw-short{display:inline}}
-/* AOW logo (logo kit v1.0, direction Ring): the supplied masters as inline SVG, in the page's own colors. */
-.masthead .logo{gap:0}.logo .logo-mark{width:auto;height:auto;background:none;border-radius:0;color:inherit;display:block;flex:none;font-size:0;line-height:0;letter-spacing:0}
-.logo .logo-word{font-size:0;line-height:0;letter-spacing:0}.logo svg{display:inline-block;vertical-align:top;flex:none;overflow:visible}.logo .logo-mark svg{display:block}
-.logo .aow-sym .s{fill:var(--brand)}.logo .aow-wm .w{fill:currentColor}.logo .aow-wm .i{fill:var(--brand)}
-@media (prefers-color-scheme:dark){.logo .aow-wm .i{fill:#7CE0C4}}
-nav.crumbs{font-size:13px;color:var(--text-muted);padding:16px 0 0}nav.crumbs a{color:var(--text-muted)}
-h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;margin:10px 0 6px}h2{font-size:20px;letter-spacing:-.01em;margin:30px 0 10px}h3{font-size:16.5px;line-height:1.4;margin:10px 0 8px}
-.sub{color:var(--text-muted);margin:0 0 6px}.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;vertical-align:middle;margin-left:6px}
-.role{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin:18px 0}
-.role-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.role-head h2{margin:0;font-size:18px}
-.score{width:64px;height:64px;border-radius:50%;border:3px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
-.score b{font-size:22px;line-height:1}.score span{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
-.score.tier-high{border-color:var(--completed);color:var(--completed)}.score.tier-mid{border-color:var(--in_progress);color:var(--in_progress)}.score.tier-low{border-color:var(--broken);color:var(--broken)}
-.bar{display:flex;height:9px;border-radius:6px;overflow:hidden;background:var(--border);margin:12px 0 4px}.bar i{display:block;height:100%}
-.legend{font-size:12.5px;color:var(--text-muted);margin:0}
-.promise{border-top:1px solid var(--border);padding:16px 0 4px}.promise:first-of-type{border-top:0}
-.pill{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
-.cat{font-size:12.5px;color:var(--text-muted);margin-left:8px}.note{margin:0 0 10px;color:var(--text)}
-.sources{list-style:none;margin:6px 0 12px;padding:0;font-size:13.5px}.sources li{padding:3px 0}.stype{display:inline-block;min-width:175px;font-size:11.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
-.info{font-size:13.5px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:18px 0}
-.dir-sec h2,.dir-sec h3{font-size:17px;margin:26px 0 6px}.dir{list-style:none;margin:0;padding:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius)}
-.dir li{display:flex;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--border);flex-wrap:wrap}.dir li:first-child{border-top:0}.dir .meta{color:var(--text-muted);font-size:13px;margin-left:auto}
-footer{border-top:1px solid var(--border);margin-top:40px;padding:22px 0 40px;font-size:13px;color:var(--text-muted)}footer a{color:var(--text-muted);margin-right:14px}
-footer .follow{margin:0 0 12px}footer .follow b{color:var(--text);margin-right:10px}footer .follow a{color:var(--brand);font-weight:600}footer .follow .handle{color:var(--text-muted);font-weight:500}
-.related{margin-top:30px}.related .sub{font-size:14px}.summary{margin:14px 0 4px}
-.prose p{margin:0 0 14px}.prose h2{margin-top:34px}.prose ul{margin:0 0 14px;padding-left:22px}.prose li{margin:0 0 8px}.defs{margin:0 0 14px}.defs dt{margin-top:12px}.defs dd{margin:4px 0 0;color:var(--text-muted)}
-table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0 18px;background:var(--bg);border:1px solid var(--border)}th,td{padding:9px 12px;border-top:1px solid var(--border);text-align:left;vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);border-top:0}code{font-size:13px;background:var(--bg-alt);padding:1px 5px;border-radius:5px}.p-d{color:var(--party-d);background:var(--party-d-bg)}.p-r{color:var(--party-r);background:var(--party-r-bg)}.p-i{color:var(--party-i);background:var(--party-i-bg)}.p-np{color:var(--party-np);background:var(--party-np-bg)}.s-not_started{color:var(--not_started);background:var(--not_started-bg)}.b-not_started{background:var(--not_started)}.s-in_progress{color:var(--in_progress);background:var(--in_progress-bg)}.b-in_progress{background:var(--in_progress)}.s-stalled{color:var(--stalled);background:var(--stalled-bg)}.b-stalled{background:var(--stalled)}.s-compromise{color:var(--compromise);background:var(--compromise-bg)}.b-compromise{background:var(--compromise)}.s-completed{color:var(--completed);background:var(--completed-bg)}.b-completed{background:var(--completed)}.s-broken{color:var(--broken);background:var(--broken-bg)}.b-broken{background:var(--broken)}</style>
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://action-over-words.com/officials/cab-blanche/#webpage","url":"https://action-over-words.com/officials/cab-blanche/","name":"Todd Blanche — Campaign Promise Tracker | ActionOverWords","dateModified":"2026-10-31","inLanguage":"en-US","about":{"@id":"https://action-over-words.com/officials/cab-blanche/#person"}},{"@type":"Person","@id":"https://action-over-words.com/officials/cab-blanche/#person","name":"Todd Blanche","jobTitle":"Attorney General (Acting) · United States","url":"https://action-over-words.com/officials/cab-blanche/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://action-over-words.com/"},{"@type":"ListItem","position":2,"name":"Officials","item":"https://action-over-words.com/officials/"},{"@type":"ListItem","position":3,"name":"Todd Blanche","item":"https://action-over-words.com/officials/cab-blanche/"}]}]}</script>
-</head>
-<body>
-<header class="masthead"><div class="wrap"><a class="logo" href="../../"><span class="logo-mark" aria-hidden="true"><svg class="aow-sym" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 166.55 181.3" width="29.4" height="32" aria-hidden="true" focusable="false"><path d="M146.33 56.97A41.65 41.65 0 0 1 147.23 65.62L147.23 102.64A41.65 41.65 0 0 1 105.59 144.28L61.09 144.28L12.72 179.75A7.99 7.99 0 0 1 0 173.31L0 65.62A41.65 41.65 0 0 1 41.65 23.97L105.59 23.97A41.65 41.65 0 0 1 113.08 24.65L100.03 39.95L41.65 39.95A25.66 25.66 0 0 0 15.98 65.62L15.98 157.53L53.75 129.84A7.99 7.99 0 0 1 58.47 128.3L105.59 128.3A25.66 25.66 0 0 0 131.25 102.64L131.25 74.66L146.33 56.97ZM36.37 83.3L66.41 113.33A13.88 13.88 0 0 0 86.79 112.53L163.23 22.89A13.88 13.88 0 0 0 142.11 4.88L75.41 83.08L56.01 63.67A13.88 13.88 0 0 0 36.37 83.3Z" class="s"/></svg></span><span class="logo-word"><span class="lw-full"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1147.4 181.3" width="202.52" height="32" role="img" aria-label="ActionOverWords Index"><g class="w"><path d="M40.15 120.63L65.85 48.33H83.5L109.25 120.63H92.35L87 105.23H62.6L57.15 120.63ZM66.3 90.58H83.05L74.7 64.68ZM138 121.63Q130.7 121.63 124.93 118.35Q119.15 115.08 115.83 109.08Q112.5 103.08 112.5 95.03Q112.5 86.98 115.75 80.88Q119 74.78 124.75 71.35Q130.5 67.93 138 67.93Q144.9 67.93 149.78 70.8Q154.65 73.68 157.33 78.45Q160 83.23 160.25 88.88H146.3Q146.05 87.13 145.18 85.23Q144.3 83.33 142.6 82Q140.9 80.68 138.15 80.68Q133.7 80.68 130.98 84.2Q128.25 87.73 128.25 94.83Q128.25 101.83 131.03 105.78Q133.8 109.73 138.45 109.73Q141.15 109.73 142.85 108.28Q144.55 106.83 145.4 104.93Q146.25 103.03 146.45 101.58H160.05Q159.9 107.03 157.18 111.58Q154.45 116.13 149.58 118.88Q144.7 121.63 138 121.63ZM191.7 121.28Q184.25 121.28 180.18 119.4Q176.1 117.53 174.53 114.25Q172.95 110.98 172.95 106.83V80.58H164.55V68.93H173.55L177.9 53.08H189.95V68.83H201.3V80.58H189.95L190 106.08Q190 108.38 191.03 109Q192.05 109.63 193.85 109.63H201.4V119.88Q200.35 120.38 198.15 120.83Q195.95 121.28 191.7 121.28ZM210.4 63.13V48.33H226.75V63.13ZM210.45 120.63V68.93H226.65V120.63ZM260.95 121.63Q253.15 121.63 247.4 118.3Q241.65 114.98 238.5 109.03Q235.35 103.08 235.35 95.08Q235.35 86.98 238.58 80.85Q241.8 74.73 247.58 71.33Q253.35 67.93 261.05 67.93Q268.9 67.93 274.63 71.35Q280.35 74.78 283.48 80.9Q286.6 87.03 286.6 95.08Q286.6 102.83 283.5 108.83Q280.4 114.83 274.65 118.23Q268.9 121.63 260.95 121.63ZM261.05 109.13Q264.5 109.13 266.45 106.95Q268.4 104.78 269.2 101.4Q270 98.03 270 94.53Q270 91.08 269.25 87.8Q268.5 84.53 266.55 82.38Q264.6 80.23 261.05 80.23Q257.5 80.23 255.53 82.3Q253.55 84.38 252.75 87.65Q251.95 90.93 251.95 94.53Q251.95 97.93 252.7 101.3Q253.45 104.68 255.43 106.9Q257.4 109.13 261.05 109.13ZM295.25 120.63V68.93H312.05V76.18Q313.75 73.53 317.08 71.05Q320.4 68.58 326.5 68.58Q331.15 68.58 335.28 70.38Q339.4 72.18 342 76.1Q344.6 80.03 344.6 86.38V120.63H327.5V88.63Q327.5 85.23 325.3 83.5Q323.1 81.78 320.25 81.78Q317.35 81.78 314.8 83.4Q312.25 85.03 312.25 88.23V120.63Z"/><path d="M386.75 121.63Q376.75 121.63 369.48 117.23Q362.2 112.83 358.23 104.55Q354.25 96.28 354.25 84.63Q354.25 72.93 358.25 64.58Q362.25 56.23 369.55 51.78Q376.85 47.33 386.75 47.33Q396.6 47.33 403.83 51.78Q411.05 56.23 415 64.58Q418.95 72.93 418.95 84.63Q418.95 96.23 415.05 104.5Q411.15 112.78 403.9 117.2Q396.65 121.63 386.75 121.63ZM386.75 111.43Q395.65 111.43 400.68 105.1Q405.7 98.78 405.7 84.78Q405.7 70.53 400.63 64.03Q395.55 57.53 386.75 57.53Q377.95 57.53 372.78 64.05Q367.6 70.58 367.6 84.78Q367.6 98.83 372.78 105.13Q377.95 111.43 386.75 111.43ZM444.55 120.63L425.45 68.93H436.6L449 105.13H449.65L462 68.93H473.2L454.15 120.63ZM503 121.63Q495.55 121.63 489.88 118.45Q484.2 115.28 481.03 109.38Q477.85 103.48 477.85 95.33Q477.85 87.38 480.73 81.2Q483.6 75.03 489.08 71.48Q494.55 67.93 502.3 67.93Q513.75 67.93 519.75 75.05Q525.75 82.18 525.75 93.88V97.58H490Q489.95 104.18 493.2 108.4Q496.45 112.63 502.75 112.63Q507.05 112.63 510.23 110.7Q513.4 108.78 514.45 104.83H525.55Q524.65 110.23 521.28 113.98Q517.9 117.73 513.08 119.68Q508.25 121.63 503 121.63ZM489.95 90.03H514.25Q514.25 84.43 511.3 80.55Q508.35 76.68 502.25 76.68Q498.25 76.68 495.5 78.63Q492.75 80.58 491.35 83.65Q489.95 86.73 489.95 90.03ZM536.95 120.63V68.93H548.6V80.13Q550.5 74.38 554.73 71.15Q558.95 67.93 564.5 67.93Q565.4 67.93 566.23 68.03Q567.05 68.13 567.5 68.38V80.03Q566.95 79.78 566.08 79.68Q565.2 79.58 564.55 79.58Q557.05 78.98 553.08 81.9Q549.1 84.83 549.1 90.58V120.63Z"/><path d="M593.05 120.63L572.2 48.33H581.55L597.55 105.88L613.85 48.33H621.1L637.35 105.88L653.65 48.33H662.95L641.85 120.63H633.3L617.45 64.58L601.35 120.63ZM688.65 121.63Q677.9 121.63 671.43 114.78Q664.95 107.93 664.95 94.98Q664.95 86.88 667.7 80.78Q670.45 74.68 675.75 71.3Q681.05 67.93 688.7 67.93Q699.35 67.93 705.78 74.93Q712.2 81.93 712.2 94.98Q712.2 102.88 709.53 108.88Q706.85 114.88 701.6 118.25Q696.35 121.63 688.65 121.63ZM688.7 114.33Q695.6 114.33 699.33 109.1Q703.05 103.88 703.05 94.78Q703.05 89.23 701.58 84.8Q700.1 80.38 696.93 77.78Q693.75 75.18 688.7 75.18Q681.65 75.18 677.9 80.35Q674.15 85.53 674.15 94.78Q674.15 100.23 675.63 104.68Q677.1 109.13 680.3 111.73Q683.5 114.33 688.7 114.33ZM724.1 120.63V68.93H732.9V78.88Q734.85 73.33 739.08 70.63Q743.3 67.93 748.2 67.93Q749.35 67.93 750.43 68.08Q751.5 68.23 752.15 68.58V77.53Q751.4 77.18 750.23 77.05Q749.05 76.93 748.25 76.93Q742.1 76.53 737.7 79.28Q733.3 82.03 733.3 88.48V120.63ZM780.85 121.63Q770.75 121.63 764.88 114.73Q759 107.83 759 94.58Q759 82.48 764.3 75.2Q769.6 67.93 780.1 67.93Q785.05 67.93 788.53 69.53Q792 71.13 794.1 73.28Q796.2 75.43 797.05 77.13V46.33H806.4V120.63H799.3L798.3 110.03Q797.65 112.03 795.88 114.78Q794.1 117.53 790.5 119.58Q786.9 121.63 780.85 121.63ZM782.5 114.53Q790.3 114.53 793.68 109.75Q797.05 104.98 797.05 94.13Q796.95 85.08 793.65 80.1Q790.35 75.13 782.65 75.13Q776.3 75.13 772.3 79.65Q768.3 84.18 768.3 94.13Q768.3 103.83 771.9 109.18Q775.5 114.53 782.5 114.53ZM839.85 121.63Q834.45 121.63 829.83 119.93Q825.2 118.23 822.15 114.7Q819.1 111.18 818.35 105.58H826.75Q827.75 110.13 831.33 112.43Q834.9 114.73 839.8 114.73Q845.05 114.73 848.25 112.78Q851.45 110.83 851.45 106.78Q851.45 101.33 844.55 99.68L833.85 97.03Q827.6 95.53 823.88 92.33Q820.15 89.13 820.1 83.38Q820.1 76.58 825.03 72.25Q829.95 67.93 839.8 67.93Q848.2 67.93 853.38 71.73Q858.55 75.53 858.8 82.78H850.6Q850.1 79.08 847.3 76.9Q844.5 74.73 839.7 74.73Q834.75 74.73 831.65 76.7Q828.55 78.68 828.55 82.83Q828.55 85.58 830.78 87.15Q833 88.73 837.25 89.78L847.65 92.38Q852.4 93.63 855.03 95.93Q857.65 98.23 858.7 100.98Q859.75 103.73 859.75 106.28Q859.75 113.43 854.53 117.53Q849.3 121.63 839.85 121.63Z"/></g><g class="i"><path d="M903.36 120.63V48.33H914.06V120.63ZM930.06 120.63V68.93H940.51V76.38Q942.36 73.28 946.28 70.78Q950.21 68.28 956.36 68.28Q961.21 68.28 965.33 70.2Q969.46 72.13 971.96 76.2Q974.46 80.28 974.46 86.73V120.63H963.76V87.88Q963.76 82.33 960.76 79.63Q957.76 76.93 953.11 76.93Q949.91 76.93 947.08 77.98Q944.26 79.03 942.51 81.15Q940.76 83.28 940.76 86.48V120.63ZM1006.86 121.63Q996.66 121.63 990.81 114.65Q984.96 107.68 984.96 94.53Q984.96 82.43 990.26 75.18Q995.56 67.93 1005.96 67.93Q1010.56 67.93 1013.91 69.38Q1017.26 70.83 1019.41 72.9Q1021.56 74.98 1022.51 76.78V46.33H1033.31V120.63H1025.26L1024.06 110.03Q1023.36 112.28 1021.53 114.98Q1019.71 117.68 1016.18 119.65Q1012.66 121.63 1006.86 121.63ZM1008.91 113.58Q1016.16 113.58 1019.33 109.05Q1022.51 104.53 1022.51 94.18Q1022.41 85.43 1019.28 80.75Q1016.16 76.08 1009.11 76.08Q1003.16 76.08 999.38 80.35Q995.61 84.63 995.61 94.18Q995.61 103.58 999.03 108.58Q1002.46 113.58 1008.91 113.58ZM1069.81 121.63Q1062.46 121.63 1056.86 118.45Q1051.26 115.28 1048.13 109.38Q1045.01 103.48 1045.01 95.33Q1045.01 87.28 1047.86 81.1Q1050.71 74.93 1056.08 71.43Q1061.46 67.93 1069.11 67.93Q1080.31 67.93 1086.23 74.95Q1092.16 81.98 1092.16 93.73V97.28H1055.76Q1055.71 104.23 1059.18 108.88Q1062.66 113.53 1069.56 113.53Q1074.21 113.53 1077.58 111.43Q1080.96 109.33 1082.01 105.18H1091.91Q1090.96 110.53 1087.66 114.18Q1084.36 117.83 1079.63 119.73Q1074.91 121.63 1069.81 121.63ZM1055.76 90.33H1081.96Q1081.96 84.23 1078.78 80Q1075.61 75.78 1069.06 75.78Q1064.61 75.78 1061.63 77.93Q1058.66 80.08 1057.21 83.43Q1055.76 86.78 1055.76 90.33ZM1095.81 120.63L1115.71 93.73L1097.46 68.93H1108.96L1121.66 86.08L1134.36 68.93H1145.86L1127.46 93.73L1147.41 120.63H1135.91L1121.61 101.28L1107.36 120.63Z"/></g></svg></span><span class="lw-short"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 571.45 181.3" width="100.86" height="32" role="img" aria-label="AOW Index"><g transform="scale(1.02778)"><g class="w"><path d="M36.16 119.7L61.85 47.4H79.5L105.25 119.7H88.36L83 104.3H58.6L53.16 119.7ZM62.3 89.65H79.06L70.7 63.75Z"/><path d="M144.1 120.7Q134.1 120.7 126.83 116.3Q119.56 111.9 115.58 103.62Q111.61 95.35 111.61 83.7Q111.61 72 115.61 63.65Q119.61 55.3 126.91 50.85Q134.21 46.4 144.1 46.4Q153.96 46.4 161.18 50.85Q168.41 55.3 172.35 63.65Q176.31 72 176.31 83.7Q176.31 95.3 172.41 103.57Q168.5 111.85 161.25 116.27Q154 120.7 144.1 120.7ZM144.1 110.5Q153 110.5 158.03 104.17Q163.06 97.85 163.06 83.85Q163.06 69.6 157.97 63.1Q152.91 56.6 144.1 56.6Q135.31 56.6 130.12 63.12Q124.95 69.65 124.95 83.85Q124.95 97.9 130.12 104.2Q135.31 110.5 144.1 110.5Z"/><path d="M203.75 119.7L182.91 47.4H192.25L208.25 104.95L224.56 47.4H231.81L248.06 104.95L264.36 47.4H273.65L252.56 119.7H244L228.16 63.65L212.06 119.7Z"/></g><g class="i"><path d="M310.7 119.7V47.4H322.86V119.7ZM337.7 119.7V68H349.61V75.4Q351.4 72.4 355.18 69.9Q358.95 67.4 365.15 67.4Q369.95 67.4 374.07 69.3Q378.2 71.2 380.73 75.25Q383.25 79.3 383.25 85.7V119.7H371.06V87.15Q371.06 82.1 368.23 79.6Q365.4 77.1 361.2 77.1Q356.81 77.1 353.32 79.3Q349.86 81.5 349.86 85.95V119.7ZM414.65 120.7Q404.4 120.7 398.56 113.65Q392.7 106.6 392.7 93.6Q392.7 81.45 398 74.22Q403.31 67 413.56 67Q419.95 67 424.06 69.8Q428.15 72.6 429.75 75.55V45.4H442V119.7H433L431.65 109.1Q430.86 111.55 428.98 114.25Q427.11 116.95 423.65 118.82Q420.2 120.7 414.65 120.7ZM417.15 111.75Q423.75 111.75 426.75 107.47Q429.75 103.2 429.75 93.3Q429.7 84.85 426.73 80.45Q423.75 76.05 417.31 76.05Q411.81 76.05 408.27 80.1Q404.75 84.15 404.75 93.3Q404.75 102.4 408 107.07Q411.25 111.75 417.15 111.75ZM477.81 120.7Q470.36 120.7 464.68 117.52Q459 114.35 455.82 108.45Q452.65 102.55 452.65 94.4Q452.65 86.45 455.52 80.27Q458.4 74.1 463.88 70.55Q469.36 67 477.11 67Q488.56 67 494.56 74.12Q500.56 81.25 500.56 92.95V96.65H464.81Q464.75 103.25 468 107.47Q471.25 111.7 477.56 111.7Q481.86 111.7 485.02 109.77Q488.2 107.85 489.25 103.9H500.36Q499.45 109.3 496.07 113.05Q492.7 116.8 487.88 118.75Q483.06 120.7 477.81 120.7ZM464.75 89.1H489.06Q489.06 83.5 486.11 79.62Q483.15 75.75 477.06 75.75Q473.06 75.75 470.31 77.7Q467.56 79.65 466.15 82.72Q464.75 85.8 464.75 89.1ZM503.06 119.7L522.9 92.8L504.7 68H517.61L529.55 84.15L541.5 68H554.46L536.11 92.8L556 119.7H543.11L529.5 101.3L515.96 119.7Z"/></g></g></svg></span></span></a><a class="cta" href="../../aow-index.html">Open the tracker</a></div></header>
-<main class="wrap">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --bg-alt:#F6F8F7; --border:#DCE3E0;
+  --text:#171A21; --text-muted:#566069; --text-faint:#69737E;
+  --brand:#12836F; --brand-dark:#0C6355; --brand-tint:#E1F3EF; --brand-tint-hover:#D2ECE6; --on-tint:#0C6355; --on-brand:#FFFFFF;
+  --not_started:#8A93A3; --in_progress:#C2790F; --stalled:#5D7599; --compromise:#8A5CA8; --completed:#1E8E5A; --broken:#C0392B;
+  --not_started-bg:#EEF0F3; --in_progress-bg:#FBF0DF; --stalled-bg:#E9EDF4; --compromise-bg:#F3E9F6; --completed-bg:#E4F5EC; --broken-bg:#FBE7E4;
+  --party-d:#2058B0; --party-r:#B23A2F; --party-i:#8B5E00; --party-np:#6B7280;
+  --radius:14px;
+  --deep:#0D4A43; --ink-band:#171A21; --on-deep:#FFFFFF; --on-deep-muted:#D3E7E2; --on-deep-faint:#B4D2CB; --on-deep-border:rgba(255,255,255,.28);
+  --t0:var(--text); --m0:var(--text-muted); --f0:var(--text-faint); --b0:var(--border);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg-alt);color:var(--text);font-family:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol,dl,dd,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:var(--brand);text-underline-offset:3px}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1168px;margin:0 auto;padding:0 24px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.top{background:var(--bg);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;gap:8px 26px;min-height:70px}
+.logo{display:flex;align-items:center;flex:none;color:var(--text);text-decoration:none}
+.logo svg{display:block;overflow:visible}
+.logo .aow-sym .s,.logo .aow-wm .i{fill:var(--brand)}
+.logo .aow-wm .w{fill:currentColor}
+.logo .lw-short{display:none}
+.nav{display:flex;align-self:stretch;gap:2px;margin-right:auto}
+.nav a{display:flex;align-items:center;padding:3px 11px 0;border-bottom:3px solid transparent;font-size:15px;font-weight:600;color:var(--text-muted);text-decoration:none;white-space:nowrap}
+.nav a:hover{color:var(--text)}
+.nav a[aria-current]{color:var(--text);border-bottom-color:var(--brand)}
+.acts{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border:2px solid transparent;border-radius:calc(var(--radius) - 3px);background:none;font-size:15.5px;font-weight:700;line-height:1.2;text-decoration:none;white-space:nowrap;cursor:pointer}
+.btn.primary{background:var(--brand);color:var(--on-brand)}
+.btn.primary:hover{background:var(--brand-dark)}
+.btn.line{border-color:var(--text);color:var(--text)}
+.btn.line:hover{background:var(--bg-alt)}
+.btn.quiet{border-color:var(--border);background:var(--bg);color:var(--text)}
+.btn.quiet:hover{border-color:var(--text-faint)}
+.btn.sm{min-height:38px;padding:0 14px;font-size:14px}
+.notice{background:var(--brand-tint);font-size:14px}
+.notice .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:9px;padding-bottom:9px}
+.notice a{color:var(--on-tint);font-weight:600}
+.notice button{flex:none;width:32px;height:32px;border:0;border-radius:50%;background:none;font-size:18px;line-height:1;cursor:pointer}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:5px 13px 5px 10px;border-radius:999px;background:var(--pill-bg);color:var(--text);font-size:14px;font-weight:700;line-height:1.3;white-space:nowrap}
+.pill::before{content:'';flex:none;width:10px;height:10px;border-radius:50%;background:var(--pill-c)}
+.s-not_started{--pill-c:var(--not_started);--pill-bg:var(--not_started-bg)}
+.s-in_progress{--pill-c:var(--in_progress);--pill-bg:var(--in_progress-bg)}
+.s-stalled{--pill-c:var(--stalled);--pill-bg:var(--stalled-bg)}
+.s-compromise{--pill-c:var(--compromise);--pill-bg:var(--compromise-bg)}
+.s-completed{--pill-c:var(--completed);--pill-bg:var(--completed-bg)}
+.s-broken{--pill-c:var(--broken);--pill-bg:var(--broken-bg)}
+.pill.sourcing{padding:4px 12px;background:none;border:1.5px dashed var(--in_progress)}
+.pill.sourcing::before{display:none}
+.b-not_started{background:var(--not_started)}.b-in_progress{background:var(--in_progress)}.b-stalled{background:var(--stalled)}
+.b-compromise{background:var(--compromise)}.b-completed{background:var(--completed)}.b-broken{background:var(--broken)}
+.mix{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden;background:var(--border)}
+.mix i{display:block;height:100%;min-width:4px}
+.src3{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--text-muted)}
+.src3 li{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.src3 svg{flex:none;color:var(--brand)}
+.src3 .missing{color:var(--text-faint)}
+.src3 .missing svg{color:var(--text-faint)}
+.ring{--p:0;--tier:var(--border);position:relative;display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:50%;background:conic-gradient(var(--tier) calc(var(--p) * 1%),var(--border) 0)}
+.ring::before{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--ring-bg,var(--bg-alt))}
+.ring b{position:relative;font-size:17px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ring.high{--tier:var(--completed)}.ring.mid{--tier:var(--in_progress)}.ring.low{--tier:var(--broken)}
+.ring.na b{color:var(--text-faint);font-weight:600}
+.ring.lg{width:104px;height:104px}
+.ring.lg::before{inset:10px}
+.ring.lg b{font-size:38px;letter-spacing:-.04em}
+.ledger{background:var(--bg);border:2px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.ledger-head{display:grid;grid-template-columns:1fr 1fr;border-bottom:3px solid var(--text);font-size:14px;color:var(--text-muted)}
+.ledger-head span{padding:11px 22px}
+.ledger-head span+span{font-weight:800;color:var(--text)}
+.entry{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.ledger-head+.entry{border-top:0}
+.said{padding:22px;border-right:1px solid var(--border)}
+.did{padding:22px;min-width:0}
+.said .q{font-size:20px;font-weight:400;line-height:1.35;letter-spacing:-.01em;text-wrap:pretty}
+.said .cat{margin-top:8px;font-size:14px;color:var(--text-muted)}
+.said .src3{margin-top:16px}
+.did .pills{display:flex;flex-wrap:wrap;gap:8px}
+.did .note{margin-top:12px;font-size:15.5px;line-height:1.6;color:var(--text-muted)}
+.did .links{margin-top:14px;display:grid;gap:6px;font-size:14px}
+.did .links li{display:flex;flex-wrap:wrap;gap:4px 10px}
+.did .links span{color:var(--text-muted)}
+.did .links a{font-weight:600}
+.did .appeal{display:inline-block;margin-top:14px;font-size:13.5px;color:var(--text-muted)}
+.ledger.small .said,.ledger.small .did{padding:16px 18px}
+.ledger.small .said .q{font-size:17px}
+.ledger.small .ledger-head span{padding:9px 18px}
+.hero{background:var(--bg);border-bottom:1px solid var(--border);padding:clamp(36px,6vw,80px) 0 clamp(36px,5vw,64px)}
+.said-did{margin-bottom:clamp(24px,4vw,48px);font-size:clamp(40px,9vw,112px);line-height:.96;letter-spacing:-.045em}
+.said-did span{display:block}
+.said-did .a{font-weight:300}
+.said-did .b{font-weight:800}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.hero h1{font-size:clamp(20px,2.3vw,26px);font-weight:700;line-height:1.25;letter-spacing:-.015em}
+.hero .lede{margin-top:12px;max-width:54ch;font-size:clamp(16px,1.5vw,18px);color:var(--text-muted)}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.hero figcaption{margin-top:10px;font-size:13.5px;color:var(--text-faint)}
+.figures{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(32px,5vw,60px);border-top:3px solid var(--text)}
+.figures div{padding:16px 16px 0 0}
+.figures div+div{padding-left:22px;border-left:1px solid var(--border)}
+.figures b{display:block;font-size:clamp(26px,4.6vw,52px);font-weight:800;line-height:1.05;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.figures span{font-size:15px;color:var(--text-muted)}
+.figures-note{margin-top:14px;font-size:13.5px;color:var(--text-faint)}
+.band{padding:clamp(48px,7vw,104px) 0}
+.band.paper{background:var(--bg);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.band-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(20px,5vw,80px);align-items:start}
+.band h2{font-size:clamp(28px,4vw,46px);font-weight:800;line-height:1.05;letter-spacing:-.035em;text-wrap:balance}
+.band .intro{margin-top:14px;font-size:17.5px;color:var(--text-muted);text-wrap:pretty}
+.band .more{margin-top:18px;font-size:15.5px}
+.band h3{font-size:19px;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.steps{counter-reset:s;border-top:3px solid var(--text)}
+.steps li{counter-increment:s;display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;padding:22px 0;border-bottom:1px solid var(--border)}
+.steps li::before{content:counter(s);grid-row:span 2;font-size:46px;font-weight:300;line-height:.95;color:var(--brand);font-variant-numeric:tabular-nums}
+.steps p{color:var(--text-muted)}
+.kinds{border-top:3px solid var(--text)}
+.kinds li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;padding:20px 0;border-bottom:1px solid var(--border)}
+.kinds svg{grid-row:span 2;color:var(--brand)}
+.kinds p{color:var(--text-muted)}
+.kinds .sum{border-bottom:0;margin-top:20px;padding:22px;border-radius:var(--radius);background:var(--brand);color:var(--on-brand)}
+.kinds .sum svg,.kinds .sum p{color:inherit}
+.asides{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:clamp(32px,5vw,56px)}
+.asides h3{font-size:17px}
+.asides p{margin-top:6px;font-size:15.5px;color:var(--text-muted)}
+.statuses{border-top:3px solid var(--text)}
+.statuses div{display:grid;grid-template-columns:170px minmax(0,1fr);gap:8px 16px;align-items:center;padding:15px 0;border-bottom:1px solid var(--border)}
+.statuses dd{color:var(--text-muted)}
+.fine{margin-top:18px;font-size:15px;color:var(--text-muted)}
+.pledges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px;border-top:3px solid var(--text)}
+.pledges li{padding:22px 0;border-bottom:1px solid var(--border)}
+.pledges svg{display:block;margin-bottom:10px;color:var(--brand)}
+.pledges p{margin-top:6px;color:var(--text-muted)}
+.cover{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.cover h3{padding-bottom:12px;border-bottom:3px solid var(--text)}
+.cover li{position:relative;padding:14px 0 14px 30px;border-bottom:1px solid var(--border);font-size:15.5px}
+.cover li::before{content:'';position:absolute;left:2px;top:19px;width:14px;height:14px;border-radius:50%;background:var(--brand)}
+.cover .not li{color:var(--text-muted)}
+.cover .not li::before{background:none;border:2px solid var(--text-faint)}
+.browse{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px;border-top:3px solid var(--text)}
+.browse a{display:block;height:100%;padding:18px 0;border-bottom:1px solid var(--border);color:inherit;text-decoration:none}
+.browse b{display:block;font-size:18px;color:var(--brand)}
+.browse a:hover b{text-decoration:underline}
+.browse span{color:var(--text-muted);font-size:15.5px}
+.browse .lead{grid-column:1/-1}
+.browse .lead a{height:auto;margin:22px 0 10px;padding:24px;border:0;border-radius:var(--radius);background:var(--brand);color:var(--on-brand)}
+.browse .lead b{font-size:22px;color:inherit}
+.browse .lead span{color:inherit}
+.fix{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 40px;padding:clamp(22px,3vw,36px);border-radius:var(--radius);background:var(--brand-tint)}
+.fix div{flex:1 1 440px}
+.fix h2{font-size:clamp(22px,2.6vw,28px);max-width:none}
+.fix p{margin-top:8px}
+.fix a:not(.btn){color:var(--on-tint)}
+.page-head{padding-top:clamp(26px,4vw,48px)}
+.page-head h1{font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.02;letter-spacing:-.04em}
+.page-head .sub{margin-top:10px;max-width:64ch;color:var(--text-muted)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:24px}
+.filters input[type=search]{flex:1 1 300px;min-width:0;min-height:50px;padding:0 16px 0 46px;border:2px solid var(--border);border-radius:calc(var(--radius) - 2px);background:var(--bg) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="%2369737E" stroke-width="2.2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><line x1="12.5" y1="12.5" x2="16.5" y2="16.5"/></svg>') no-repeat 16px center;font-size:16px}
+.filters select{min-height:50px;padding:0 12px;border:2px solid var(--border);border-radius:calc(var(--radius) - 2px);background:var(--bg);font-size:15px}
+.group{margin-top:clamp(28px,4vw,48px)}
+.group-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:3px solid var(--text)}
+.group-head h2{font-size:24px;font-weight:800;letter-spacing:-.025em}
+.group-head span{font-size:14.5px;color:var(--text-muted)}
+.cols,.row{display:grid;grid-template-columns:minmax(0,2.3fr) 130px minmax(0,1.5fr) 56px 44px;gap:20px;align-items:center}
+.cols{padding:10px 8px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text-muted)}
+.row{padding:14px 8px;border-bottom:1px solid var(--border);color:inherit;text-decoration:none}
+.row:hover{background:var(--bg);--ring-bg:var(--bg)}
+.who{display:flex;align-items:center;gap:14px;min-width:0}
+.mono{display:flex;align-items:center;justify-content:center;flex:none;width:46px;height:46px;border:2px solid var(--border);border-radius:50%;background:var(--bg);font-size:14.5px;font-weight:700;color:var(--text-muted)}
+.who .name{display:block;font-size:18px;font-weight:700;line-height:1.25;letter-spacing:-.015em;color:var(--text);text-decoration:none}
+.who .name:hover{text-decoration:underline}
+.who .seat{display:block;font-size:14.5px;color:var(--text-muted)}
+.party{display:inline-flex;align-items:center;gap:8px;font-size:15px}
+.party i{flex:none;width:10px;height:10px;border-radius:50%}
+.pd i{background:var(--party-d)}.pr i{background:var(--party-r)}.pi i{background:var(--party-i)}.pn i{background:var(--party-np)}
+.kept{min-width:0;font-size:14.5px;color:var(--text-muted)}
+.kept .mix{margin-top:7px}
+.star{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:50%;background:none;font-size:20px;color:var(--text-faint);cursor:pointer}
+.star:hover{color:var(--text);background:var(--bg-alt)}
+.key{display:flex;flex-wrap:wrap;gap:8px 20px;margin:clamp(28px,4vw,44px) 0 0;font-size:14.5px;color:var(--text-muted)}
+.key li{display:flex;align-items:center;gap:8px}
+.key i{width:10px;height:10px;border-radius:50%}
+.crumbs{padding-top:22px;font-size:14.5px;color:var(--text-muted)}
+.crumbs a{color:var(--text-muted)}
+.profile{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:clamp(24px,5vw,64px);align-items:start;padding:18px 0 0}
+.profile h1{font-size:clamp(36px,6vw,72px);font-weight:800;line-height:.98;letter-spacing:-.045em}
+.facts{display:flex;flex-wrap:wrap;gap:4px 26px;margin-top:16px;font-size:16.5px;color:var(--text-muted)}
+.facts strong{font-weight:600;color:var(--text)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.scorebox{padding:22px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);--ring-bg:var(--bg)}
+.scorebox .head{display:flex;align-items:center;gap:18px}
+.scorebox .head b.t{display:block;font-size:17px;font-weight:800}
+.scorebox .head .d{display:block;font-size:14.5px;color:var(--text-muted)}
+.scorebox .mix{height:10px;border-radius:5px;margin-top:20px}
+.tally{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;margin-top:14px;font-size:14px;color:var(--text-muted)}
+.tally li{display:flex;align-items:center;gap:8px}
+.tally i{flex:none;width:10px;height:10px;border-radius:50%}
+.tally b{margin-left:auto;color:var(--text);font-variant-numeric:tabular-nums}
+.upsell{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin-top:22px;padding:14px 18px;border:2px dashed var(--border);border-radius:var(--radius);font-size:15px;color:var(--text-muted)}
+.upsell b{color:var(--text)}
+.sec-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;margin:clamp(28px,4vw,44px) 0 16px}
+.sec-head h2{font-size:28px;font-weight:800;letter-spacing:-.03em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{min-height:38px;padding:0 13px;border:2px solid var(--border);border-radius:999px;background:var(--bg);font-size:14px;font-weight:600;cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--text);background:var(--text);color:var(--bg)}
+.foot{margin-top:clamp(48px,7vw,96px);padding:36px 0 52px;border-top:3px solid var(--text);background:var(--bg);font-size:15px;color:var(--text-muted)}
+.home .foot{margin-top:0}
+.foot-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,3fr) minmax(0,3fr);gap:28px clamp(24px,5vw,72px)}
+.foot h2{margin-bottom:10px;font-size:15px;font-weight:800;color:var(--text)}
+.foot li{padding:3px 0}
+.foot a{color:var(--text-muted)}
+.foot a:hover{color:var(--text)}
+.foot .mail{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.foot .mail input{flex:1 1 200px;min-width:0;min-height:46px;padding:0 14px;border:2px solid var(--border);border-radius:calc(var(--radius) - 3px);background:var(--bg-alt)}
+.band-top{padding-bottom:clamp(22px,3vw,38px)}
+body.bk-plain .band-top.p{border-bottom:3px solid var(--text)}
+body.bk-ink{--deep:var(--ink-band)}
+body.bk-tint :is(.hero,.band-top){background:var(--brand-tint);border-color:transparent;--border:color-mix(in srgb,var(--text) 16%,transparent)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot){background:var(--deep);border-color:transparent;color:var(--on-deep);--text:var(--on-deep);--text-muted:var(--on-deep-muted);--text-faint:var(--on-deep-faint);--border:var(--on-deep-border)}
+body.bk-ink :is(.hero,.band-top,.foot){color:#FFFFFF;--text:#FFFFFF;--text-muted:#D5D9DE;--text-faint:#B3B9C2;--border:rgba(255,255,255,.26)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.primary{background:var(--text);color:var(--deep)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.primary:hover{background:var(--text);filter:brightness(.93)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.line:hover{background:color-mix(in srgb,var(--text) 12%,transparent)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.quiet{background:transparent}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) .btn.quiet:hover{border-color:var(--text)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top) .party i{box-shadow:0 0 0 2px var(--text)}
+body:is(.bk-tint,.bk-deep,.bk-ink) :is(.hero,.band-top,.foot) :is(.ledger,.scorebox,.filters input,.filters select,.mail input){--text:var(--t0);--text-muted:var(--m0);--text-faint:var(--f0);--border:var(--b0);color:var(--text)}
+body:is(.bk-deep,.bk-ink) :is(.band-top,.foot) :is(.filters input,.filters select,.mail input){border-color:transparent;background-color:var(--bg)}
+body:is(.bk-deep,.bk-ink) :is(.hero,.band-top) :is(.ledger,.scorebox){border-color:transparent}
+body:is(.bk-deep,.bk-ink) .foot{margin-top:clamp(48px,7vw,96px)}
+body:is(.bk-deep,.bk-ink) .home .foot{margin-top:0}
+body.wm-pattern,body.wm-mark main{position:relative}
+body.wm-pattern::after,body.wm-mark main::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;opacity:var(--wm-o,.09)}
+body.wm-mark main::after{background:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y}
+body.wm-pattern::after{background:var(--wm-tile) 0 0/280px auto repeat}
+body.wm-pattern :is(.top,.notice,.hero,.band-top,.foot),body.wm-mark .hero{position:relative;z-index:41}
+body.wm-mark .home main::after{display:none}
+body.wm-mark .home .band:not(.paper):not(#corrections){position:relative}
+body.wm-mark .home .band:not(.paper):not(#corrections)::after{content:'';position:absolute;inset:0;margin:auto;width:min(46vw,540px);aspect-ratio:166.55/181.3;max-height:80%;z-index:40;pointer-events:none;opacity:var(--wm-o,.09);background:var(--wm-one) center/contain no-repeat}
+body.wms-faint{--wm-o:.05}
+body.wms-medium{--wm-o:.09}
+body.wms-strong{--wm-o:.15}
+@media (max-width:1000px){
+  .top .wrap{flex-wrap:wrap;padding-top:10px}
+  .nav{order:3;flex:1 1 100%;align-self:auto;margin:0 -24px;padding:0 14px;overflow-x:auto;border-top:1px solid var(--border)}
+  .nav a{padding:12px 10px 9px}
+  .hero-grid,.band-grid,.profile{grid-template-columns:minmax(0,1fr)}
+  .asides{grid-template-columns:minmax(0,1fr);gap:20px}
+}
+@media (max-width:720px){
+  .wrap{padding:0 18px}
+  .nav{margin:0 -18px;padding:0 8px}
+  .logo .lw-full{display:none}.logo .lw-short{display:block}
+  .btn{min-height:44px;padding:0 15px;font-size:15px}
+  .cols{display:none}
+  .row{grid-template-columns:minmax(0,1fr) 56px;gap:12px 14px;padding:16px 2px}
+  .row .party{grid-column:1;grid-row:2;padding-left:60px}
+  .row .kept{grid-column:1/-1;grid-row:3}
+  .row .ring{grid-column:2;grid-row:1}
+  .row .star{display:none}
+  .ledger-head{display:none}
+  .entry{grid-template-columns:minmax(0,1fr)}
+  .said{border-right:0;padding-bottom:6px}
+  .did{padding-top:10px}
+  .pledges,.cover,.browse{grid-template-columns:minmax(0,1fr)}
+  .cover .not{margin-top:28px}
+  .statuses div{grid-template-columns:minmax(0,1fr);gap:6px}
+  .steps li{grid-template-columns:44px minmax(0,1fr)}
+  .steps li::before{font-size:36px}
+  .figures div{padding-right:8px}
+  .figures div+div{padding-left:12px}
+  .figures span{font-size:13.5px}
+  .foot-grid{grid-template-columns:minmax(0,1fr)}
+  .cta-row .btn{flex:1 1 100%}
+  .acts .btn.quiet{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
+@media (prefers-color-scheme:dark){
+:root{
+  --deep:#0A332E; --ink-band:#0B0D10;
+  --bg:#1D222B; --bg-alt:#14171D; --border:#313946;
+  --text:#E8EAED; --text-muted:#A9B1BB; --text-faint:#8E97A3;
+  --brand:#22A98A; --brand-dark:#1B8570; --brand-tint:#16332E; --brand-tint-hover:#1E4038; --on-tint:#6FD6BC; --on-brand:#06231C;
+  --not_started:#9AA3B2; --in_progress:#E0993D; --stalled:#7C93C4; --compromise:#B084D1; --completed:#3DBE82; --broken:#E0685A;
+  --not_started-bg:#262B33; --in_progress-bg:#3A2E1B; --stalled-bg:#212A38; --compromise-bg:#2E2438; --completed-bg:#1A3327; --broken-bg:#3A2220;
+  --party-d:#5B9BF0; --party-r:#F0776A; --party-i:#D9A93F; --party-np:#9AA3B2;
+}
+.logo .aow-wm .i{fill:#7CE0C4}
+.btn.primary:hover{background:var(--brand);filter:brightness(1.1)}
+}
+:root{--wm-one:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22166.55%22%20height%3D%22181.3%22%20viewBox%3D%220%200%20166.55%20181.3%22%3E%3Cpath%20fill%3D%22%2312836F%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fsvg%3E");--wm-mark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22166.55%22%20height%3D%22416.99%22%20viewBox%3D%220%200%20166.55%20416.99%22%3E%3Cg%20transform%3D%22translate(0%2C117.85)%22%3E%3Cpath%20fill%3D%22%2312836F%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");--wm-tile:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22640%22%20viewBox%3D%220%200%20640%20640%22%3E%3Cg%20transform%3D%22translate(60%2C50)%20scale(.6)%22%3E%3Cpath%20fill%3D%22%2312836F%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate(380%2C370)%20scale(.6)%22%3E%3Cpath%20fill%3D%22%2312836F%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
+@media (prefers-color-scheme:dark){:root{--wm-one:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22166.55%22%20height%3D%22181.3%22%20viewBox%3D%220%200%20166.55%20181.3%22%3E%3Cpath%20fill%3D%22%2322A98A%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fsvg%3E");--wm-mark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22166.55%22%20height%3D%22416.99%22%20viewBox%3D%220%200%20166.55%20416.99%22%3E%3Cg%20transform%3D%22translate(0%2C117.85)%22%3E%3Cpath%20fill%3D%22%2322A98A%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");--wm-tile:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22640%22%20height%3D%22640%22%20viewBox%3D%220%200%20640%20640%22%3E%3Cg%20transform%3D%22translate(60%2C50)%20scale(.6)%22%3E%3Cpath%20fill%3D%22%2322A98A%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate(380%2C370)%20scale(.6)%22%3E%3Cpath%20fill%3D%22%2322A98A%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}}
+
+body.wm-mark main::after{display:none}
+body.wm-mark .page{position:relative}
+body.wm-mark .page::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;opacity:var(--wm-o,.09);background:var(--wm-mark) center center/clamp(260px,46vw,600px) auto;background-repeat:no-repeat space}
+.band-top h1{margin-top:14px;font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.02;letter-spacing:-.04em;text-wrap:balance}
+.band-top .profile h1{margin-top:0;font-size:clamp(36px,6vw,72px);line-height:.98;letter-spacing:-.045em}
+.band-top .sub{margin-top:14px;max-width:72ch;font-size:17px;color:var(--text-muted);text-wrap:pretty}
+.band-top a{color:var(--text)}
+.facts .party{font-size:inherit}
+.page{padding-top:clamp(28px,4vw,48px)}
+.page h2{font-size:24px;font-weight:800;line-height:1.2;letter-spacing:-.025em;scroll-margin-top:16px}
+.page .sub{max-width:78ch;margin-top:8px;color:var(--text-muted)}
+.prose{max-width:72ch;font-size:17px;line-height:1.65}
+.prose h2{margin:44px 0 12px}
+.prose h2:first-child{margin-top:0}
+.prose p{margin:0 0 16px}
+.prose ul,.prose ol{margin:0 0 16px;padding-left:22px}
+.prose ul{list-style:disc}
+.prose ol{list-style:decimal}
+.prose li{margin:0 0 8px}
+.defs{margin:0 0 16px}
+.defs dt{margin-top:14px;font-weight:700}
+.defs dd{margin-top:4px;color:var(--text-muted)}
+table{width:100%;border-collapse:collapse;margin:14px 0 20px;border:2px solid var(--border);background:var(--bg);font-size:15px;line-height:1.5}
+th,td{padding:10px 14px;border-top:1px solid var(--border);text-align:left;vertical-align:top}
+th{border-top:0;border-bottom:3px solid var(--text);font-size:14px;font-weight:600;color:var(--text-muted)}
+code{padding:1px 6px;border-radius:5px;background:var(--bg-alt);font-size:.9em}
+.role{margin-top:clamp(36px,5vw,60px)}
+.role:first-child{margin-top:0}
+.role .sec-head{justify-content:flex-start;margin:0 0 12px}
+.role .sec-head h2{font-size:28px;letter-spacing:-.03em}
+.role .count{font-size:15px;color:var(--text-muted)}
+.role .summary{max-width:80ch;margin-top:10px;color:var(--text-muted)}
+.role .mix{max-width:560px;height:10px;margin-top:16px;border-radius:5px}
+.role .held{max-width:80ch;margin-top:12px;font-size:14.5px;color:var(--text-muted)}
+.role .ledger{margin-top:20px}
+.entry{scroll-margin-top:16px}
+.entry:target{box-shadow:inset 4px 0 0 var(--brand)}
+.info{margin-top:clamp(36px,5vw,56px);padding:18px 20px;border:2px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:15px;color:var(--text-muted)}
+.info strong{color:var(--text)}
+.related{margin-top:clamp(36px,5vw,60px)}
+.related .dir{margin-top:14px}
+.dir-sec{margin-top:clamp(28px,4vw,44px)}
+.dir-sec>h2,.dir-sec>h3{padding-bottom:10px;border-bottom:3px solid var(--text);font-size:24px;font-weight:800;letter-spacing:-.025em}
+.dir-sec>h3{font-size:20px}
+.dir-sec>:is(h2,h3) a{color:inherit;text-decoration:none}
+.dir-sec>:is(h2,h3) a:hover{text-decoration:underline}
+.dir .row{grid-template-columns:minmax(0,2.3fr) 130px minmax(0,1.5fr) 56px}
+.dir .kept .mix{max-width:320px}
+.dir.names{border-top:1px solid var(--border)}
+.related .dir.names{border-top:3px solid var(--text)}
+.dir.names .row{grid-template-columns:minmax(0,1.5fr) 130px minmax(0,1.6fr);padding:10px 8px}
+.dir.names .name{font-size:16px;font-weight:600;color:var(--text)}
+.dir.names a.name{color:var(--brand);text-decoration:none}
+.dir.names a.name:hover{text-decoration:underline}
+.dir.names .seat{font-size:14.5px;color:var(--text-muted)}
+.foot ul a span{font-size:.85em}
+@media (max-width:720px){
+  .dir .row{grid-template-columns:minmax(0,1fr) 56px}
+  .dir.names .row{grid-template-columns:minmax(0,1fr);gap:2px;padding:10px 2px}
+  .dir.names .row .party{grid-row:auto;padding-left:0;font-size:14.5px}
+  .prose{font-size:16.5px}
+  table{font-size:14px}
+  th,td{padding:8px 10px}
+}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://action-over-words.com/officials/cab-blanche/#webpage","url":"https://action-over-words.com/officials/cab-blanche/","name":"Todd Blanche — Campaign Promise Tracker | ActionOverWords","dateModified":"2026-11-11","inLanguage":"en-US","about":{"@id":"https://action-over-words.com/officials/cab-blanche/#person"}},{"@type":"Person","@id":"https://action-over-words.com/officials/cab-blanche/#person","name":"Todd Blanche","jobTitle":"Attorney General (Acting) · United States","url":"https://action-over-words.com/officials/cab-blanche/"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://action-over-words.com/"},{"@type":"ListItem","position":2,"name":"Officials","item":"https://action-over-words.com/officials/"},{"@type":"ListItem","position":3,"name":"Todd Blanche","item":"https://action-over-words.com/officials/cab-blanche/"}]}]}</script>
+</head>
+<body class="bk-deep wm-mark wms-medium">
+<div>
+<header class="top"><div class="wrap"><a class="logo" href="../../"><span class="logo-mark" aria-hidden="true"><svg class="aow-sym" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 166.55 181.3" width="29.4" height="32" aria-hidden="true" focusable="false"><path d="M146.33 56.97A41.65 41.65 0 0 1 147.23 65.62L147.23 102.64A41.65 41.65 0 0 1 105.59 144.28L61.09 144.28L12.72 179.75A7.99 7.99 0 0 1 0 173.31L0 65.62A41.65 41.65 0 0 1 41.65 23.97L105.59 23.97A41.65 41.65 0 0 1 113.08 24.65L100.03 39.95L41.65 39.95A25.66 25.66 0 0 0 15.98 65.62L15.98 157.53L53.75 129.84A7.99 7.99 0 0 1 58.47 128.3L105.59 128.3A25.66 25.66 0 0 0 131.25 102.64L131.25 74.66L146.33 56.97ZM36.37 83.3L66.41 113.33A13.88 13.88 0 0 0 86.79 112.53L163.23 22.89A13.88 13.88 0 0 0 142.11 4.88L75.41 83.08L56.01 63.67A13.88 13.88 0 0 0 36.37 83.3Z" class="s"/></svg></span><span class="logo-word"><span class="lw-full"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1147.4 181.3" width="202.52" height="32" role="img" aria-label="ActionOverWords Index"><g class="w"><path d="M40.15 120.63L65.85 48.33H83.5L109.25 120.63H92.35L87 105.23H62.6L57.15 120.63ZM66.3 90.58H83.05L74.7 64.68ZM138 121.63Q130.7 121.63 124.93 118.35Q119.15 115.08 115.83 109.08Q112.5 103.08 112.5 95.03Q112.5 86.98 115.75 80.88Q119 74.78 124.75 71.35Q130.5 67.93 138 67.93Q144.9 67.93 149.78 70.8Q154.65 73.68 157.33 78.45Q160 83.23 160.25 88.88H146.3Q146.05 87.13 145.18 85.23Q144.3 83.33 142.6 82Q140.9 80.68 138.15 80.68Q133.7 80.68 130.98 84.2Q128.25 87.73 128.25 94.83Q128.25 101.83 131.03 105.78Q133.8 109.73 138.45 109.73Q141.15 109.73 142.85 108.28Q144.55 106.83 145.4 104.93Q146.25 103.03 146.45 101.58H160.05Q159.9 107.03 157.18 111.58Q154.45 116.13 149.58 118.88Q144.7 121.63 138 121.63ZM191.7 121.28Q184.25 121.28 180.18 119.4Q176.1 117.53 174.53 114.25Q172.95 110.98 172.95 106.83V80.58H164.55V68.93H173.55L177.9 53.08H189.95V68.83H201.3V80.58H189.95L190 106.08Q190 108.38 191.03 109Q192.05 109.63 193.85 109.63H201.4V119.88Q200.35 120.38 198.15 120.83Q195.95 121.28 191.7 121.28ZM210.4 63.13V48.33H226.75V63.13ZM210.45 120.63V68.93H226.65V120.63ZM260.95 121.63Q253.15 121.63 247.4 118.3Q241.65 114.98 238.5 109.03Q235.35 103.08 235.35 95.08Q235.35 86.98 238.58 80.85Q241.8 74.73 247.58 71.33Q253.35 67.93 261.05 67.93Q268.9 67.93 274.63 71.35Q280.35 74.78 283.48 80.9Q286.6 87.03 286.6 95.08Q286.6 102.83 283.5 108.83Q280.4 114.83 274.65 118.23Q268.9 121.63 260.95 121.63ZM261.05 109.13Q264.5 109.13 266.45 106.95Q268.4 104.78 269.2 101.4Q270 98.03 270 94.53Q270 91.08 269.25 87.8Q268.5 84.53 266.55 82.38Q264.6 80.23 261.05 80.23Q257.5 80.23 255.53 82.3Q253.55 84.38 252.75 87.65Q251.95 90.93 251.95 94.53Q251.95 97.93 252.7 101.3Q253.45 104.68 255.43 106.9Q257.4 109.13 261.05 109.13ZM295.25 120.63V68.93H312.05V76.18Q313.75 73.53 317.08 71.05Q320.4 68.58 326.5 68.58Q331.15 68.58 335.28 70.38Q339.4 72.18 342 76.1Q344.6 80.03 344.6 86.38V120.63H327.5V88.63Q327.5 85.23 325.3 83.5Q323.1 81.78 320.25 81.78Q317.35 81.78 314.8 83.4Q312.25 85.03 312.25 88.23V120.63Z"/><path d="M386.75 121.63Q376.75 121.63 369.48 117.23Q362.2 112.83 358.23 104.55Q354.25 96.28 354.25 84.63Q354.25 72.93 358.25 64.58Q362.25 56.23 369.55 51.78Q376.85 47.33 386.75 47.33Q396.6 47.33 403.83 51.78Q411.05 56.23 415 64.58Q418.95 72.93 418.95 84.63Q418.95 96.23 415.05 104.5Q411.15 112.78 403.9 117.2Q396.65 121.63 386.75 121.63ZM386.75 111.43Q395.65 111.43 400.68 105.1Q405.7 98.78 405.7 84.78Q405.7 70.53 400.63 64.03Q395.55 57.53 386.75 57.53Q377.95 57.53 372.78 64.05Q367.6 70.58 367.6 84.78Q367.6 98.83 372.78 105.13Q377.95 111.43 386.75 111.43ZM444.55 120.63L425.45 68.93H436.6L449 105.13H449.65L462 68.93H473.2L454.15 120.63ZM503 121.63Q495.55 121.63 489.88 118.45Q484.2 115.28 481.03 109.38Q477.85 103.48 477.85 95.33Q477.85 87.38 480.73 81.2Q483.6 75.03 489.08 71.48Q494.55 67.93 502.3 67.93Q513.75 67.93 519.75 75.05Q525.75 82.18 525.75 93.88V97.58H490Q489.95 104.18 493.2 108.4Q496.45 112.63 502.75 112.63Q507.05 112.63 510.23 110.7Q513.4 108.78 514.45 104.83H525.55Q524.65 110.23 521.28 113.98Q517.9 117.73 513.08 119.68Q508.25 121.63 503 121.63ZM489.95 90.03H514.25Q514.25 84.43 511.3 80.55Q508.35 76.68 502.25 76.68Q498.25 76.68 495.5 78.63Q492.75 80.58 491.35 83.65Q489.95 86.73 489.95 90.03ZM536.95 120.63V68.93H548.6V80.13Q550.5 74.38 554.73 71.15Q558.95 67.93 564.5 67.93Q565.4 67.93 566.23 68.03Q567.05 68.13 567.5 68.38V80.03Q566.95 79.78 566.08 79.68Q565.2 79.58 564.55 79.58Q557.05 78.98 553.08 81.9Q549.1 84.83 549.1 90.58V120.63Z"/><path d="M593.05 120.63L572.2 48.33H581.55L597.55 105.88L613.85 48.33H621.1L637.35 105.88L653.65 48.33H662.95L641.85 120.63H633.3L617.45 64.58L601.35 120.63ZM688.65 121.63Q677.9 121.63 671.43 114.78Q664.95 107.93 664.95 94.98Q664.95 86.88 667.7 80.78Q670.45 74.68 675.75 71.3Q681.05 67.93 688.7 67.93Q699.35 67.93 705.78 74.93Q712.2 81.93 712.2 94.98Q712.2 102.88 709.53 108.88Q706.85 114.88 701.6 118.25Q696.35 121.63 688.65 121.63ZM688.7 114.33Q695.6 114.33 699.33 109.1Q703.05 103.88 703.05 94.78Q703.05 89.23 701.58 84.8Q700.1 80.38 696.93 77.78Q693.75 75.18 688.7 75.18Q681.65 75.18 677.9 80.35Q674.15 85.53 674.15 94.78Q674.15 100.23 675.63 104.68Q677.1 109.13 680.3 111.73Q683.5 114.33 688.7 114.33ZM724.1 120.63V68.93H732.9V78.88Q734.85 73.33 739.08 70.63Q743.3 67.93 748.2 67.93Q749.35 67.93 750.43 68.08Q751.5 68.23 752.15 68.58V77.53Q751.4 77.18 750.23 77.05Q749.05 76.93 748.25 76.93Q742.1 76.53 737.7 79.28Q733.3 82.03 733.3 88.48V120.63ZM780.85 121.63Q770.75 121.63 764.88 114.73Q759 107.83 759 94.58Q759 82.48 764.3 75.2Q769.6 67.93 780.1 67.93Q785.05 67.93 788.53 69.53Q792 71.13 794.1 73.28Q796.2 75.43 797.05 77.13V46.33H806.4V120.63H799.3L798.3 110.03Q797.65 112.03 795.88 114.78Q794.1 117.53 790.5 119.58Q786.9 121.63 780.85 121.63ZM782.5 114.53Q790.3 114.53 793.68 109.75Q797.05 104.98 797.05 94.13Q796.95 85.08 793.65 80.1Q790.35 75.13 782.65 75.13Q776.3 75.13 772.3 79.65Q768.3 84.18 768.3 94.13Q768.3 103.83 771.9 109.18Q775.5 114.53 782.5 114.53ZM839.85 121.63Q834.45 121.63 829.83 119.93Q825.2 118.23 822.15 114.7Q819.1 111.18 818.35 105.58H826.75Q827.75 110.13 831.33 112.43Q834.9 114.73 839.8 114.73Q845.05 114.73 848.25 112.78Q851.45 110.83 851.45 106.78Q851.45 101.33 844.55 99.68L833.85 97.03Q827.6 95.53 823.88 92.33Q820.15 89.13 820.1 83.38Q820.1 76.58 825.03 72.25Q829.95 67.93 839.8 67.93Q848.2 67.93 853.38 71.73Q858.55 75.53 858.8 82.78H850.6Q850.1 79.08 847.3 76.9Q844.5 74.73 839.7 74.73Q834.75 74.73 831.65 76.7Q828.55 78.68 828.55 82.83Q828.55 85.58 830.78 87.15Q833 88.73 837.25 89.78L847.65 92.38Q852.4 93.63 855.03 95.93Q857.65 98.23 858.7 100.98Q859.75 103.73 859.75 106.28Q859.75 113.43 854.53 117.53Q849.3 121.63 839.85 121.63Z"/></g><g class="i"><path d="M903.36 120.63V48.33H914.06V120.63ZM930.06 120.63V68.93H940.51V76.38Q942.36 73.28 946.28 70.78Q950.21 68.28 956.36 68.28Q961.21 68.28 965.33 70.2Q969.46 72.13 971.96 76.2Q974.46 80.28 974.46 86.73V120.63H963.76V87.88Q963.76 82.33 960.76 79.63Q957.76 76.93 953.11 76.93Q949.91 76.93 947.08 77.98Q944.26 79.03 942.51 81.15Q940.76 83.28 940.76 86.48V120.63ZM1006.86 121.63Q996.66 121.63 990.81 114.65Q984.96 107.68 984.96 94.53Q984.96 82.43 990.26 75.18Q995.56 67.93 1005.96 67.93Q1010.56 67.93 1013.91 69.38Q1017.26 70.83 1019.41 72.9Q1021.56 74.98 1022.51 76.78V46.33H1033.31V120.63H1025.26L1024.06 110.03Q1023.36 112.28 1021.53 114.98Q1019.71 117.68 1016.18 119.65Q1012.66 121.63 1006.86 121.63ZM1008.91 113.58Q1016.16 113.58 1019.33 109.05Q1022.51 104.53 1022.51 94.18Q1022.41 85.43 1019.28 80.75Q1016.16 76.08 1009.11 76.08Q1003.16 76.08 999.38 80.35Q995.61 84.63 995.61 94.18Q995.61 103.58 999.03 108.58Q1002.46 113.58 1008.91 113.58ZM1069.81 121.63Q1062.46 121.63 1056.86 118.45Q1051.26 115.28 1048.13 109.38Q1045.01 103.48 1045.01 95.33Q1045.01 87.28 1047.86 81.1Q1050.71 74.93 1056.08 71.43Q1061.46 67.93 1069.11 67.93Q1080.31 67.93 1086.23 74.95Q1092.16 81.98 1092.16 93.73V97.28H1055.76Q1055.71 104.23 1059.18 108.88Q1062.66 113.53 1069.56 113.53Q1074.21 113.53 1077.58 111.43Q1080.96 109.33 1082.01 105.18H1091.91Q1090.96 110.53 1087.66 114.18Q1084.36 117.83 1079.63 119.73Q1074.91 121.63 1069.81 121.63ZM1055.76 90.33H1081.96Q1081.96 84.23 1078.78 80Q1075.61 75.78 1069.06 75.78Q1064.61 75.78 1061.63 77.93Q1058.66 80.08 1057.21 83.43Q1055.76 86.78 1055.76 90.33ZM1095.81 120.63L1115.71 93.73L1097.46 68.93H1108.96L1121.66 86.08L1134.36 68.93H1145.86L1127.46 93.73L1147.41 120.63H1135.91L1121.61 101.28L1107.36 120.63Z"/></g></svg></span><span class="lw-short"><svg class="aow-wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 571.45 181.3" width="100.86" height="32" role="img" aria-label="AOW Index"><g transform="scale(1.02778)"><g class="w"><path d="M36.16 119.7L61.85 47.4H79.5L105.25 119.7H88.36L83 104.3H58.6L53.16 119.7ZM62.3 89.65H79.06L70.7 63.75Z"/><path d="M144.1 120.7Q134.1 120.7 126.83 116.3Q119.56 111.9 115.58 103.62Q111.61 95.35 111.61 83.7Q111.61 72 115.61 63.65Q119.61 55.3 126.91 50.85Q134.21 46.4 144.1 46.4Q153.96 46.4 161.18 50.85Q168.41 55.3 172.35 63.65Q176.31 72 176.31 83.7Q176.31 95.3 172.41 103.57Q168.5 111.85 161.25 116.27Q154 120.7 144.1 120.7ZM144.1 110.5Q153 110.5 158.03 104.17Q163.06 97.85 163.06 83.85Q163.06 69.6 157.97 63.1Q152.91 56.6 144.1 56.6Q135.31 56.6 130.12 63.12Q124.95 69.65 124.95 83.85Q124.95 97.9 130.12 104.2Q135.31 110.5 144.1 110.5Z"/><path d="M203.75 119.7L182.91 47.4H192.25L208.25 104.95L224.56 47.4H231.81L248.06 104.95L264.36 47.4H273.65L252.56 119.7H244L228.16 63.65L212.06 119.7Z"/></g><g class="i"><path d="M310.7 119.7V47.4H322.86V119.7ZM337.7 119.7V68H349.61V75.4Q351.4 72.4 355.18 69.9Q358.95 67.4 365.15 67.4Q369.95 67.4 374.07 69.3Q378.2 71.2 380.73 75.25Q383.25 79.3 383.25 85.7V119.7H371.06V87.15Q371.06 82.1 368.23 79.6Q365.4 77.1 361.2 77.1Q356.81 77.1 353.32 79.3Q349.86 81.5 349.86 85.95V119.7ZM414.65 120.7Q404.4 120.7 398.56 113.65Q392.7 106.6 392.7 93.6Q392.7 81.45 398 74.22Q403.31 67 413.56 67Q419.95 67 424.06 69.8Q428.15 72.6 429.75 75.55V45.4H442V119.7H433L431.65 109.1Q430.86 111.55 428.98 114.25Q427.11 116.95 423.65 118.82Q420.2 120.7 414.65 120.7ZM417.15 111.75Q423.75 111.75 426.75 107.47Q429.75 103.2 429.75 93.3Q429.7 84.85 426.73 80.45Q423.75 76.05 417.31 76.05Q411.81 76.05 408.27 80.1Q404.75 84.15 404.75 93.3Q404.75 102.4 408 107.07Q411.25 111.75 417.15 111.75ZM477.81 120.7Q470.36 120.7 464.68 117.52Q459 114.35 455.82 108.45Q452.65 102.55 452.65 94.4Q452.65 86.45 455.52 80.27Q458.4 74.1 463.88 70.55Q469.36 67 477.11 67Q488.56 67 494.56 74.12Q500.56 81.25 500.56 92.95V96.65H464.81Q464.75 103.25 468 107.47Q471.25 111.7 477.56 111.7Q481.86 111.7 485.02 109.77Q488.2 107.85 489.25 103.9H500.36Q499.45 109.3 496.07 113.05Q492.7 116.8 487.88 118.75Q483.06 120.7 477.81 120.7ZM464.75 89.1H489.06Q489.06 83.5 486.11 79.62Q483.15 75.75 477.06 75.75Q473.06 75.75 470.31 77.7Q467.56 79.65 466.15 82.72Q464.75 85.8 464.75 89.1ZM503.06 119.7L522.9 92.8L504.7 68H517.61L529.55 84.15L541.5 68H554.46L536.11 92.8L556 119.7H543.11L529.5 101.3L515.96 119.7Z"/></g></g></svg></span></span></a><nav class="nav" aria-label="Main"><a href="../../officials/" aria-current="true">Officials</a><a href="../../methodology/">Methodology</a><a href="../../about/">About</a><a href="../../contact/">Contact</a></nav><div class="acts"><a class="btn primary sm" href="../../aow-index.html">Open the tracker</a></div></div></header>
+<main>
+<div class="band-top"><div class="wrap">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="../../">Home</a> › <a href="../">Officials</a> › Todd Blanche</nav>
-<h1>Todd Blanche<span class="chip p-r">Republican</span></h1>
-<p class="sub">Attorney General (Acting) · United States · in this role since 2025</p>
+<div class="profile">
+<div><h1>Todd Blanche</h1>
+<ul class="facts"><li><span class="party pr"><i></i>Republican</span></li><li><strong>Attorney General (Acting) · United States</strong></li><li>In this role since 2025</li></ul></div>
+<div class="scorebox"><div class="head"><div class="ring lg mid" style="--p:40" role="img" aria-label="AOW Score 40 out of 100"><b>40</b></div><div><b class="t">AOW Score</b><span class="d">Based on 1 tracked promise</span></div></div>
+<div class="mix" role="img" aria-label="1 in progress"><i class="b-in_progress" style="flex:1"></i></div>
+<ul class="tally"><li><i class="b-in_progress"></i>In progress<b>1</b></li></ul></div>
+</div>
+</div></div>
+<div class="wrap page">
+
 
 <section class="role" aria-labelledby="r-cab-blanche">
-<div class="role-head"><div class="score tier-mid" title="AOW Score, based on 1 tracked promise"><b>40</b><span>Score</span></div>
-<div><h2 id="r-cab-blanche">Current role · Attorney General (Acting) · United States</h2><p class="sub">1 tracked promise</p></div></div>
+<div class="sec-head"><div><h2 id="r-cab-blanche">Current role · Attorney General (Acting) · United States</h2><p class="count">1 tracked promise</p></div></div>
 <p class="summary">ActionOverWords Index tracks 1 promise by Todd Blanche as Attorney General (Acting), United States: 1 in progress. The AOW Score (0 to 100, based on 1 tracked promise) is 40. It is listed below with its sources.</p>
-<div class="bar" role="img" aria-label="1 in progress"><i class="b-in_progress" style="width:100.00%"></i></div><p class="legend">1 in progress</p>
 
 
-<article class="promise" id="p52">
-<span class="pill s-in_progress">In progress</span><span class="cat">Government reform</span>
-<h3>Lead the Justice Department with integrity and uphold the rule of law fairly and impartially.</h3>
+<div class="ledger"><div class="ledger-head" aria-hidden="true"><span>What they said</span><span>What happened</span></div>
+<article class="entry" id="p52">
+<div class="said"><h3 class="q">Lead the Justice Department with integrity and uphold the rule of law fairly and impartially.</h3><p class="cat">Government reform</p><ul class="src3" aria-label="Kinds of sources found"><li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Official record</li><li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Mainstream news</li><li><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="9" r="7.75" stroke-width="1.5"/><path d="M5.4 9.5l2.5 2.5 4.9-5.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Right-leaning news</li></ul></div>
+<div class="did"><p class="pills"><span class="pill s-in_progress">In progress</span></p>
 <p class="note">Made in his first speech to DOJ staff on August 13, 2026, days after a narrow Senate confirmation, addressed to a workforce badly depleted by departures — the unedited remarks are on the public record via C-SPAN. He committed to leading with integrity, to applying the law without fear or favor, and to listening to rank-and-file staff. One specific, checkable data point: analysts noted the speech was notable for what he chose not to repeat — no attacks on the prior administration, no denunciations of &quot;activist&quot; judges, none of the &quot;weaponization&quot; rhetoric he had used in his own earlier remarks as a senior official. The larger tension remains: he was the President’s personal defence attorney before entering government, and during his tenure as deputy and acting attorney general the department charged former FBI Director James Comey, charged the Southern Poverty Law Center, and opened an investigation touching the lawsuits E. Jean Carroll won against the President. The promise is new and the record it will be judged against is already partly written.</p>
-<ul class="sources"><li><span class="stype">News report</span><a href="https://www.washingtonexaminer.com/news/justice/4686751/todd-blanche-vows-leave-doj-better-than-found-it/" rel="noopener noreferrer">Washington Examiner</a></li><li><span class="stype">News report</span><a href="https://www.ms.now/rachel-maddow-show/maddowblog/blanche-doj-speech-record" rel="noopener noreferrer">MS NOW</a></li><li><span class="stype">Official record</span><a href="https://www.c-span.org/event/public-affairs-event/attorney-general-todd-blanches-delivers-remarks-at-justice-department/446050" rel="noopener noreferrer">C-SPAN — unedited remarks</a></li></ul>
+<ul class="links"><li><span>News report</span><a href="https://www.washingtonexaminer.com/news/justice/4686751/todd-blanche-vows-leave-doj-better-than-found-it/" rel="noopener noreferrer">Washington Examiner</a></li><li><span>News report</span><a href="https://www.ms.now/rachel-maddow-show/maddowblog/blanche-doj-speech-record" rel="noopener noreferrer">MS NOW</a></li><li><span>Official record</span><a href="https://www.c-span.org/event/public-affairs-event/attorney-general-todd-blanches-delivers-remarks-at-justice-department/446050" rel="noopener noreferrer">C-SPAN — unedited remarks</a></li></ul></div>
 </article>
+</div>
 </section>
 
 
 <section class="related">
 <h2>More from the Trump administration</h2>
 <p class="sub">Everyone with promises published: <a href="../../administration/">Trump administration</a></p>
-<ul class="dir"><li><a href="../cab-burgum/">Doug Burgum</a><span class="meta">Secretary of the Interior · United States</span></li><li><a href="../cab-rollins/">Brooke Rollins</a><span class="meta">Secretary of Agriculture · United States</span></li><li><a href="../cab-lutnick/">Howard Lutnick</a><span class="meta">Secretary of Commerce · United States</span></li><li><a href="../cab-sonderling/">Keith E. Sonderling</a><span class="meta">Secretary of Labor (Acting) · United States</span></li><li><a href="../cab-jr/">Robert F. Kennedy Jr.</a><span class="meta">Secretary of Health and Human Services · United States</span></li><li><a href="../cab-turner/">Scott Turner</a><span class="meta">Secretary of Housing and Urban Development · United States</span></li></ul>
+<ul class="dir names"><li class="row"><a class="name" href="../cab-burgum/">Doug Burgum</a><span class="party pr"><i></i>Republican</span><span class="seat">Secretary of the Interior · United States</span></li><li class="row"><a class="name" href="../cab-rollins/">Brooke Rollins</a><span class="party pr"><i></i>Republican</span><span class="seat">Secretary of Agriculture · United States</span></li><li class="row"><a class="name" href="../cab-lutnick/">Howard Lutnick</a><span class="party pr"><i></i>Republican</span><span class="seat">Secretary of Commerce · United States</span></li><li class="row"><a class="name" href="../cab-sonderling/">Keith E. Sonderling</a><span class="party pr"><i></i>Republican</span><span class="seat">Secretary of Labor (Acting) · United States</span></li><li class="row"><a class="name" href="../cab-jr/">Robert F. Kennedy Jr.</a><span class="party pi"><i></i>Independent</span><span class="seat">Secretary of Health and Human Services · United States</span></li><li class="row"><a class="name" href="../cab-turner/">Scott Turner</a><span class="party pr"><i></i>Republican</span><span class="seat">Secretary of Housing and Urban Development · United States</span></li></ul>
 </section>
 <div class="info"><strong>How to read this page.</strong> Each status is ActionOverWords' assessment based on the sources listed. A listed promise needs sources from at least three distinct publishers, including at least one primary record. The AOW Score averages a person's tracked promises: Completed 100, Compromise 60, In progress 40, Stalled 15, Not started 0, Broken 0. <a href="../../methodology/">Full methodology</a> and the <a href="../../aow-index.html">interactive tracker</a>.</div>
+</div>
 </main>
-<footer><div class="wrap"><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated 2026-10-31. Spot an error? <a style="margin:0" href="mailto:info@action-over-words.com">info@action-over-words.com</a></p><p class="follow"><b>Follow us</b><a href="https://www.instagram.com/aow_index/" target="_blank" rel="me noopener noreferrer">Instagram <span class="handle">@aow_index</span> <span aria-hidden="true">&#8599;</span></a><a href="https://www.facebook.com/profile.php?id=61594983407204" target="_blank" rel="me noopener noreferrer">Facebook <span aria-hidden="true">&#8599;</span></a><a href="https://www.youtube.com/@ActionOverWordsIndex" target="_blank" rel="me noopener noreferrer">YouTube <span aria-hidden="true">&#8599;</span></a></p><div><a href="../../about/">About</a><a href="../../contact/">Contact</a><a href="../../methodology/">Methodology</a><a href="../../aow-index.html#newsletter">Weekly email</a><a href="../../privacy-policy.html">Privacy Policy</a><a href="../../terms-of-service.html">Terms of Service</a><a href="../../cookie-policy.html">Cookie Policy</a><a href="../../dmca-policy.html">Copyright / DMCA</a><a href="../../faq.html">FAQ</a></div></div></footer>
+<footer class="foot"><div class="wrap foot-grid"><div><h2>ActionOverWords Index</h2><p>ActionOverWords Index is an independent, nonpartisan tracker of specific promises made by U.S. officials, federal and state. Last updated 2026-11-11. Spot an error? <a href="mailto:info@action-over-words.com">info@action-over-words.com</a></p></div><div><h2>Follow us</h2><ul><li><a href="https://www.instagram.com/aow_index/" target="_blank" rel="me noopener noreferrer">Instagram @aow_index <span aria-hidden="true">&#8599;</span></a></li><li><a href="https://www.facebook.com/profile.php?id=61594983407204" target="_blank" rel="me noopener noreferrer">Facebook <span aria-hidden="true">&#8599;</span></a></li><li><a href="https://www.youtube.com/@ActionOverWordsIndex" target="_blank" rel="me noopener noreferrer">YouTube <span aria-hidden="true">&#8599;</span></a></li></ul></div><div><h2>The site</h2><ul><li><a href="../../about/">About</a></li><li><a href="../../contact/">Contact</a></li><li><a href="../../methodology/">Methodology</a></li><li><a href="../../aow-index.html#newsletter">Weekly email</a></li><li><a href="../../privacy-policy.html">Privacy Policy</a></li><li><a href="../../terms-of-service.html">Terms of Service</a></li><li><a href="../../cookie-policy.html">Cookie Policy</a></li><li><a href="../../dmca-policy.html">Copyright / DMCA</a></li><li><a href="../../faq.html">FAQ</a></li></ul></div></div></footer>
+</div>
 </body>
 </html>
