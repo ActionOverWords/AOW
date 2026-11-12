@@ -843,7 +843,9 @@ html[data-look="2"] .r-band #tally div+div{padding-left:22px;border-left:1px sol
 html[data-look="2"] .r-band #tally .n{font-size:clamp(26px,4.6vw,52px);line-height:1.05;letter-spacing:-.035em}
 html[data-look="2"] .r-band #tally .l{display:block;font-size:15px;color:var(--text-muted);text-transform:none;letter-spacing:0}
 html[data-look="2"] .content{padding:clamp(24px,3.4vw,40px) 0 clamp(48px,7vw,90px);position:relative}
-html[data-look="2"] #content::after{content:'';position:absolute;inset:0;z-index:40;pointer-events:none;background:var(--wm-mark) center center/clamp(260px,46vw,600px) auto repeat-y}
+html[data-look="2"] #content::after{content:'';position:fixed;left:50%;top:50%;width:min(clamp(260px,46vw,600px),56vh);aspect-ratio:166.55/181.29;transform:translate(-50%,-50%);z-index:40;pointer-events:none;background:var(--wm-mark) center/100% auto no-repeat;will-change:transform}
+html[data-look="2"] .r-band,html[data-look="2"] footer{position:relative;z-index:41}
+@media print{html[data-look="2"] #content::after{display:none}}
 html[data-look="2"] .section-intro{margin:0 0 4px;padding-bottom:10px;border-bottom:3px solid var(--text)}
 html[data-look="2"] .section-intro h2{font-size:24px;font-weight:800;letter-spacing:-.025em}
 html[data-look="2"] .section-intro p{font-size:15px;line-height:1.55}
@@ -861,7 +863,6 @@ html[data-look="2"] .score-note{font-size:13px;line-height:1.5}
 html[data-look="2"] .grid:has(> .mcard){display:block;margin-bottom:clamp(26px,4vw,44px)}
 html[data-look="2"] .mcard{display:grid;grid-template-columns:46px minmax(0,2.1fr) minmax(0,1.5fr) auto;grid-template-areas:"av id ct side" "av id bar side";column-gap:16px;align-items:center;padding:14px 8px;border:0;border-bottom:1px solid var(--border);border-radius:0;background:none;transition:none}
 html[data-look="2"] .mcard:hover{background:var(--bg);box-shadow:none;transform:none}
-html[data-look="2"] .grid > .mcard{content-visibility:auto;contain-intrinsic-size:auto 82px}
 html[data-look="2"] .mcard-top{display:contents}
 html[data-look="2"] .mcard .avatar{grid-area:av;width:46px;height:46px;background:var(--bg);box-shadow:inset 0 0 0 2px var(--border)}
 html[data-look="2"] .mcard .avatar-fallback{font-size:14.5px;color:var(--text-muted)}
@@ -3440,11 +3441,17 @@ function deletePromise(id){
 }
 
 /* ---------- rendering ---------- */
+// Wikimedia Commons sends a photo at its full size (often several megabytes) unless a width is asked for, and a
+// page of full-size portraits is slow to load and to scroll. 250 is one of Wikimedia's standard thumbnail widths
+// and is enough for the largest photo on the site (88px, sharp on high-density screens). Other addresses are left alone.
+function photoSrc(url){
+  return /^https:\/\/commons\.wikimedia\.org\/wiki\/Special:FilePath\/[^?#]+$/.test(url) ? url + '?width=250' : url;
+}
 function avatarHTML(m, size){
   const sizeStyle = size ? `width:${size}px;height:${size}px;` : '';
   if(!m.photo) return `<div class="avatar" style="${sizeStyle}"><div class="avatar-fallback" style="display:flex;">${escAttr(m.initials)}</div></div>`;
   return `<div class="avatar" style="${sizeStyle}">
-    <img src="${escAttr(m.photo)}" alt="${escAttr(m.name)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+    <img src="${escAttr(photoSrc(m.photo))}" alt="${escAttr(m.name)}" loading="lazy" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
     <div class="avatar-fallback">${escAttr(m.initials)}</div>
   </div>`;
 }
