@@ -798,6 +798,8 @@
   /* The phone menu's own header carries the symbol alone. */
   .site-menu-head .logo-mark{width:auto; height:auto; background:none; border-radius:0; display:block; flex:none; font-size:0; line-height:0;}
   .site-menu-head .aow-sym .s{fill:var(--brand-fixed);}
+  /* The Members tab stays hidden until members.js says it is on (or the visitor is an admin). */
+  .tab-btn[hidden], .menu-item[hidden]{display:none !important;}
 </style>
 <style id="look2">
 html[data-look="2"]:not([data-theme="dark"]){--bg-alt:#F6F8F7;--border:#DCE3E0;--text-muted:#566069;--text-faint:#69737E;--deep:#0D4A43;--on-brand:#FFFFFF;--on-tint:#0C6355;--wm-mark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22166.55%22%20height%3D%22416.99%22%20viewBox%3D%220%200%20166.55%20416.99%22%3E%3Cg%20transform%3D%22translate%280%2C117.85%29%22%3E%3Cpath%20fill%3D%22%2312836F%22%20fill-opacity%3D%22.09%22%20d%3D%22M146.33%2056.97A41.65%2041.65%200%200%201%20147.23%2065.62L147.23%20102.64A41.65%2041.65%200%200%201%20105.59%20144.28L61.09%20144.28L12.72%20179.75A7.99%207.99%200%200%201%200%20173.31L0%2065.62A41.65%2041.65%200%200%201%2041.65%2023.97L105.59%2023.97A41.65%2041.65%200%200%201%20113.08%2024.65L100.03%2039.95L41.65%2039.95A25.66%2025.66%200%200%200%2015.98%2065.62L15.98%20157.53L53.75%20129.84A7.99%207.99%200%200%201%2058.47%20128.3L105.59%20128.3A25.66%2025.66%200%200%200%20131.25%20102.64L131.25%2074.66L146.33%2056.97ZM36.37%2083.3L66.41%20113.33A13.88%2013.88%200%200%200%2086.79%20112.53L163.23%2022.89A13.88%2013.88%200%200%200%20142.11%204.88L75.41%2083.08L56.01%2063.67A13.88%2013.88%200%200%200%2036.37%2083.3Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")}
@@ -811,6 +813,7 @@ html[data-look="2"] .account-btn{min-height:38px;padding:0 14px;border:2px solid
 html[data-look="2"] .account-btn:hover{border-color:var(--text-faint);background:var(--bg)}
 html[data-look="2"] .account-btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
 html[data-look="2"] .account-name{font-size:14px}
+@media (min-width:768px){html[data-look="2"] .account-name{white-space:nowrap}html[data-look="2"] .masthead-inner.hide-name .account-name{display:none}html[data-look="2"] .masthead-inner.tight-tabs .tab-btn{padding-left:7px;padding-right:7px;font-size:14.5px}html[data-look="2"] .masthead-inner.tabs-wrap{flex-wrap:wrap;padding-top:10px}html[data-look="2"] .masthead-inner.tabs-wrap .tabs{order:3;flex:1 1 100%;align-self:auto;overflow-x:auto;margin:0 -24px;padding:0 14px;border-top:1px solid var(--border)}html[data-look="2"] .masthead-inner.tabs-wrap .tab-btn{padding:12px 10px 9px}}
 @media (min-width:768px){
   html[data-look="2"] .masthead .tabs{display:flex;align-self:stretch;gap:2px;margin:0 auto 0 0;padding:0;background:none;border:0;border-radius:0;box-shadow:none;position:static;overflow:visible}
   html[data-look="2"] .masthead .tab-btn{flex:0 0 auto;display:flex;align-items:center;padding:3px 11px 0;border-radius:0;border-bottom:3px solid transparent;font-size:15px;font-weight:600;color:var(--text-muted)}
@@ -1055,6 +1058,7 @@ html[data-look="2"] #content > .detail-head .trend-locked .btn-sm:hover{backgrou
   <button class="menu-item" type="button" data-tab="states" onclick="menuGo('states')">States</button>
   <button class="menu-item" type="button" data-tab="tools" onclick="menuGo('tools')">Tools</button>
   <button class="menu-item" type="button" data-tab="archive" onclick="menuGo('archive')">Archive</button>
+  <button class="menu-item" type="button" data-tab="members" onclick="menuGo('members')" hidden>Members</button>
   <button class="menu-item" type="button" data-tab="about" onclick="menuGo('about')">About</button>
 </nav>
 
@@ -1080,6 +1084,7 @@ html[data-look="2"] #content > .detail-head .trend-locked .btn-sm:hover{backgrou
     <button class="tab-btn" data-tab="states" onclick="selectTab('states')">States</button>
     <button class="tab-btn" data-tab="tools" onclick="selectTab('tools')">Tools</button>
     <button class="tab-btn" data-tab="archive" onclick="selectTab('archive')">Archive</button>
+    <button class="tab-btn" data-tab="members" onclick="selectTab('members')" hidden>Members</button>
     <button class="tab-btn" data-tab="about" onclick="selectTab('about')">About</button>
   </div>
 
@@ -1311,7 +1316,7 @@ const SRC_TYPE_LABEL = {
   voting_record:'Voting record', official_record:'Official record',
   self_published_report:"Official's own office", news_report:'News report'
 };
-const TAB_LABELS = {featured:'Featured', search:'Search', administration:'Administration', congress:'U.S. Congress', states:'States', tools:'Tools', archive:'Archive', about:'About', contact:'Contact', donate:'Tip'};
+const TAB_LABELS = {featured:'Featured', search:'Search', administration:'Administration', congress:'U.S. Congress', states:'States', tools:'Tools', archive:'Archive', members:'Members', about:'About', contact:'Contact', donate:'Tip'};
 const STATE_NAMES = {
   AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California', CO:'Colorado', CT:'Connecticut',
   DE:'Delaware', DC:'District of Columbia', FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
@@ -1817,6 +1822,7 @@ function renderAccountZone(){
   zone.innerHTML = CURRENT_USER
     ? `${adminTag}<span class="account-name" onclick="showAccountSettings()">Hi, ${escAttr(CURRENT_USER.displayName)}</span>${teamBtn}<button class="account-btn" onclick="showAccountSettings()">Account</button>`
     : `<button class="account-btn" onclick="showAuthModal('login')">Log In</button><button class="account-btn primary" onclick="showAuthModal('signup')">Sign Up</button>`;
+  if(typeof membersOnAccountChange === 'function') membersOnAccountChange();   // Member votes and forums (members.js)
   fitHeader();
 }
 function showAuthModal(mode){
@@ -1894,7 +1900,8 @@ async function logOut(){
 function renderTierTableHTML(){
   const currentTierId = CURRENT_USER ? CURRENT_USER.tier : null;
   const hasSubscription = !!(CURRENT_USER && CURRENT_USER.tier !== 'free');
-  const rows = TIER_FEATURES.map(f => `
+  const featureRows = TIER_FEATURES.concat(typeof membersTierRows === 'function' ? membersTierRows() : []);   // members.js adds its 2 rows only once it is switched on
+  const rows = featureRows.map(f => `
     <tr><td>${escAttr(f.label)}</td><td${currentTierId==='free'?' class="tier-current"':''}>${escAttr(f.free)}</td><td${currentTierId==='supporter'?' class="tier-current"':''}>${escAttr(f.supporter)}</td><td${currentTierId==='sustainer'?' class="tier-current"':''}>${escAttr(f.sustainer)}</td><td${currentTierId==='patron'?' class="tier-current"':''}>${escAttr(f.patron)}</td></tr>
   `).join('');
   const pickCells = TIERS.map(t => {
@@ -3216,6 +3223,7 @@ async function handleLinkHash(){
   if(!h) return;
   const clear = () => { try { history.replaceState(null, '', location.pathname + location.search); } catch(e){ /* old browser: leave it */ } };
   let match;
+  if(typeof membersHandleHash === 'function' && membersHandleHash(h)) return;   // #votes, #forums, #thread=12 (members.js)
   if(h === 'newsletter'){ clear(); openNewsletterModal('link'); return; }
   if(h === 'plans'){ clear(); selectTab('about'); selectedAboutSection = 'support'; render(); if(typeof scrollToContentTop === 'function') scrollToContentTop(); return; }
   if((match = h.match(new RegExp('^newsletter-confirm=(' + NL_UUID + ')$')))){ clear(); newsletterConfirmPrompt(match[1].toLowerCase()); return; }
@@ -3818,6 +3826,24 @@ function fitHeader(){
     // goes if the buttons still would not fit without it.
     if(tooWide(20)) inner.classList.add('hide-name');
     if(tooWide(8)) inner.classList.add('hide-word');
+  } else if(LOOK2){
+    // Wide screens: the section tabs and the account buttons share one row. When they would touch (a long name, an
+    // admin's extra buttons, the Members tab), the tabs pack a little closer, then the greeting goes, and if that is still
+    // not enough the tabs move to a row of their own (as they already do on tablet widths).
+    inner.classList.remove('tight-tabs', 'tabs-wrap');
+    const crowded = () => {
+      const z = zone.getBoundingClientRect(), box = inner.getBoundingClientRect();
+      const padR = parseFloat(getComputedStyle(inner).paddingRight) || 0;
+      if(z.right > box.right - padR + 0.5) return true;
+      const btns = [...document.querySelectorAll('#tabs .tab-btn')].filter(b => b.offsetParent);
+      const last = btns[btns.length - 1];
+      if(!last) return false;
+      const t = last.getBoundingClientRect();
+      return t.top < z.bottom && z.top < t.bottom && t.right > z.left - 12;   // only when they sit on the same row
+    };
+    if(crowded()) inner.classList.add('tight-tabs');
+    if(crowded()) inner.classList.add('hide-name');
+    if(crowded()){ inner.classList.remove('tight-tabs', 'hide-name'); inner.classList.add('tabs-wrap'); }
   }
   // With the wordmark hidden, a screen reader would announce the logo as just "AOW": give it its full name.
   if(inner.classList.contains('hide-word')) logo.setAttribute('aria-label', 'ActionOverWords Index home');
@@ -4195,6 +4221,12 @@ function look2AfterRender(){
   const title = document.getElementById('rTitle');
   if(!band || !title) return;
   band.setAttribute('data-tab', activeTab);
+  if(activeTab === 'members' && !selectedId && typeof membersBandHTML === 'function'){
+    const mh = membersBandHTML();                     // members.js; left alone when unchanged so a half-typed search keeps its place
+    if(title.getAttribute('data-mb') !== mh){ title.innerHTML = mh; title.setAttribute('data-mb', mh); }
+    return;
+  }
+  title.removeAttribute('data-mb');
   const btn = document.querySelector('.tab-btn[data-tab="' + activeTab + '"]');
   title.innerHTML = activeTab === 'featured'
     ? '<h1 class="r-said-did"><span class="a">What they said.</span><span class="b">What happened.</span></h1><p class="r-sub">We track the specific promises elected officials make, and show whether they were kept, broken, or somewhere in between. Every promise links to its source.</p>'
@@ -4242,7 +4274,7 @@ function promiseEntryHTML(p, personName, canEdit){
         <div class="r-pills"><span class="pill p-${statusClass(p.status)}">${statusMeta(p.status).label}</span>${p.draft ? `<span class="pill pill-sourcing" title="Published while its sourcing is still being completed to our three-source standard.">Still finding sources</span>` : ''}</div>
         ${p.note ? `<p class="r-note">${escAttr(p.note)}</p>` : ''}
         ${links ? `<ul class="r-links">${links}</ul>` : (p.draft ? `<p class="r-note" style="font-style:italic;">No source linked yet.</p>` : '')}
-        <a href="#" class="r-appeal" onclick="appealPromise('${escJsAttr(p.text)}','${escJsAttr(personName)}'); return false;">Appeal this status</a>
+        <a href="#" class="r-appeal" onclick="appealPromise('${escJsAttr(p.text)}','${escJsAttr(personName)}'); return false;">Appeal this status</a>${typeof membersDiscussLink === 'function' ? membersDiscussLink(p) : ''}
         ${canEdit ? `<div class="padmin-row">
           <button class="btn-sm" onclick="editPromise('${p.id}')">Edit</button>
           <button class="btn-sm danger" onclick="handleDeletePromiseClick(this,'${p.id}')">Delete</button>
@@ -5502,6 +5534,7 @@ function render(){
     else if(activeTab==='tools') html = renderTools();
     else if(activeTab==='archive') html = renderArchive();
     else if(activeTab==='about') html = renderAboutSection();
+    else if(activeTab==='members') html = typeof renderMembers === 'function' ? renderMembers() : '<div class="empty">Loading…</div>';
   } catch(e) {
     console.error('Render failed for activeTab=' + activeTab + ':', e);
     activeTab = 'featured';
@@ -5560,6 +5593,7 @@ initData().catch(err => {
   if(c) c.innerHTML = '<div class="empty">Something went wrong loading the site. Refreshing the page usually fixes it.</div>';
 });
 </script>
+<script src="members.js"></script>
 <script src="cookie-consent.js"></script>
 </body>
 </html>

@@ -7,35 +7,66 @@ Desktop\AOW\AOW-main already has these same files (it is your full copy of the s
 Older packages are kept in Desktop\AOW\_archive\site-updates - never upload from there.
 
 WHAT'S IN HERE NOW:
-Take "Prototype" off the policy, FAQ and thank-you pages. Sat Oct 31 2026
-=========================================================================
-Built on what is live right now (commit 232c7ae). Upload all 8 files in ONE commit.
+Member votes and Member forums, admin-only preview. Sat Nov 21 2026
+==================================================================
 
-FILES (all 8 go in the repo ROOT; each replaces the file of the same name)
-  404.html
-  cookie-policy.html
-  dmca-policy.html
-  faq.html
-  privacy-policy.html
-  terms-of-service.html
-  thank-you-donate.html
-  thank-you-subscribe.html
+FILES (four, all to the repo ROOT)
+  aow-index.html         -> replaces aow-index.html
+  members.js             -> NEW file, sits next to aow-index.html
+  terms-of-service.html  -> replaces terms-of-service.html
+  privacy-policy.html    -> replaces privacy-policy.html
+  On the repo's "Add files > Upload files" page, drag in all four and commit.
+  Upload all four together: aow-index.html loads members.js, and without it the new tab just never appears.
 
-WHAT IT CHANGES
-  - Removes the "Prototype" pill from the top of all 8 pages (one line each).
-  - privacy-policy.html and cookie-policy.html: one sentence in each said "prototype"; both now read normally.
-  - Nothing else changes. aow-index.html and tools\ are NOT in this package: they are already live.
+WHAT VISITORS SEE AFTER THE UPLOAD
+  Nothing new yet, apart from the Terms and Privacy pages. The database is already set up, but the
+  feature is switched off for everyone except admin accounts, and the server itself refuses votes
+  and forum use from anyone else while it is off.
 
-WHY
-  Google AdSense did not approve the site on Oct 31. A "Prototype" label on the Privacy Policy, Terms and FAQ
-  makes the site look unfinished to a reviewer, so it is the first thing to remove.
+WHAT YOU SEE (signed in as admin)
+  A "Members" tab between Archive and About (also in the phone menu), with a dashed "Preview" note.
+  - Votes: the Features and Offices ballots from the mockup, open until Dec 31, 2026.
+    You can vote to try it (admins can vote in the preview; take it back with "Your vote").
+  - Forums: six categories and a pinned, locked welcome thread with the house rules.
+  - Admin: the switch, the ballots (withdraw or add items, close a ballot, open the next one,
+    member suggestions) and the forum reports queue (hide a post, keep it and dismiss the reports,
+    pause an author for 1, 7 or 30 days or until lifted, lift a pause).
 
-UPLOAD
-  1. github.com/actionoverwords/AOW -> Add file -> Upload files
-  2. Drag the 8 .html files from this folder onto the page (not this READ-ME file), then Commit directly to main.
-  3. Wait 1 to 2 minutes, then open https://action-over-words.com/privacy-policy.html and press Ctrl+F5:
-     the green "Prototype" pill next to the logo should be gone.
+TO SWITCH IT ON FOR EVERYONE (when you are happy with it)
+  Members tab > Admin > "On or off" > "Switch on for everyone". It takes effect at once, no upload.
+  Then: the tab appears for everyone, the plans table on Support Us gets its two new rows
+  ("Member votes: one vote per ballot" and "Member forums"), and every promise gets a small
+  "Discuss in the member forums" link. "Back to preview" turns it off again; nothing is deleted.
 
-UNDO
-  The 8 old files are in Desktop\AOW\_archive\site-updates\2026-10-31-prototype-badges-ROLLBACK
-  Upload those the same way.
+WHO CAN DO WHAT (the server checks all of this, not just the page)
+  Signed out: sees vote results. Forums need a free account.
+  Free: reads the forums. Plus: reads, and votes. Premium: also replies and marks posts Helpful.
+  Supporter: also starts threads. Every paid plan gets the same one vote per ballot.
+  Anyone signed in can Report a post; 3 reports from different members hide it until you look.
+  Members post under a forum name they pick, never their email or display name.
+  Counts on the page are rounded down with a plus (1,234 votes shows as 1,200+).
+
+ALSO CHANGED IN aow-index.html
+  The header: when the tabs and the account buttons don't fit on one row (admins have the extra
+  "Admin" tag and "Team" button), the tabs pack a little closer, then the "Hi, name" greeting
+  goes, and if that is still not enough the tabs move to their own row. Before this, an admin's
+  "Account" button was cut off on screens about 1,100 to 1,280 wide.
+
+TERMS AND PRIVACY (please have a lawyer look at these before switching on)
+  Terms: a new "Member votes & forums" section (how votes work, forum names, house rules, who owns
+  posts, moderation) and a line in "The short version".
+  Privacy: a new "Member votes & forums" section (what is stored when you vote or post, who sees
+  it, what happens if an account is deleted) and short notes in three other places.
+  Both pages now say "Last updated November 21, 2026".
+
+CHECKED
+  - Built on the live copy at GitHub commit a38797e, re-checked right before handing over.
+  - 82 browser checks at desktop and phone width as a visitor, Free, Plus, Premium, Supporter,
+    a paused member and admin, in the preview and switched on, light and dark, new and old look.
+  - 47 database rule checks earlier today, plus the two small database changes made since.
+  - Every other tab still opens with no errors.
+
+TO UNDO
+  Re-upload aow-index.html, terms-of-service.html and privacy-policy.html from
+  Desktop\AOW\_archive\site-updates\2026-11-21-before-members-UNDO\
+  members.js can stay; nothing loads it then. Or simply leave the feature switched off.
