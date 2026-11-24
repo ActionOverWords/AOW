@@ -7,66 +7,43 @@ Desktop\AOW\AOW-main already has these same files (it is your full copy of the s
 Older packages are kept in Desktop\AOW\_archive\site-updates - never upload from there.
 
 WHAT'S IN HERE NOW:
-Member votes and Member forums, admin-only preview. Sat Nov 21 2026
-==================================================================
+Infolinks ads + the Members tab fix. Mon Nov 23 2026
+====================================================
 
-FILES (four, all to the repo ROOT)
-  aow-index.html         -> replaces aow-index.html
-  members.js             -> NEW file, sits next to aow-index.html
-  terms-of-service.html  -> replaces terms-of-service.html
-  privacy-policy.html    -> replaces privacy-policy.html
-  On the repo's "Add files > Upload files" page, drag in all four and commit.
-  Upload all four together: aow-index.html loads members.js, and without it the new tab just never appears.
+FILES (six files, all go in the repo ROOT, replacing the old ones)
+  aow-index.html
+  privacy-policy.html
+  cookie-policy.html
+  terms-of-service.html
+  cookie-consent.js
+  members.js          (the Nov 21 Members tab fix - it was never uploaded, so it rides along)
 
-WHAT VISITORS SEE AFTER THE UPLOAD
-  Nothing new yet, apart from the Terms and Privacy pages. The database is already set up, but the
-  feature is switched off for everyone except admin accounts, and the server itself refuses votes
-  and forum use from anyone else while it is off.
+  On github.com/actionoverwords/AOW: Add file > Upload files, drag in all six, commit to main.
+  The site updates in 1 to 2 minutes.
 
-WHAT YOU SEE (signed in as admin)
-  A "Members" tab between Archive and About (also in the phone menu), with a dashed "Preview" note.
-  - Votes: the Features and Offices ballots from the mockup, open until Dec 31, 2026.
-    You can vote to try it (admins can vote in the preview; take it back with "Your vote").
-  - Forums: six categories and a pinned, locked welcome thread with the house rules.
-  - Admin: the switch, the ballots (withdraw or add items, close a ballot, open the next one,
-    member suggestions) and the forum reports queue (hide a post, keep it and dismiss the reports,
-    pause an author for 1, 7 or 30 days or until lifted, lift a pause).
+WHAT IT CHANGES
+  1. Infolinks ads (publisher 3449895) now load on the tracker for signed-out visitors and free
+     accounts. Paid members load no ad code, same as before. Google AdSense code is unchanged.
+     Ads may stay blank until Infolinks finishes reviewing the site (up to about 48 hours).
+     To switch Infolinks off later: in aow-index.html set INFOLINKS_PID to 0.
+  2. Privacy Policy, Cookie Policy, Terms and the cookie banner now name Infolinks next to
+     Google and link Infolinks' opt-out page (Infolinks' agreement requires this).
+     The three pages say "Last updated November 23, 2026".
+  3. members.js: if the Members tab is ever switched back off, someone on that tab no longer
+     loses the green title band on the other tabs. You won't see a difference while it's on.
 
-TO SWITCH IT ON FOR EVERYONE (when you are happy with it)
-  Members tab > Admin > "On or off" > "Switch on for everyone". It takes effect at once, no upload.
-  Then: the tab appears for everyone, the plans table on Support Us gets its two new rows
-  ("Member votes: one vote per ballot" and "Member forums"), and every promise gets a small
-  "Discuss in the member forums" link. "Back to preview" turns it off again; nothing is deleted.
-
-WHO CAN DO WHAT (the server checks all of this, not just the page)
-  Signed out: sees vote results. Forums need a free account.
-  Free: reads the forums. Plus: reads, and votes. Premium: also replies and marks posts Helpful.
-  Supporter: also starts threads. Every paid plan gets the same one vote per ballot.
-  Anyone signed in can Report a post; 3 reports from different members hide it until you look.
-  Members post under a forum name they pick, never their email or display name.
-  Counts on the page are rounded down with a plus (1,234 votes shows as 1,200+).
-
-ALSO CHANGED IN aow-index.html
-  The header: when the tabs and the account buttons don't fit on one row (admins have the extra
-  "Admin" tag and "Team" button), the tabs pack a little closer, then the "Hi, name" greeting
-  goes, and if that is still not enough the tabs move to their own row. Before this, an admin's
-  "Account" button was cut off on screens about 1,100 to 1,280 wide.
-
-TERMS AND PRIVACY (please have a lawyer look at these before switching on)
-  Terms: a new "Member votes & forums" section (how votes work, forum names, house rules, who owns
-  posts, moderation) and a line in "The short version".
-  Privacy: a new "Member votes & forums" section (what is stored when you vote or post, who sees
-  it, what happens if an account is deleted) and short notes in three other places.
-  Both pages now say "Last updated November 21, 2026".
+STILL TO DO (not in this upload)
+  - ads.txt: Infolinks' lines come from your Infolinks dashboard. Claude adds them once found.
+  - In the Infolinks dashboard, switch InText (underlined-word ads) OFF.
 
 CHECKED
-  - Built on the live copy at GitHub commit a38797e, re-checked right before handing over.
-  - 82 browser checks at desktop and phone width as a visitor, Free, Plus, Premium, Supporter,
-    a paused member and admin, in the preview and switched on, light and dark, new and old look.
-  - 47 database rule checks earlier today, plus the two small database changes made since.
-  - Every other tab still opens with no errors.
+  - Built on the live copy at GitHub commit 85dd5a5 (Nov 22). The five pages matched your
+    AOW-main copies except cookie-consent.js, where AOW-main had an older copy.
+  - Every script on the tracker passes a syntax check; tags balance on all four pages.
+  - Tested in Chrome: a signed-out visit loads the Infolinks script with no page errors; a paid
+    member loads no ad script; the cookie banner and its panel show the new wording.
 
 TO UNDO
-  Re-upload aow-index.html, terms-of-service.html and privacy-policy.html from
-  Desktop\AOW\_archive\site-updates\2026-11-21-before-members-UNDO\
-  members.js can stay; nothing loads it then. Or simply leave the feature switched off.
+  Re-upload the five files from
+  Desktop\AOW\_archive\site-updates\2026-11-23-before-infolinks-UNDO\
+  (members.js: from Desktop\AOW\_archive\site-updates\2026-11-21-member-votes-forums-LIVE\)

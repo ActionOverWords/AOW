@@ -67,7 +67,7 @@ async function membersCheckLive(){
 }
 function membersSyncTab(){
   const show = membersVisible();
-  document.querySelectorAll('[data-tab="members"]').forEach(b => { b.hidden = !show; });
+  document.querySelectorAll('.tab-btn[data-tab="members"], .menu-item[data-tab="members"]').forEach(b => { b.hidden = !show; });   // not the green band, which also carries data-tab
   if(!show && activeTab === 'members'){ activeTab = 'featured'; render(); }
   if(typeof fitHeader === 'function') { try { fitHeader(); } catch(e){ /* header fit is cosmetic */ } }
 }

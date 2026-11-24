@@ -1349,7 +1349,7 @@ const BILLING_FUNCTION_URL = SUPABASE_URL + '/functions/v1/billing';
 // out, instead of the whole page staying blank on "Loading…" forever.
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY) : null;
 
-// ---------- advertising (Google AdSense) ----------
+// ---------- advertising (Google AdSense, plus Infolinks since Nov 23, 2026) ----------
 // Free tier only — matches the "Ad-free" perk already promised in the pricing table.
 // Two things happen here, both required by Google's EU User Consent Policy before any
 // ad script is allowed to run for EEA/UK/Switzerland visitors:
@@ -1381,7 +1381,16 @@ gtag('consent', 'default', {
 // then. Format once you have it: 'ca-pub-XXXXXXXXXXXXXXXX', from the AdSense dashboard
 // (a different service and a different ID than anything Stripe-related).
 const ADSENSE_PUBLISHER_ID = 'ca-pub-2415928011419150';
-let adsLoaded = false;
+// Infolinks, the second ad network (added Nov 23, 2026). Both numbers come from the
+// code on the Infolinks dashboard's Welcome page: infolinks_pid (publisher) and
+// infolinks_wsid (website). Which Infolinks units show (InText is meant to stay OFF,
+// so ads never look like source links) is set in the Infolinks dashboard, not here.
+// Set INFOLINKS_PID to 0 to switch Infolinks off without touching anything else.
+const INFOLINKS_PID = 3449895;
+const INFOLINKS_WSID = 0;
+let adsLoaded = false;        // true once ANY ad script was injected (logIn() reloads paid members then)
+let adsenseLoaded = false;
+let infolinksLoaded = false;
 // Injected as a dynamic script tag, not static markup, and only once a member's tier is
 // actually known — a Plus/Premium/Supporter member never even briefly sees an ad before
 // their tier loads. Uses Auto ads (Google chooses placement from the rendered page)
@@ -1390,14 +1399,26 @@ let adsLoaded = false;
 // that; hand-placed <ins> units would need re-inserting and re-initializing on every one
 // of those re-renders.
 function maybeLoadAds(){
-  if(adsLoaded || !/^ca-pub-\d{16}$/.test(ADSENSE_PUBLISHER_ID)) return; // blank, or a mistyped ID, stays a no-op
-  if(userHasTier('supporter')) return; // any paid tier — stays ad-free
-  adsLoaded = true;
-  const s = document.createElement('script');
-  s.async = true;
-  s.crossOrigin = 'anonymous';
-  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID;
-  document.head.appendChild(s);
+  if(userHasTier('supporter')) return; // any paid tier — stays ad-free, no ad script of either network loads
+  if(!adsenseLoaded && /^ca-pub-\d{16}$/.test(ADSENSE_PUBLISHER_ID)){ // blank, or a mistyped ID, stays a no-op
+    adsenseLoaded = adsLoaded = true;
+    const s = document.createElement('script');
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID;
+    document.head.appendChild(s);
+  }
+  if(!infolinksLoaded && Number.isInteger(INFOLINKS_PID) && INFOLINKS_PID > 0){ // 0 = Infolinks off
+    infolinksLoaded = adsLoaded = true;
+    // Same two globals and script as Infolinks' paste-before-</body> snippet, injected
+    // here instead so paid members never load it.
+    window.infolinks_pid = INFOLINKS_PID;
+    window.infolinks_wsid = INFOLINKS_WSID;
+    const il = document.createElement('script');
+    il.async = true;
+    il.src = 'https://resources.infolinks.com/js/infolinks_main.js';
+    (document.body || document.head).appendChild(il);
+  }
 }
 
 function getLinkedRoleIds(id){
