@@ -1,43 +1,69 @@
 AOW static pages report (deterministic; no timestamps)
-data files read: 76
+data: live data from the public database: 736 officials, 19661 promises, 304 of 318 archive rows merged; repo data files read: 76
 home page (/): generated landing page; live headline numbers: on (the browser reads public.site_counts() and shows the live counts rounded down like the tracker)
 design: the redesign ("The record") on every generated page; the /preview/ folder from before the switch-over is removed when found
-officials with a page: 30
-promises published on pages: 64
-current officials listed by name only (no publishable promises yet): 707
-hub pages (a group needs at least 3 people with pages): 1
-  - administration: 29 with pages, 1 listed by name only
-groups with a page but below that minimum, so no hub yet: 0
-promises held back (fewer than 3 distinct publishers, no primary-record source, status Undetermined or Campaign promise, or a status that can't apply to someone not in office): 32
-  - p27 (Donald Trump): 3 publisher(s), primary-record source: no
-  - p44 (Donald Trump): 2 publisher(s), primary-record source: no
-  - p87 (John Ratcliffe): 3 publisher(s), primary-record source: no
-  - p68 (Pete Hegseth): 2 publisher(s), primary-record source: yes
-  - p21 (Kris Mayes): 1 publisher(s), primary-record source: no
-  - p22 (Kris Mayes): 1 publisher(s), primary-record source: no
-  - p08 (Lauren Boebert): 1 publisher(s), primary-record source: yes
-  - p09 (Lauren Boebert): 1 publisher(s), primary-record source: yes
-  - p23 (Todd Rokita): 1 publisher(s), primary-record source: yes
-  - p24 (Todd Rokita): 1 publisher(s), primary-record source: no
-  - p12 (Jared Golden): 1 publisher(s), primary-record source: no
-  - p13 (Jared Golden): 1 publisher(s), primary-record source: no
-  - p01 (Elissa Slotkin): 1 publisher(s), primary-record source: no
-  - p02 (Elissa Slotkin): 1 publisher(s), primary-record source: no
-  - p03 (Elissa Slotkin): 1 publisher(s), primary-record source: no
-  - p10 (Andy Kim): 1 publisher(s), primary-record source: yes
-  - p11 (Andy Kim): 1 publisher(s), primary-record source: no
-  - p04 (Bernie Moreno): 1 publisher(s), primary-record source: no
-  - p05 (Bernie Moreno): 1 publisher(s), primary-record source: no
-  - p06 (Bernie Moreno): 1 publisher(s), primary-record source: no
-  - p17 (Tina Kotek): 1 publisher(s), primary-record source: no
-  - p18 (Tina Kotek): 1 publisher(s), primary-record source: no
-  - p07 (Val Hoyle): 1 publisher(s), primary-record source: no
-  - p19 (Greg Abbott): 1 publisher(s), primary-record source: no
-  - p20 (Greg Abbott): 1 publisher(s), primary-record source: no
-  - pp1 (Joe Biden): 1 publisher(s), primary-record source: no
-  - pp2 (Joe Biden): 1 publisher(s), primary-record source: no
-  - pp4 (Donald Trump): 1 publisher(s), primary-record source: no
-  - pp5 (Donald Trump): 1 publisher(s), primary-record source: no
-  - arc1 (Eric Swalwell): 1 publisher(s), primary-record source: no
-  - arc2 (Beto O'Rourke): 1 publisher(s), primary-record source: no
-  - arc3 (Mitt Romney): 1 publisher(s), primary-record source: no
+officials with a page: 573
+promises published on pages: 12665
+current officials listed by name only (no promise with finished sourcing yet): 172
+promises counted in scores but not listed: 6936 still being sourced (tracker only, "Still finding sources"), 20 finished but with no working source link
+promises whose official is not on any list (ignored, as in the tracker): 0
+hub pages (a group needs at least 3 people with pages): 53
+  - administration: 30 with pages, 0 listed by name only
+  - congress/house: 433 with pages, 4 listed by name only
+  - congress/senate: 98 with pages, 2 listed by name only
+  - states/alabama: 9 with pages, 3 listed by name only
+  - states/alaska: 3 with pages, 3 listed by name only
+  - states/arizona: 11 with pages, 3 listed by name only
+  - states/arkansas: 6 with pages, 3 listed by name only
+  - states/california: 53 with pages, 8 listed by name only
+  - states/colorado: 10 with pages, 3 listed by name only
+  - states/connecticut: 7 with pages, 3 listed by name only
+  - states/delaware: 3 with pages, 3 listed by name only
+  - states/florida: 29 with pages, 5 listed by name only
+  - states/georgia: 15 with pages, 3 listed by name only
+  - states/hawaii: 4 with pages, 4 listed by name only
+  - states/idaho: 4 with pages, 3 listed by name only
+  - states/illinois: 19 with pages, 6 listed by name only
+  - states/indiana: 11 with pages, 3 listed by name only
+  - states/iowa: 6 with pages, 3 listed by name only
+  - states/kansas: 6 with pages, 3 listed by name only
+  - states/kentucky: 7 with pages, 4 listed by name only
+  - states/louisiana: 7 with pages, 4 listed by name only
+  - states/maine: 4 with pages, 3 listed by name only
+  - states/maryland: 10 with pages, 3 listed by name only
+  - states/massachusetts: 11 with pages, 3 listed by name only
+  - states/michigan: 15 with pages, 3 listed by name only
+  - states/minnesota: 10 with pages, 3 listed by name only
+  - states/mississippi: 6 with pages, 3 listed by name only
+  - states/missouri: 10 with pages, 3 listed by name only
+  - states/montana: 4 with pages, 3 listed by name only
+  - states/nebraska: 5 with pages, 3 listed by name only
+  - states/nevada: 6 with pages, 3 listed by name only
+  - states/new-hampshire: 5 with pages, 2 listed by name only
+  - states/new-jersey: 14 with pages, 3 listed by name only
+  - states/new-mexico: 5 with pages, 3 listed by name only
+  - states/new-york: 27 with pages, 5 listed by name only
+  - states/north-carolina: 16 with pages, 3 listed by name only
+  - states/north-dakota: 3 with pages, 3 listed by name only
+  - states/ohio: 17 with pages, 3 listed by name only
+  - states/oklahoma: 7 with pages, 3 listed by name only
+  - states/oregon: 8 with pages, 5 listed by name only
+  - states/pennsylvania: 19 with pages, 5 listed by name only
+  - states/rhode-island: 3 with pages, 4 listed by name only
+  - states/south-carolina: 9 with pages, 3 listed by name only
+  - states/south-dakota: 3 with pages, 3 listed by name only
+  - states/tennessee: 11 with pages, 3 listed by name only
+  - states/texas: 39 with pages, 6 listed by name only
+  - states/utah: 6 with pages, 3 listed by name only
+  - states/vermont: 3 with pages, 3 listed by name only
+  - states/virginia: 13 with pages, 3 listed by name only
+  - states/washington: 11 with pages, 4 listed by name only
+  - states/west-virginia: 5 with pages, 2 listed by name only
+  - states/wisconsin: 10 with pages, 3 listed by name only
+  - states/wyoming: 3 with pages, 3 listed by name only
+groups with a page but below that minimum, so no hub yet: 6
+promises left out of pages and scores (Undetermined, Campaign promise, an unknown status, or a status that can't apply to someone not in office): 352
+  - 322 × status is Campaign promise (a candidate's record, left out of scores)
+  - 25 × status is Undetermined (a placeholder, left out of scores)
+  - 4 × status is In progress, which can't apply to someone not in office (the tracker shows Undetermined until the final outcome is checked)
+  - 1 × status is Stalled, which can't apply to someone not in office (the tracker shows Undetermined until the final outcome is checked)

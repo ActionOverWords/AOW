@@ -1,138 +1,2310 @@
 {
  "version": 1,
- "officialCount": 30,
+ "officialCount": 573,
  "pages": {
   "home": {
-   "hash": "690d718dbda6b68370345684b2e7ee04f77e256241da82c32598af563d650bcf",
-   "lastmod": "2026-11-11"
+   "hash": "fd5c550c192045f1f6a3ab4d363d53647a6e2215c5dd71afb3e18f1ae44efac9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl04/": {
+   "hash": "bf0f81d85924f26e2ffacb499dc7de8599cace3e60e30e95158f4175ed3de3de",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az08/": {
+   "hash": "f783beb6422fb8e9b814ecc72ee1fc37c9261b141a58147dcceaf87552ab70ad",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-schiff-ca/": {
+   "hash": "3cce2624dc27dccc4f3a5fdebe93ecd7470744ee908d04a1ccd356bd7215e651",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca13/": {
+   "hash": "f369e57c4364ea8c9e6d7543c96b89b1a2d06468aae1f999f082ad40a085666c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa09/": {
+   "hash": "f230ad0f18bc2f0c8a5b601ba348ef8c31c683c6068f2c7ce03f1e0594e96cdb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc06/": {
+   "hash": "09eb689ec09362c4b514bc2299f44b4127ad50a1c4b5714f2294f21acd05c488",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az07/": {
+   "hash": "7bef677240d757c5592766e798a39f5f378d8096c72d2373a55790ba4ee446bf",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ne03/": {
+   "hash": "c74364212198adef52ba9a30cf424502a6f25a3b8f5414684da58d2b5ffa018f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny13/": {
+   "hash": "79adfbe068972314074194da6557cd4c9d368ab3543122099db185f4e6481ec4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx09/": {
+   "hash": "4a9941828b3426b3e7bd7c1e410bdd7da46f54a2edebcc811ded716f4f6b29cd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-armstrong-ok/": {
+   "hash": "c11144945f0cc6df8b9cecc0af7e69541a761c3e8f64bb5c178e77def708aafb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-padilla-ca/": {
+   "hash": "34cffc6523bd9c903124274faff61d596bf4dfcbbc01982773cfecb360715d79",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny14/": {
+   "hash": "4b59dedc60be2a54c82e557e18a2e5551cbcccaa4de90e1f55818cc9e0ff7e8e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc12/": {
+   "hash": "149e449bcca1ff5c6c8a607f6c3652b0a76654033f601bb63edec8eb61f3a35a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca06/": {
+   "hash": "707ea1e661d3f953d225a829849f8a4075374a524998f87e975a885fe60cb26c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-klobuchar-mn/": {
+   "hash": "45b4e8220b8b9f851330953b69621e94dd2864efc9c64807f9a41f5afb2ed2eb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj11/": {
+   "hash": "78b7b2dcaaadc28f4547b8952374468f8e49ebaceb2e37ea6c190241c931e6d0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in07/": {
+   "hash": "d1afbfec176f4ad9cd89ec73daab5bec1e431b2649dcaa51e0fe13c816ebfaf5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-or06/": {
+   "hash": "655d99f88c6aa1065db7c82dec308d338c450e1fcc41089a389fa02dd58e6a39",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga09/": {
+   "hash": "44a5c6c345ebdcd100921d833c53920a62496f367de1e9d0bedf0d2b02ec0d51",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny02/": {
+   "hash": "3ba23033f945a30505fea36f83661bc221bf61e439185df9d70207ec3ef54ff9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn05/": {
+   "hash": "8f3fb96e3cf9459df8a51c4df25e526f6e19f5217222375637b2211e7f27f4b5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ky06/": {
+   "hash": "dfe79caef8633baa83efb793898b04c6b4c15c81fb52856f2c3e97beeca80f0c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az05/": {
+   "hash": "aaf5626945e1d474ed00a0817daa5b4438f85a6491a107c6c64a5979b5cff5cb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md01/": {
+   "hash": "c21e623ca461b8d7d42dad87252cd1c2eef77594f5f0a3ca622be715c82d39e9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/kim-nj/": {
+   "hash": "e563547a422c5b504666996477a1c4cf1d1c41f89d90e36b3a930bd786674af1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-alsobrooks-md/": {
+   "hash": "71dcf2ef0969d338d928b35b388736b02a8bae3326314f71e9d2143146833875",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn02/": {
+   "hash": "190cc048c74a4d88e7a66495e96bb49859a6932fcb5eee5a157e66db5e66d607",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-king-me/": {
+   "hash": "98981f0511675bee919836944cae3a8da44397e2ed3efe7f209185712b6a8a0d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo02/": {
+   "hash": "cb2ef60cdd2c89a08bc5b247cf71f963761c82a9bcd1718d2efb4669d3575a78",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl13/": {
+   "hash": "e666232fba91b70cf0ff296fda8148c20845709fa9866d1d455cd281fe3be114",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md06/": {
+   "hash": "3fc75fe8b8ad0850fe5fd10516b9bfa8a226487828a27f88d3ad498d90661f49",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ia02/": {
+   "hash": "d3d28f76a36e2315f1a883147f4ec791ac8e6c84a59345366a633e5175c33c68",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-moody-fl/": {
+   "hash": "a6c2932ec91e94b777d59147771ed81f91923ef34edfa77625dc5c7af71ec33b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx11/": {
+   "hash": "9e0b974c9d190261a8e9cee5543e6e5c401123da17704d444e9bdf2b2b86445d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/del-radewagen/": {
+   "hash": "ef3e13c82cdeb0984a0703582b9f996786c0e15aee728fe52c6745fdf42aaedb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga08/": {
+   "hash": "aef0050c300aa1002922cfda62e88ed75353530b71b94bdbb17686934d7b5004",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma07/": {
+   "hash": "86fe68dc81a54348b5b4464215acd3b379a629adab44e559bfb25bd4e0095823",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga11/": {
+   "hash": "8f4d1f9c420533d5dc4954e2ffaa3ce07e912ff12ca95f28e6b7eb904df783e1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al01/": {
+   "hash": "0f1b502a9d0aeb0eecea5b46f628c38a32b20e13acd2fa7c390c0404ece444af",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-vt00/": {
+   "hash": "27da1ec64194c94719810e0f806adbd85d4c5e40032e5e64b1ea6b6efda05214",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va06/": {
+   "hash": "07f9d60f51188fcbbebc4f41595643a4568b2371a476b70c730ed9f9b61846f4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-lujan-nm/": {
+   "hash": "2588cc5fe29fd6275b5a546f72db639925b176903148d17214e89b4106670604",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ms02/": {
+   "hash": "e7da2165df905082e593ef78f9d495e913acedfea3a5fce06ea2f413782cf1be",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-sanders-vt/": {
+   "hash": "fc9b0edb3acdfca00255084588af5ad5cc8bf9a5bdc6670006483bb1c49c3a08",
+   "lastmod": "2026-11-28"
+  },
+  "officials/moreno-oh/": {
+   "hash": "52a6d3da4054f873c9e066de3327de9dcb8238e965bacbb604c331b411e802db",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx24/": {
+   "hash": "578e66f2fcc98b0b181623266d0cc9632a0deee1755725f27e6d28e4bfeb84c4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/arch-orourke/": {
+   "hash": "5fc4dbe8098a9f156088b1cb6288de26ff7fa4da4305b058c97eeea7dd5b6fcc",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn04/": {
+   "hash": "145728ee804a499646cc7b7640894c128611d72d6ff52327a7a6ec7cb28f9abe",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-cassidy-la/": {
+   "hash": "7717ed927f6a9002a500b362043bf3321cd72d53b570168d92fe0d3b7cf2f941",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il11/": {
+   "hash": "ebe21a4bf5e71488b229b25a8a177f6b1a3cf35554e77e5d403ae29d4e1b255a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hagerty-tn/": {
+   "hash": "8fb1002d462037d6887be75ac3aac12e8bcdb77a11bf75dbe35acd0d7d74419c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi04/": {
+   "hash": "19bc00ac04396ea6e0364cb496715694fea76208c7d55279a0fa100b2b07f1f8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ut01/": {
+   "hash": "b4e4f61099004c04dcc13641bc091d73c44f1f0efd825de8c4eb0ae4bf3eb036",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj12/": {
+   "hash": "ddc44c9fc9b0d15380daca8754bdce3391734c5207360fa1d07e9144b2e6e4c7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn01/": {
+   "hash": "d44b0e2e9b4a4860093ce794d666432bcb4cfa1648968445f0bcfe359b1610ab",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc13/": {
+   "hash": "ccc89d0eaa5a14d1079c78f9e589ff9b948d1b9a12c2a536d259dc6af13a359a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca32/": {
+   "hash": "e85cb54cd62ef98606f188212e2431b5795e1c3f6f02c74b38f091c7275ce501",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il10/": {
+   "hash": "cdf57dbed27bfef1fba63a99469edc2e9bf9ba824aae791de33f44e2076202cf",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx26/": {
+   "hash": "3f64eec2ec115bfc8be222921bce1a28b5a90719837ced17b806ee6bfeaa8487",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa02/": {
+   "hash": "fc60601536a00e34191cbcf5d0e4d17366958d5c470200f27ef60fe77ece6324",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ky02/": {
+   "hash": "c0443c6f7901d9eb55de9028e1f2bac82a0d97744cc669106ba79ec97c1791b5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa01/": {
+   "hash": "5c7966fd3e50bdb54352e4c9500647dcb2d5228d271df67acc2ff7c2fafdbfd4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga03/": {
+   "hash": "ab1c25f307022c07ef25078b53f65fc78805b9c2fa49c286ebe46626d1efa8e0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl21/": {
+   "hash": "6df08ff071d8c7772abd9f722123074eae7d0cd60583f74309c2cc9337fef4b6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-schatz-hi/": {
+   "hash": "3c46b97f091c2d6fc4c4b101e1dba2fba68e9a61323a3a25106167001c6e5eee",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co07/": {
+   "hash": "972d3f5608904da72cb4a5d33bbf067c2be75ef419dfe3870b1e384cd0dfa1d8",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-rollins/": {
-   "hash": "626c5a9e12d2d9a729eea769c8dd2558c163a9bd38fdad1f2eb53f7b3ec7f1a8",
-   "lastmod": "2026-11-11"
+   "hash": "7a8b3ddf9092409e55a901256c150b4c8e5eb21b5376ba28bc90804be5994cfd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ar04/": {
+   "hash": "314f3c2fe26c6aedf5ae2f1157cb8d01865e7e76e133662ac13ba59999731721",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi01/": {
+   "hash": "310a457cd65017ce1a6a93ba55024135f2401a1301b4ccf6f25443b2f45d370e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ut04/": {
+   "hash": "61f6283883fc5897086783195297d62c286d8a7abdbb5f3a73029beaabbcc267",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl19/": {
+   "hash": "91cc8e7778ee6c3825d484c23634aff27efd7c9afffa6ec3953b82c422ca49b4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl28/": {
+   "hash": "84c28461ec8cb25bab858a45d47a6f6b4c1831150cfc30c6082a02a45d352dae",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wv01/": {
+   "hash": "0a141a879d89a61586b0d460e252d4edf5821886065ef648886640e2e924f346",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-masto-nv/": {
+   "hash": "fe26b9b8d074face710b8cd715ae21f51e351836421bef61ca0ddc285d48e593",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ut02/": {
+   "hash": "37fca2cbd079edd0b785bee056df5400f42aa4c74644a61a09b4feb4fd3d06a1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-schumer-ny/": {
+   "hash": "5d3de5c4fe7c937940b24377d932f58aead236e696eda3d2373385b1c3c72bc3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn03/": {
+   "hash": "c390918df17c278b885f4cd91b0c27e1ee3798dd61722552287f809894dd2e55",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-me01/": {
+   "hash": "a5dc9e5c4f9f1f4d55aab767c543f777cfa7b452ea97fd450425111abbe0fbc2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx21/": {
+   "hash": "a9956f39b90b978a76809d4a572a8a3336a31c2c1512dfcd44a281805bcb4d1e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nh01/": {
+   "hash": "bfa1ccbfcc84494fc8e67be06e220e365786de3a8336f9537439c0eb4809d8c7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hollen-md/": {
+   "hash": "c4e1f17418cc17883732a08330e9e5465dc7ad9c36aadf857fa9bd83f6aba7a0",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-wright/": {
-   "hash": "daa7318a89cf339e19bf7bc92ef2c524ee5f6ee86fefbad3478044b927e18d9c",
-   "lastmod": "2026-11-11"
+   "hash": "614cda5c0d42c339df8fe8d2e952b2c9e8249c54af65dc544ea25439c393f667",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa06/": {
+   "hash": "ef75b083e4c5922b3004c7d769ee59a3a32f44158b4b48e770b742be7360dc11",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx18/": {
+   "hash": "29988af9aae30648fa4dcb9f1f19bd224003c341da0f36fd6ac6f278db2c8b0c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-coons-de/": {
+   "hash": "7bedec966b00154b221cad399c7421ce7b686f93c25c6ab93730ec80648b3622",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa17/": {
+   "hash": "bc3abdc23fd60d5559e45fe22274a12ba66d6090bbb47218a151617bf7cb244d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-murphy-ct/": {
+   "hash": "e703acd4c52eb49b6fcbcd5138276a674c9cfb9746425d3e8afb397d5766c712",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj04/": {
+   "hash": "170d0587d736278f329b143b3767b783fe78a6d364f58f522a121c345a9daca1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc11/": {
+   "hash": "6164783ab7cc75770a97653044b7097b9dee237dbae7945760b68afd59488862",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-grassley-ia/": {
+   "hash": "62c1deff3a3248201b645857586b35a2c286444609df151c55c60041000c8d3f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hyde-smith-ms/": {
+   "hash": "ff6efa3669e7b6a325f5505b61b5e9b56a4886efa14651c6286b3b48c48d9ab3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny24/": {
+   "hash": "45d48c6e62858275f4c8f4db4e4678c0c3a95dd046b21c5c2382a4cbd72be2ca",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga14/": {
+   "hash": "462081b409185b063c20873fd9e3ace62acdbb38e6df66d383a5394b45ecc3bc",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-la03/": {
+   "hash": "a5666adcc154d5b009b615d5a1979d902117c38fd6a16e80b1268c13713560ae",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-la06/": {
+   "hash": "f3f68ad7ad25eabf13ae7f495c9adfa9341fb2085665269f781c1300162e60ce",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-or02/": {
+   "hash": "ce774831313249faaae71865e179aa7dc9ea57f2e8b33df6dc4312bd85f20d3f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-booker-nj/": {
+   "hash": "7fa64f307853f7a1749a23a7f6083bf27bb72bdf5ab8dd3b43cef80d2a1f5e56",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl07/": {
+   "hash": "86e0bc7c6ef945176ef8e5ad4c842e672ca4e4003fae5b4b3df36c81ce7fa6ed",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx12/": {
+   "hash": "f7fbc69b56c0b9d048e3a64387560ebe885ef58996baf912660b3d3bab06f076",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-lummis-wy/": {
+   "hash": "31d2d6cf85350508e4fed9b511ff54954a426b5545af9ad1d75154d545ec2848",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al05/": {
+   "hash": "0a577cf8317a3a73716b39a16484c41e4db3923c12c61a5d5caac51dcbbe30c1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx02/": {
+   "hash": "ba8da98187a56fae4718a75f57b4f449555d4786579eb5bc985d13f038688466",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa04/": {
+   "hash": "55ff72c70ca8bedfa10ffb83fd921eb6d7e620bd7ea1365976294eaedee73d59",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-sullivan-ak/": {
+   "hash": "d4dfebcbe44b7bd3e37a1b3946fe024108d08f69d7b6fde77483c25bc968bebf",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny10/": {
+   "hash": "006ec47fa0b9fc3263497e0f1ac21c31ccbadd869eb2d42226e7d9096563a028",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa09/": {
+   "hash": "6f25131313c3996d739984540d36d823cb63695a8f2db74000670772af93ae74",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl11/": {
+   "hash": "9228a8cfcb3701e0ceb9382a0169fb62a4647351ae1a272abeeca2eeba9c1dc0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il07/": {
+   "hash": "fab5e0cd02def13d408418dafd6fd2f638d84859df505f8b73d4091111582e3c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il16/": {
+   "hash": "36f78c72bf0ca78ccb9de186b40e2e7dcd59eb82167a840d86b8983ca45a1255",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-graham-sc/": {
+   "hash": "58b46e92ba8e34aa8a98e86ee904e24d4684c3292553a2912e17679170362563",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca48/": {
+   "hash": "38b4dee6df21d94fc0f636c3ed35a22ed9704a43f5a6ef4bb539da74a9ac7ea9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl09/": {
+   "hash": "acbb3a8dfe7bb12b4fe5ef4e24a9a2025fcc899a79b700a915446d553993a1f2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca47/": {
+   "hash": "f1cfe079d71b65498411da6d3103998f8715bfdd8e303fe7880051350e19a7d8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh14/": {
+   "hash": "f122a3264185ba7e32d3c8b44c4a5fc7d7c3c0b69861ea8a3d59a8295a009182",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn08/": {
+   "hash": "609add486570169a643c57614c1bde9a1eaf506158233c5ae653ed9eae3c38e3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-mccormick-pa/": {
+   "hash": "3b030fe8accf62dbf3d633617a6b5ae993e44293d4cbd47897b2bd7935b54810",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc07/": {
+   "hash": "6a2406f8cf54777a809adae2a91a89cce81eaca2f2dec6dcb79b4d8e4073867f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az01/": {
+   "hash": "2ba3a19cc8be2a0ad0e15af3406486bcfd1ad593b83244941d7d6659309706d5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh02/": {
+   "hash": "57684dda563429491dd58e587a2a101d8487aad3d3e1f4956554d6cea0c9e1ce",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca22/": {
+   "hash": "26559b19a90f822dcc13bb0d1bb2dc1757130d100d5969c72b7a93df517af0eb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-fischer-ne/": {
+   "hash": "8d0712fde15b87398d11baf7a262661c56cc8e0d59ff2f9e0da4571d97a3ac12",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi06/": {
+   "hash": "97b801c4abe11afa3bb69f00e8e23e464e766264a70e7385c0c39914f02c53e4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl25/": {
+   "hash": "a17fb698081bbce8a1f1592e37a6fbe210c557053b4662a36cafb5fd9dd66d0a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc02/": {
+   "hash": "ab6b7d3e5c48b9e5d82d0d16b186c17719f08b54f71d3e406b8068e58bfedc02",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il03/": {
+   "hash": "ba75afeec8c8f656735638426d243aff93ddb60f1b56d5deab3e0eb12d0d30dd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ks02/": {
+   "hash": "5661e49578568a23299ad13319294df597849624386bcef355031efa36eae5d0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca45/": {
+   "hash": "c6584b6ecba853ac34b61f6085d9f03b590e4df5446f3ebb975f998e05257471",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi03/": {
+   "hash": "de6367b47987406570554849b033bfe4ae8dd0a1ae8e2436456127f148fe1334",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co01/": {
+   "hash": "09c2c25cb83b53384ca7656a1a272d1d1cf701f1b0aba67838930595bc2e8e31",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn01/": {
+   "hash": "749d050fb51de006e7afe99bf52f4cc7b7338b6bfc61d8f70f52cd8ebd50cffd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nv01/": {
+   "hash": "e2670871b09b9845dc61d101da70987102619cc369b5fc23a2fddf132f6043eb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ne02/": {
+   "hash": "c015e2fbed1dd19492b6ccfbe69d51c7bac5a68d51174365afd2927b454afc32",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va08/": {
+   "hash": "6d11fb9970083fe1f6dacad195a1026db4ec54786f7c256fbc9704f43d56ef01",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc01/": {
+   "hash": "ccdc491136578a44876c65161294de097d3c2af1719ee7be4e5d6d1001475489",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj01/": {
+   "hash": "f8924151c28db292fd52667aac1eeb0e41bca3e89ed64709ba3e8b4980bd9869",
+   "lastmod": "2026-11-28"
   },
   "officials/trump-pres/": {
-   "hash": "ecdba3baa055c5d2cec2cf265446f06fe3fbeaf35fb5eab53b92701c912b0daa",
-   "lastmod": "2026-11-11"
+   "hash": "c79e94499f704e90d628678beb789b20bfea95f1d42f9c3c0d0ff8fa56a1d1e3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca07/": {
+   "hash": "dac05f6a63c77b9a0da5aaf0d8d87ce224b0b03af4349cf0644f2ab7ba2c1b9c",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-burgum/": {
-   "hash": "51dc4cae8b277e7d27624429b013fd82c4de9eabdbdeaa699cb54f2ca870c3d7",
-   "lastmod": "2026-11-11"
+   "hash": "347d8212078149078dc6e2dfb1ca16ed9ade4fc86029e36ea91782339d9a9648",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-collins/": {
-   "hash": "d608df85f91639a05eb5d6fe32e2d5b4891f1781ec50459a8afbb2e1405647e5",
-   "lastmod": "2026-11-11"
+   "hash": "967c4b9682f8ebb03b6c89e5e442c221947f85a8501068325025dc21b5ef38f6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sd00/": {
+   "hash": "4e1acf2b411e2dd97b0b91c27778d4221499fe63a362cbf9fa6add80d6dda882",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa03/": {
+   "hash": "ecdf3c463e67e709ebc671577e33a20a7601983be9d908221269f174a6066714",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga01/": {
+   "hash": "03295df09cc5eb3bee277ea0518d623b86fbef06a6d68bc9e60b45c58117b892",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-hi01/": {
+   "hash": "c4cbf55ed5c0a621397f04af27687724d5cabb6c32d55d2673ade783a098743e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-markey-ma/": {
+   "hash": "3cde7f6c60f6e395c96a659117cd0efc7e701dadb9fa87b380d6f0634a3e1097",
+   "lastmod": "2026-11-28"
+  },
+  "officials/del-norton/": {
+   "hash": "fde235bdca0a800df1ccded342bc85562eb3fd5df23a38bca1968eb4f0be9e05",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az02/": {
+   "hash": "c906e633aaedb93c0e4612fbcf39a93e9e1e393109f4b5ba71cf339b52a31eb7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny21/": {
+   "hash": "55a5213e4218593e38f1a5a3bd12a06679af9c4c0c54c5b3eec6f74d3791eab2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/slotkin-mi/": {
+   "hash": "dd93f2b75dadfb8ffdf62ea6785ea1b4d6e9019e06be5bf721bcbb2cb493d249",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-warren-ma/": {
+   "hash": "867d7b1e94a376386a547b3d8a91820a58f1f1d4c8439ef75568cc94acf572bc",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo05/": {
+   "hash": "07434a5c28d0f1b16a6b157b09d69f559e3417d94beeef892b503c693f507f63",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh13/": {
+   "hash": "e0543b806773181b65835a9370641647fe8bf6e81d7fceaf16828460a31d3681",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa06/": {
+   "hash": "bd470865b85c36586480c39c0a35a5ee376b4a8cd0190bf9fa8bc985cc96cc43",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo07/": {
+   "hash": "e118925e5d6ee06622c4c0c661c2a63e5ecb1afd8b2feb71e835a864855d0cf5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ar01/": {
+   "hash": "7ec36beba300947c03270c814775e5b6cbf564b0b00c768cbca8a6e384ef910c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-schmitt-mo/": {
+   "hash": "08cf73af8825278745316e6be721101e71598b6aad05d56fa389776faa02499f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il17/": {
+   "hash": "e73d7c22ec29280c3d5114eb03d76dd9a70dd1fcadfa2b8b76df9f28af7ebb46",
+   "lastmod": "2026-11-28"
+  },
+  "officials/arch-swalwell/": {
+   "hash": "a5578460cf86f06ba0e6207229bfeb76b872429d4015928cc2c2e3c1bda296cd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in09/": {
+   "hash": "66845e3aeb2c1bc0f65561ce4e0ccd24b907f5a31f8eef4f85aaf892ebf50027",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va07/": {
+   "hash": "3ae1c133ad0635ad4491381cc86fcc71eef686f3bf01250dad95d40853048cf8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ok03/": {
+   "hash": "589870f7ea117b5f1441142ce948dad18c8a9017d470d93cabcff5fd4b11ff05",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in01/": {
+   "hash": "376178bab3d6a88f8cd64095c8a089bfb20d667cc648b517ce2cecd93de8cca3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj06/": {
+   "hash": "412553cb798e1a06d35a54c1c1ea1fee4e8a4aa36c256ff50538e90e0e00fc5f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl24/": {
+   "hash": "ef4a9dbe9c61aeb2b04fd335e372989e028db3cc03984f629194db055ec96640",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ri01/": {
+   "hash": "3b85f5aa95ed3a68009e6f01f1ebcdda6047a257465fdea847a9bb72033115b5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co08/": {
+   "hash": "bb981ef5fca61336ea4e7af5180daf830a7fccb604c3409ec2019ce0adb182fb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nm02/": {
+   "hash": "bcd5fae1ec15e8e5d67cd68a46a8da0298e723a6fc3a3444f87166f40c5f5225",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-serralta/": {
-   "hash": "8d24e49931d5e9b82aaebd1b0a594072f0b7554e0b48284c7c20dc612a58aa50",
-   "lastmod": "2026-11-11"
+   "hash": "29a6e2a741d4eedb6c087e9c45985acb61a6513a97bb189e77193da22ef4dd95",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-peters-mi/": {
+   "hash": "ab7d261af54c329d16a41e96c169e54ae644d33a06c4e3f0f99df1039f23d30e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al06/": {
+   "hash": "d4f54f3614b02c57591d0e3e8d9d9ba5a7bc4051a7e9c8025f01600162618090",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny16/": {
+   "hash": "aaf62b11268c0f3348205d461ffbae56f5bf4dcdf74370ef0188b586aa4ffdae",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca27/": {
+   "hash": "89a1adbf344cfe640013d53e916bf792ee75af3a0fa014b93d174e7b5a256aaf",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca31/": {
+   "hash": "0cccc47ca0abfc290514b5bb3c404239a327a493c66ab40435103b815215ef4d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi06/": {
+   "hash": "d56abc2489bbba5fc8eb2b133ed78d5ca2043c8ce694642688bfc4e2bb3887bf",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md04/": {
+   "hash": "75eaa49fb7c801c525fd7a0c42f446bd844da1092a344f5bae81e6d78abec51c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa15/": {
+   "hash": "1052be73136292792174b42556c50a776cf48ac58f768e90f25c9874c0f32705",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny06/": {
+   "hash": "b7e5132ba6c0a6de2f5acdf0ac4ddbd3d4c5e570622b44d8d0e55ccc807a0c90",
+   "lastmod": "2026-11-28"
+  },
+  "officials/abbott-tx/": {
+   "hash": "d7869eeb0ca6e4b792d60ba2bf3016bb0da4f6deb429d79b9fea5b99419a50f1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx35/": {
+   "hash": "79753386acd0de72a3a4768bbd68a5742ef5fee9e01aeeaaa3c9218f46740c85",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh01/": {
+   "hash": "9475f7937fabe66aa675f9279956d22471cb53295f58d34d9f499c2b1642f4a9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az04/": {
+   "hash": "77f54c63b46ac817fa801cae62a22baa95192f2db060c42b643dd0936af17acd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny05/": {
+   "hash": "0b77e4e28be92764297415d934e4a250261cf577e893ff24fd598e62771cf226",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc03/": {
+   "hash": "d67b3c9043769cbd71b5bd078c3e963ef3b2e30cdf0b3d056a3687de4b34a8e0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl12/": {
+   "hash": "bc1106542eb56519926b79e20b10a0452189d1ad0050f189e5540a26dcd6885d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa14/": {
+   "hash": "bb7bd2a9aca4d55adf114286ce4e5b601deab241dfc697bba06831378a6cdfb6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi04/": {
+   "hash": "f24b12497ea93a39da2f58e30865f6128c9593ec12f994ebccf78ca1b414afb3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va09/": {
+   "hash": "42a610fac45966a73ea2096f026e9937b0a9e3bc5ea38af701128d02903c3aa1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi11/": {
+   "hash": "131b3297ccef49a084d99db6bd52fef4f022e9072495801aa2608d6a9d18e7e6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ky05/": {
+   "hash": "5d8c3e7ab43aca7b02c4907d3fc9b90cdae7bacb3e03bf9e09076c6b9419b9c6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wy00/": {
+   "hash": "fc6c6979b0519a874fda6ac319301859cb778238b8e1d88a5a9a2ddc21ab9d8f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx28/": {
+   "hash": "55e627328f788e5b46eb2fd39b83af79c7bfe87fd048b0a050502e49437782d5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga04/": {
+   "hash": "4b86b0b577ffdf39589b511ce9560edbd2a08acfd56eb646925d59451cb0f8c5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj03/": {
+   "hash": "18bd456d840997e5746a826a3a5bc64e1bb715d7387ced230708ae0c0d31f69f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi03/": {
+   "hash": "6c9953beb71bac88639a82f16fdcd9dd72995f8d5e5d0801eb5a5b1dd323a5f5",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-lutnick/": {
-   "hash": "8210ed54eceff0d5f3ca7f77fffb3606e80fa6f244bcfb768f05cb308c15ef86",
-   "lastmod": "2026-11-11"
+   "hash": "5871718172083d3532b506496127cad199ffc993b1107080baa53db7b80c4c21",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn05/": {
+   "hash": "cec331b5e42f0362f5fa2da74ea612b8c6d4b28ff859cd7303bb78b1bc236c02",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca46/": {
+   "hash": "e4fd12b67d0db36517006fa0eb939e6be4444a2398d772c7f7773beba303281e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ar02/": {
+   "hash": "2e2b951c95fda09e1b019c098c58e63b11b56691dc24de04e69e0798b779715d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi01/": {
+   "hash": "d842b1998835ae0887d59a3dc44141349dab56cebbd6dd292fb6682d7b270349",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-rosen-nv/": {
+   "hash": "5465e24601781826baa9871e874e1cc85ecceaf25d26ec4ee678d17e95a668e4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ct05/": {
+   "hash": "15cee4c7feeb00b3f91fa35da3ce4ae3eda9a52b4f7fc834a973f2cf47081443",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma04/": {
+   "hash": "e98a332da0cc9dba4d4efb332d5fe21771e3fb01d65251e978350c63c5524ca9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx06/": {
+   "hash": "97ccc2d7fe505e52ac8e7e759ed1aa73520ff3af3cf87d04c0f4e0306e3b92ea",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in04/": {
+   "hash": "e0eb32a8d88e5b2c64ef27975a711dfb4b87c26d08a070a62af2d11b46c84053",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-justice-wv/": {
+   "hash": "91f7ac1a7f06fd8fdba853e4c3388b68e48c5423e2d300e748886f7e938a13c7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc06/": {
+   "hash": "b72cd631bd126650a024d739c64d10998b6aeac6000df8442f7a7fb31ef270a0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ky01/": {
+   "hash": "7905dd006ec08ee23144f802ef3ab746747c685daab9f97de88f16980f3f58a1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-risch-id/": {
+   "hash": "1e5b306f9d7a8395f04e4415025bfc7ba439365c6462599b30ec446f6e7bd3d2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca01/": {
+   "hash": "0c01314e7a5f689943e452fe2b7eb22f73dd2011adb8679d546ca6953c3b4819",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ct04/": {
+   "hash": "8b3198c4d99f43a9f038a458cd4714a35f865ea39c7ffb178382edc753787ffc",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-lankford-ok/": {
+   "hash": "5eddb5bb62fa13ff26edeb85dbb4bc039c58b1f239472139e3cdd2c518eb45fb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma02/": {
+   "hash": "96dc083368ab59fdfaf9d9dbec52187a97d66dfd439abe22d2943ccc78a1c677",
+   "lastmod": "2026-11-28"
+  },
+  "officials/del-moylan/": {
+   "hash": "eb2be9c5760db86a67a17693fc7e3f698a6dc6608923962a34bd1830380e8ca2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va11/": {
+   "hash": "f121fcc077e516b3c95ccda61a38848c71fcca31691298beec5ae127107beedb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md08/": {
+   "hash": "0ca022fb43d76fb8980666799a3a2b19cea5a66fc19ebb1ba95d411bfd8dbda2",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-greer/": {
-   "hash": "2866fd24f9b3bad64acf0ff995965fe580eb7a9ed8496259f634c6a967e27679",
-   "lastmod": "2026-11-11"
+   "hash": "94cacefca4e845a819942f47ae8abcfc653a5ccd685d2911c87457a9a958f855",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-or05/": {
+   "hash": "40d5699c20b7a677c2b45e4eae19031d292538df71ecdca5520eecf0427d5826",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il09/": {
+   "hash": "14bbddbf71267bb1f33dcf4df70c164c2d28adad2d5a43cc21fd24f501188334",
+   "lastmod": "2026-11-28"
+  },
+  "officials/golden-me/": {
+   "hash": "e309bc2a68881a585521015cb8517276bf4ee6018531ce025171f9a99b90ed05",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca02/": {
+   "hash": "0bcf4c988a5aa8c2630ced4a204dc23bb1e1233d80133098fb5cc4f3ab0ef7ea",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl23/": {
+   "hash": "ae5e052134a3992bb74ac44472c8d80e80c2881c8855ebfa861b1ade0fcf91e1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx30/": {
+   "hash": "c6bcb466584e0f1d1267ba80932f46311b7a0e1a69cf8b3a29c372102122753b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co06/": {
+   "hash": "c04f2184d4bbda234d157a2722b4a5d92351703138c40dfdc84a2148d3bbdb59",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo08/": {
+   "hash": "62c2937b831f1f078fe4d659f5667150d5f4996f1591d43660a792f23a88d71a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca23/": {
+   "hash": "d8b1226de45749660967c50dcc635bfd3a74a405459fae5666e9c5e6008e63d8",
+   "lastmod": "2026-11-28"
   },
   "officials/vance-vp/": {
-   "hash": "24272d08acf5899a72d0bd9fb3a14c92f1516d25b13e7143170f870e5580c136",
-   "lastmod": "2026-11-11"
+   "hash": "dbf5a8d498603c9435387e953d7b3b2e5d4ba65b086dced5027ecad38518b117",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-shaheen-nh/": {
+   "hash": "622cf46d40f2c83b2f04c7291e53cbcb87b510236286b2255067b709e65b8b41",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co05/": {
+   "hash": "ab38dc17ecec5c71c5e0a52073374f9f8521be8ce4072da2b7d5ad929b5d10a2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co03/": {
+   "hash": "5457af273014a1438fcf6b84796aec5264b2db4a12f0630502c13aaaafeee6bd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-merkley-or/": {
+   "hash": "a352a9475142dbfc146f35452a8852238b9060611c52a142428606d4259280c6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in06/": {
+   "hash": "0da51b8a0b4a3873d9b331e4137103478fb1bc408892183448ebbbfe960c630a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj02/": {
+   "hash": "81339c522bc962148002159b6e566473f3c985de50e8c0dac7eed2c06cb6798e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va02/": {
+   "hash": "65f1452a36ffc742fae8d735127f59da29a8a582ad861299807cb53005b65406",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va04/": {
+   "hash": "7dc1fc8e6e91d3fcf29861af03a698c119f812ca0c08ed7bb7bb7b483664223f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny12/": {
+   "hash": "f0dbd236ce7dd4752447f1abc5d666db28f5c069618937091b1fe698a506105a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-moran-ks/": {
+   "hash": "4cf3788175e087638495fea16ef81aa86c879817074d8873b984a7c3c5ea6979",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il04/": {
+   "hash": "3109245630b8669467328b7c23630616a923d32e28e0be3a586b08dcf51a611f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-hi02/": {
+   "hash": "9a75aa2e9e53822aa307936b0944b03d27c68e8ed36d2881939d785286d5d249",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-banks-in/": {
+   "hash": "17d6fdaa4808f9e53eb353d746120f68e354c09d684cf5f91d56bc2520fd2349",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca21/": {
+   "hash": "8d51dd67491a2319cbb844c59ed3140dde45271f09ef42498bf3b66ec729f0d1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh04/": {
+   "hash": "61ae662c55823fff9ef89feb515bcf8700a4f9f408f28b81dfe2c1cb6eeafad3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca34/": {
+   "hash": "862205df67918620d58d50e92643e37d6bff00c48c27ba53e9e676a14acf60fd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca19/": {
+   "hash": "361d1743edcbf2b008ce95fdce31e355a86dd17aef1d42b1f4c4605c76b97ee5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl01/": {
+   "hash": "c5f813bcdc8def3d1e3602f17b8c45cd951e65aef165846322f9bad0299174d0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx20/": {
+   "hash": "c6c739c4c36f4e13280bcd9f13439d912370f7dd5de98f8e164706dd3651e323",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx19/": {
+   "hash": "27bfa454f31ebf1aad0d40f26f4a9b6c81b3d98139211dc6fb8b96bdb260ff8a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/past-biden/": {
+   "hash": "065660a715f9a921c9c13f7219693cecabab954028e26b712dd7074ec277b0d9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ct02/": {
+   "hash": "826b0816ada168c24fb2bd7923602776c357be74ef81596ea6421585e11f4c7f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-co02/": {
+   "hash": "349be45a35f29f5d3928570b682318379cfde29826632b4ac5774aef8af29f17",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc02/": {
+   "hash": "e3c19c6f6880a23321948f5e410720981855f63cc6e514bac7859e35ceb08d43",
+   "lastmod": "2026-11-28"
+  },
+  "officials/ag-mccuskey-wv/": {
+   "hash": "b1126db83088d63ad21126374982f3769b8935c592daec8158978cc8b7a720cb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-barrasso-wy/": {
+   "hash": "52ba225d7344d8ca18d870d41e3108527eefc8830c96b7e2d7a2f84b25155ae1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-boozman-ar/": {
+   "hash": "2caa350b04c4a371f51c3154f49782fefbe313c1c433cf3f074dc7c922e55aea",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx31/": {
+   "hash": "e4e4c173ec3b79710c09edc6136587a5ab48984ddf47a9cb20d64504e9fd0de0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-cornyn-tx/": {
+   "hash": "20de0be7da4684ea109bd9851160de19d056aa99985b311d6a4a16d99c4cde61",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-fetterman-pa/": {
+   "hash": "8bbc7227b965a27d1ea18d9366ae54dedeb31d358a35f51b819c7d6a4ccdd893",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca08/": {
+   "hash": "e433e6c0d9ee149f37d9682242b18686ce49d45c2df0e86ba46d89a830795141",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hoeven-nd/": {
+   "hash": "e24be3be5de9a8ca4f62ced01d150be1ec541b5b96b35c7e697aee6fc0c2d6c3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi10/": {
+   "hash": "e953e99f7ddafdbba9a66a75e743807bf2683cc11986dd2e1322da12505d2fcb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa13/": {
+   "hash": "0873127e5b197c51168966f428c28ef12aadb29083224de6848e884d63410108",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-kennedy-la/": {
+   "hash": "b5192ca51bb9dd8d8711a30f691af092e259229d81b7f7accd8c6197837e3adb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ct01/": {
+   "hash": "518b8417dbd4ad589bb2f9c6db75e8784c372655e7ffb3b27c396aa721c217a4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny22/": {
+   "hash": "2a6fd6fe64c491173db364060edfa06993502e1e54c36dfad81a3ca5d77400ca",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va05/": {
+   "hash": "afc10ebc97af78ddbd8b40f913ca52d507cefa6acaa26fe32a16892ba85afd56",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi02/": {
+   "hash": "dff7e32b388de2cf5e3807d1f8cf474694c7a4b799bc45822b76a7764e8e1085",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-curtis-ut/": {
+   "hash": "1c7b9a76ea993bf0c56a27d1c2a37a710571f34efc82fd1d966f4c01f122279a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/cab-ratcliffe/": {
+   "hash": "23f7bb9c39331b6dfed8ed118f0179eabba42551f512676f3dae4d06361e1018",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn06/": {
+   "hash": "0c179ac9560dcef675a8afba143a1dd011183e753f41ad66f0b9c3609b8791bd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl05/": {
+   "hash": "cc039e127ae6b3247664eca9487d5ec65734a4048a7d54d641f3b96ce8ec837c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-thune-sd/": {
+   "hash": "b6519fab692b387a0d83fa01a300b8d95b6361dfa099ab1b0469d6ab459b3826",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hickenlooper-co/": {
+   "hash": "f07781c31db1d07cb829b06d9e2638c114a24a3e4f32e973622c0949b2e688e6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md02/": {
+   "hash": "3852e1d7b12ed75e24ee100c60bb1d8bb47d2e46a018ae7213105fc4d5643cce",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-husted-oh/": {
+   "hash": "780bd0fd0e4097b5a65766ee4e244ff3a9fdbec3d7e7d951e4665c6251e4bd25",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-ossoff-ga/": {
+   "hash": "af28e04872d0bb6b73de81eb8b1dd6ccbcf171ba5f31094e5e61b0a41938b9af",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il01/": {
+   "hash": "e616f08c4ead7b0e79efde394667ede4136a3f4c9f3715b7d22f24f9016a9811",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-ernst-ia/": {
+   "hash": "ad551c1443dec3fa57e0584fd29c0da43fa3d856c1c4574ae9520f0b996c6b41",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny25/": {
+   "hash": "50558d8febc497357d054365e3c056422f4ea163dc4d1639876e511833f40d74",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ok02/": {
+   "hash": "4252f5b5d3979e82d1df524ba16d43cc81ff7892019548c6b51926315e47299b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj05/": {
+   "hash": "fc19f270b9ea1865162dd6ef8a78adbc97cee5d3ab21411ec7ebdd4535459844",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca09/": {
+   "hash": "e088d0bac13c8f244780b7ab770a80cf6c79d8631c2d9161e36f5e4400c33829",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hawley-mo/": {
+   "hash": "e52d50783f559009c4e02b34b957396056a737d646657921722deda8f3a666a4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny19/": {
+   "hash": "c541b4ed5e482f8d261223e0faca8b3b7409a5f8e10052e440ad039f3c0ab631",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh03/": {
+   "hash": "54bef5557152b6a9c65729416143713aabf90e60b66223bc97cffd0165bc8f96",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az06/": {
+   "hash": "0529d6beb3282142820d5c6c598390e1801d9d57e51eb1161a7a86d47a83bac7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca52/": {
+   "hash": "b07a732038f3cf4afcc55a1bfcff98eaf7d59f567b5ab0e5f294c5d777e934fd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca28/": {
+   "hash": "a56d0157215dbec01df1e989a9fd6258d311300c3ee25abc79a09ad71965afd4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca26/": {
+   "hash": "5c8e7c491a40f7cc7c088a2d54e12b273d431f1ea0034d8d2b90135090dbd3fe",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-la05/": {
+   "hash": "249f1962767799f1dbbc0b0bca23a57d795f54e2c8806ad5414020972ffaa2dd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nd00/": {
+   "hash": "734a959ddef289fd59c0c6d21c112b7c3fbcccdb17c16a48f3e5e87228b0eea4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx32/": {
+   "hash": "3ed2cca3b4e9ab9c7b0ab014d65456ad3fc892040593456770d899e4395c82e3",
+   "lastmod": "2026-11-28"
   },
   "officials/past-harris/": {
-   "hash": "f04a1bedbacd2075be759181b4f0706705646e29b360f7730104d1999d6d61de",
-   "lastmod": "2026-11-11"
+   "hash": "3a3ad029512cd3c445d0b3da84deaabf1d0f05624e5bd1fcb79abdd2a8ad5d45",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-patel/": {
-   "hash": "77b5944a12e00d8234c0fbd57d3624af81ecd97336edec179e339f2352172554",
-   "lastmod": "2026-11-11"
+   "hash": "4786bcb91b52946374d5e52fd5d5bff807c8ceda16443e24a640dffd715b28c8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl03/": {
+   "hash": "a1e9603cbf0b1a3ff59c4540ddd9f72c0e7515c9cb4e01c9722e66cd3ec9b3fe",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma05/": {
+   "hash": "483e0ede617c768ca8e2dd7aa0dc23f2d3369ccc0998a58674a5dee824f8d2c2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl14/": {
+   "hash": "072f3b9fd74304414606ea05dac5af04626f2c499902a0a805161dbb6870cf3e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-britt-al/": {
+   "hash": "074f626581bd78447b8e093e9986a75ee483832ff2e405af0893eab9edeb9bdb",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-sonderling/": {
-   "hash": "af890d0098af3e9953c88d538e16de3d521c737a6ba9d91f1658622198dda8f9",
-   "lastmod": "2026-11-11"
+   "hash": "4adf6ef4dafee30805dbf7c66036f11de3dc1b5826a6af8c581514eae7bbb862",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx03/": {
+   "hash": "89ba35aaeb610ae0f978de0ee5fd3314ee833b3d36c573d80ff938554bffb654",
+   "lastmod": "2026-11-28"
+  },
+  "officials/gov-nh/": {
+   "hash": "d714b9b6b7c998fba4d086d44e15635ab1737cc3a60dd95d552bf17238a00551",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-loeffler/": {
-   "hash": "9547f8b5efe563f97733b5116e17d5bfe9b11e7ed3d6147bd6ccf03eb1558f08",
-   "lastmod": "2026-11-11"
+   "hash": "2ffd7b95ef11c52287c66758987806fcc88d5db83fa3c6c2fa16d3ad4906a86f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn03/": {
+   "hash": "38cad41de8823fc5c03bd33e211862f8faba9db603e0d9fbeed764410e597a6d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca41/": {
+   "hash": "33a2d19eb92b879d88ca0f807e52ae70b47c4c835cd750064e5225b08aa28988",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-cramer-nd/": {
+   "hash": "dc50a64b1554a6476c7fe7f96b67079eda829a3b40030787412d19e9fef9dc27",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ok01/": {
+   "hash": "d023bf046338d5519527ff3b8801c1cd6c820cf5b18d5809a4d7a44b95bdbd80",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca03/": {
+   "hash": "165851aab30a13dce8eeacb9ba3c395649ff10ec6b451231476eb2978bea9d22",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca15/": {
+   "hash": "cc8647374d73999ef5b65c9a5b8fb970f6b8a72a238da9177a1d6464fa4ad793",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa08/": {
+   "hash": "bb8e5ee5260c724dc1f92088b290fe64bbf2b3cba20cfff009584367f6a78bd2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/del-king-hinds/": {
+   "hash": "e3d053c0a5b654b231f3acaa15418d2ea8c2f85254ad004a448922d97bc6a495",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-gillibrand-ny/": {
+   "hash": "df6792d37bb5cc91db8c5b4a6d02874d2cd86cf453dbc911eb290467f6fc150b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi08/": {
+   "hash": "d06c1c96d89b621509f23fde799036a5c0924083e719c44c395001a23445a39b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md07/": {
+   "hash": "ec3e8fa6c503207bd6a4336402cbde9e515d4e21a5e882c27931ca0ff4aaf985",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj10/": {
+   "hash": "f45d2fb6c0110d6447d578dff3986e39cc492cd33506d1011e1f629040d60b20",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx05/": {
+   "hash": "0ed825e7f063978380577decf0a9d9990bb55503faf4b11209db1fbae5b3b61e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca12/": {
+   "hash": "853da840666d5285053ef9e88fbf3f5b092b532dec0169352af44046c6d34dde",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca30/": {
+   "hash": "27857a6bbda295a64676504a9542f73d3a3121f3331819af6b8c23b847ad2f63",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny04/": {
+   "hash": "a1d04a2dd6bf0d38129462605650efe074677d079c9b35738df95a714a985c6e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl15/": {
+   "hash": "5db9574e908bed57db8671e5818d9f4eab07537f30b4963772a4f34d628d80ee",
+   "lastmod": "2026-11-28"
+  },
+  "officials/boebert-co/": {
+   "hash": "c3304d5cd5f4d0c7bd1b5664787e84e41e9ed5d770353056a25d95c5b498e089",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il14/": {
+   "hash": "086df0207cf29dcdeacc0e547e3c5819d48f2f1f9027151ecfe06754a3599b16",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-zeldin/": {
-   "hash": "0277cfc6c07cca3ddfd5098a0cc2af198974075b77a53046756a70a3ee8b4607",
-   "lastmod": "2026-11-11"
+   "hash": "b94c2ca4f64817f146aaf848b4e26d5086fba3034a111b9bd5308116b8c8340c",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-mcmahon/": {
-   "hash": "b7c00194759a7ef1fac5d30423d4cdef33769c0dae6c1971ae3cfbee5862d092",
-   "lastmod": "2026-11-11"
+   "hash": "90a712359202eff7a441680be388770a7c9490fbd3ba0e2cf373358b988c6ab2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca38/": {
+   "hash": "f612186eb10467772574e03275838293ff31859a017ab259b45d18d299ad0ac6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-rochester-de/": {
+   "hash": "81a3b56a36097b9b9267ac7517e8681971452e7429cfeee4f093886d87aa7460",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi09/": {
+   "hash": "ebb4144ae40ac12776525cb03f7675945ca1883be7f68a0acae24a9f84aa3bdd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-murkowski-ak/": {
+   "hash": "5c454acbb915c01d359b2a84ce75faf64e91264c6e49e6dcb38b53ff50eb87a4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx07/": {
+   "hash": "59295f45c18c2bb35476f43248857035cf7f3b68a477351eb2001c4aeaf022e6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx37/": {
+   "hash": "0852311a094003ed099a929f9b7839d7077707110d13a4e38e9b4c846b702575",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa11/": {
+   "hash": "cd44301cdbd125ef1eb2306d9b4ad0615a78f701a32b9b8616ecc5fb9941ca7a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl22/": {
+   "hash": "c393de0d7497a237a2979a154734e852b621e60bfe7a4e8406c95e145e678cf2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma03/": {
+   "hash": "d5810e0b62d1a30f63bdec9a3cabee5d1c92c9934104ac278cc4aba6896c8b51",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga06/": {
+   "hash": "b32da509439a55aee514d13b6a41e1025c5095b8051b101cc92987c547f3c634",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca29/": {
+   "hash": "74d45c27cc4f9ab3a5ec46a6b759bb31697fb285e121ac4b0b6a8cad6fea358a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa04/": {
+   "hash": "20b8cc9e7330ac7fd9b8a3079d31631df6a2686f655e9f01e0d6b9ccfb2045c3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nh02/": {
+   "hash": "e294a68545ffac8b700de8e8f0120605b15dd238b751647bd2fd99117075a377",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx33/": {
+   "hash": "117c95dd79f9554ee0ad2cebb742a9df6248d418e86f2ebfe8fb4b237404806d",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-rubio/": {
-   "hash": "d4d2c68b3d02159e7d49147e640673ad2c817ea04d2426b0fc96b511db9fbf12",
-   "lastmod": "2026-11-11"
+   "hash": "313aaee0c0f03c22326197548c397157d24d0996990197784e685a71a2443683",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh09/": {
+   "hash": "6a87d132769e205261937f4bf985249f299e69e24c2e1f6c31ae236ef75b1a5b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hassan-nh/": {
+   "hash": "f2cb9efc87edeb00d5126be1aedb5ad27393ef5ad671182be1d0ba28ad499eba",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-cantwell-wa/": {
+   "hash": "fb97da22839dc61df89ead13e2d74370f8782605d6e2b43f2ca00942514878c2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl27/": {
+   "hash": "626cae7886e34eb908f0dee1ff294025cb01dfb58f6bf9532d937afdbc649abd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ia01/": {
+   "hash": "cfba65102b6b7715a48c4bb28a55199eec4e20127158d82aaa8a2024c06a0d35",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa10/": {
+   "hash": "a958d53d6cc7336db5e3c66fca538530d44182af7b5024f2617a74bf1a116ca9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl26/": {
+   "hash": "264ac5315a6aac1215b8fb519cf44716e4ad88938eaa2bec0ef3effd39137874",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo04/": {
+   "hash": "8c284399448045ad1edbc3ae137c0cefe0fb1e10db9b3885ce932156d2698be9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nv02/": {
+   "hash": "c5260d813331fd0791677fdaf79cf88a088591656e29485d0331fb597a56acfb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca10/": {
+   "hash": "0762acd2c1da5a3b7c2c07dbf4af5035f39c74c30c57720c774a3be9af291b38",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc08/": {
+   "hash": "9aa43c3870aa30eb1cf2f62d375478dde5eb5039f5994ac4bf4e5da7a561253b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-kelly-az/": {
+   "hash": "d8407589defbb03f78a2fa001eeb7cb757fbc3dc5e8fa0cf516b25e34ebc1e41",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in08/": {
+   "hash": "c53564b67f19d04535286f1331d0996483611208782c8889e755c28eb623479d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi02/": {
+   "hash": "7b34f8a42ac7e16b1b4dd6ddd4a7a4dd93c2d97dca20c5187e3a08b23e99f03a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-warner-va/": {
+   "hash": "f7a110f80f1eba7568db5ef3a7aa35cca761f59831dda815858742f0532a527a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca39/": {
+   "hash": "fc4d0cc9275c03bcdad97d43b4044db52bcc6979a081938d2d6a472d46dd4831",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-mullin/": {
-   "hash": "c2c33cb808fe809f2ce6d7b138842032a59b7a00f81e3cddd789b0ff43b1b238",
-   "lastmod": "2026-11-11"
+   "hash": "7a31e3037c25e1745232e29138d445992611f8d5fc511a1aea843b1410f16228",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in03/": {
+   "hash": "1623d2e0bbc06b3860f81922e9b3c1b3da5413167e4908009333ca4bfc2e7304",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-blackburn-tn/": {
+   "hash": "ffad6172f5959d66535be8dbbe5dd298e2d5b0cf543a43ca0ecffab8cb26614d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-heinrich-nm/": {
+   "hash": "672fcdf9401a82636bbbd7ba217c16f1141ead9987f6a0c6af268539467f7af9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa05/": {
+   "hash": "532fb448bcfb2b68f1c00ee8e0ba6e0da2e3ff8e2c7c4e3b4253927e4b2d1781",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il15/": {
+   "hash": "4787d0e49a83e221c04aee85dda2b538c884a000dcac52e8e8cf84bbfc469cfa",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn07/": {
+   "hash": "31ee7ccf7b21355635d73229f8e3854a8e7c4dfffacd54f92b8b758e2ed713b4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh07/": {
+   "hash": "0b8ede3c4b045efb9a9c181de2634488bff6a47599bd102ceee1d4fcb4a24b3d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-or03/": {
+   "hash": "bf8ff2bbcc755bcbc8b66cd1932fe09d5b9408dc8b30dc532c930ee122fc1a19",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca43/": {
+   "hash": "57b8d5698cd1af2a31137d4a91ecf700abe97f4e4d4631164e8829cfac3614e2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl10/": {
+   "hash": "af68a3f5407618cc4caa734ae0a464716e8edca0351fc2786c23f3e2c67141a0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-hirono-hi/": {
+   "hash": "3ef0cfebc448172f965676776e324597e66e36702fde44fea02639791c4d8514",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nm01/": {
+   "hash": "358f16d9d45e73a54ae6cacc784b2462a9144dbb8f21aa5922d3b76a14a6341a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh06/": {
+   "hash": "066fb67f346410fddba2620d12983b039384d43542b37fe657b63c97b92efb0e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa05/": {
+   "hash": "838be39e89b6f0f96c1252aaebf197871dbe08f816dd51004477f8eaf41569b4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx27/": {
+   "hash": "91fe47a4da2ec127b69d8f51362b1867f831d041c0273525ac32975bbcf0143e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-bennet-co/": {
+   "hash": "a013dc3dc01452c609c33a4427f4759e6ef8e3d9024609ee737e6bdb6365c0f7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ms03/": {
+   "hash": "0e5780ca51e7113db394a9ba0897fb8569f209b077c73930b023ab7bb26a683b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny17/": {
+   "hash": "f8404ecaa9172dc6421f29da7791bb744c24c665768a729114f8e6f2c5ff5b17",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx10/": {
+   "hash": "789437107190d9aac77c6bf921959d4b0be541455e7c5282d32f9052c1274e48",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-id02/": {
+   "hash": "5f83e1eb7a1c16cd709141ff8fe15046051d418d3bd9b470fc83af715fa56e47",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh10/": {
+   "hash": "eae6850f0d436708f0a2cd5d3cf411056550be59708d22dcb230b31c32a836aa",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn07/": {
+   "hash": "247f941a7b930f942a464bb36bffc2635313d5d8d5b339da627480bbce58ec88",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il12/": {
+   "hash": "6f1b9df0d59571ed18a187b48229dbda3862cf516a0fc4ee8430f07fbf5edb1f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh15/": {
+   "hash": "382fceda2a81be74060b44e6ae5ef7b5c2ca735f64a68a15333b8602d5866f4d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga10/": {
+   "hash": "6ca24942e8bea100fabec30dbe78a3b2bd1271ec10494ccedf3f6a533388ddd7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-crapo-id/": {
+   "hash": "be9e7deadb887c5c28405cc89a9343e7d2a289903dcde296d834ecfe2895072f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ms04/": {
+   "hash": "35c71c40d1bf0301b8bf42ad5187ee7312c839cccb998d2e1dfd0071f6547ed3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ne01/": {
+   "hash": "b75f47cbcd5b91f3a45e6d10680ab7bf824219284d35ab81e18fc0816895403e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl08/": {
+   "hash": "c1bbfa783c29e4607e98b800d1582a360ff68594c9a5e91f28d49d4317e920f0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa16/": {
+   "hash": "675570928993a6ea0ab508aea5fb4a1f6d327616892662faaedcaa48242078f0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ut03/": {
+   "hash": "cb9cf8393d8081dd3493d54da6f5423d8508722e37efdb31ba0728cb97a37ec0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-lee-ut/": {
+   "hash": "33f850d0354f93ac74795bfcb46ad827a8dc4f741d0f90c78d6a4f16ffc8dae5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca49/": {
+   "hash": "5d18d517b3b97f6a43a10a41bc86c5480d55086cd2eb33c3510f0ffa81ff3068",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il05/": {
+   "hash": "20c4bebff6b65e29ec9f3d265da4336e7c170bc9d67b7c0c563c150910ad67a5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al03/": {
+   "hash": "51c6fd2fbe5e98882b123b73bbda4d870e9ce3aa6627ba6f5253cfd0d6af729a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-rounds-sd/": {
+   "hash": "748665dd0d9a62cd4f8e74d952faa0331f75bd131acb040b0be49e42a85bcee4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca04/": {
+   "hash": "9e6c8adea399a7974d5098bd02de44d4bdc7ccde95df48c6f7078bdc233cc5ae",
+   "lastmod": "2026-11-28"
+  },
+  "officials/arch-romney/": {
+   "hash": "2e829ed72732a89e2ea8f73051744b074278f73c58e5b041679cf38db1529086",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx15/": {
+   "hash": "a8b82f29563b40259dd67f43173de54d5047d0069137fe99435f7359fd34beb4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx08/": {
+   "hash": "a9e9696b4b58e14c2c6338ed721826ddef37b0ffb92acd721ed67e2c1c743550",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ky03/": {
+   "hash": "6e3bc0e8b9b1250bd9175e6b63fc66da1bec9583d556aed9bb7a682b6464d482",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc01/": {
+   "hash": "f16b45de2f38214d387a8997532599521a247e954f806d511a3d7714749fc048",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca11/": {
+   "hash": "8ca204a5c8e391b5eb4178c4df42ac60b316751652d67281ef2a88c0dd02a815",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca44/": {
+   "hash": "ddf99732af928978daa40675d2c70c02098f7058b92eb0c854b5e15cad2af057",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx01/": {
+   "hash": "e730a6b9a0c5d2cd7aaff014c02f9bef8608281dfca85e5b467e49787a415849",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl02/": {
+   "hash": "354cffa96856ea87aa59c790da7ad2e47059c0e59ed3cfad5bcac74afa0b9291",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj09/": {
+   "hash": "b414967f91dd8043f780d424555140d94f134e63124835c4293120eebfa9c869",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ak00/": {
+   "hash": "1e138643dfda7623278d5caf484ded242ac1992d5373f8f5f2b4e5f4ea6cb281",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny23/": {
+   "hash": "86ac5aa5ff9012ab0cc3848623de5e25a21030f719f2f1b81b9aa4641865ad9f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny01/": {
+   "hash": "14d958737501ad0950993250a987ff2824c143accb426515de9d92eb3f6761f1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny11/": {
+   "hash": "ff4eaefcbd4608ee54132639c41885e2ea44ed76e1a032707e5adc358cb5d312",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga05/": {
+   "hash": "a58724bd1eb9b7c369f2df6d6971268cee1b1a3cfbf316009680ee9ce790618a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il13/": {
+   "hash": "a4fa5a3cee3735091ad09def62c52f2758e1bb8767b270a0097dc9141b5f49b4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca35/": {
+   "hash": "2488944f4df33e8796569bcd8b8fdc24484fefc9e3630a47362e8934e119525d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny07/": {
+   "hash": "4169780296152c1cd9664a1c9d1fcaa8d8a76e267e1cb0cd03b168cf3d2e4073",
+   "lastmod": "2026-11-28"
+  },
+  "officials/del-rivera/": {
+   "hash": "3238d1e403c9d5d09b6289a82aff1c5d2a1de54c91c9f2e45eb02457aeaab2e4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx04/": {
+   "hash": "52521df4ed093afab35080093ca6c977322df68b34e0b4cf394dec6f70a8e032",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc10/": {
+   "hash": "ad4fa85b04ef8bf84d7d9076c0effe09c019d67b24c51347cf5aaa75eb5017ff",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny18/": {
+   "hash": "05392e035beb9bd209e57d5c7a0c611b26fa4d4925f4cf4250dedbbebbb0b55c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-murray-wa/": {
+   "hash": "1306e76c859f104bb9b1311e899de56b2da5f0d13fc248e4ea4c6d7963f4d98c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az09/": {
+   "hash": "149568db9e0ac527169d8b770859e3ade8ab29522639d9bc9bb5dc513d509c06",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny20/": {
+   "hash": "0e12739897b9f9af31503a6c907d357b21797a6aa987aade1c1c305fc84c287e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca33/": {
+   "hash": "4cb6d0cc636d03f5ea3eaf15b1ce9a4b7813ddb7c48be84f277402ee0f3519fc",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-hegseth/": {
-   "hash": "f5f4b6272c26240ebcaf00d20c9ce58aa5c0a1b267fffec7a4a11325763c96c3",
-   "lastmod": "2026-11-11"
+   "hash": "c082a6504dc254c14aabbc9baab5508657aec890138df886481aa337e95f6e4e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-ricketts-ne/": {
+   "hash": "3a8c17b92d9ac7a61df66453c88b3b10c3fed15762a74be4962118e8f95af08d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx17/": {
+   "hash": "07a55981815b27239aebd00e71120d7bf74062af959f19849c63a68f7e4ec172",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn08/": {
+   "hash": "e9c09c2a149b08bd5974d9dab9f349851e1270ace5d53f2dea56d6070a334884",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-welch-vt/": {
+   "hash": "0a9ae2c6737bc45eaa1cf453ea3d5084ecdfa0cb0df8f9778747fc57d5336b50",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa07/": {
+   "hash": "3459d3b19995c4876f8b807e8c27069c8dc0c7e3e0374c26f10227abf68d6ba6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il08/": {
+   "hash": "0e1789ff44070755d7fb6b9e0aed8e1f656807b8ccd61add49f5bea5ee922dbb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc05/": {
+   "hash": "21d8e0b70abb87b70d642357d7dc3744668dc8bc103af1bdbf7c3510662b1fdb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-paul-ky/": {
+   "hash": "fceac9ebdcd7581d222f5dc23c2418e541abf54ccc7ba9fa516b4b5db67330c9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ia04/": {
+   "hash": "9b2b875d5bb48ba34476531d670c1e5f98750cd6418349ee3fd1a6a4b417c7b2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl06/": {
+   "hash": "c469a2f3bfe51d7f44451aa20fa88450358a8e81a349c45ffeb6687a08b2aa12",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx14/": {
+   "hash": "d9e9c96b94a2129924808e86fadaf2d165a365af313fa1b86cf5fff28fb01fef",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-warnock-ga/": {
+   "hash": "f66690be8577c7f3918e76715185a10c64e7e9b30545fdc631f5c8e73c882245",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi12/": {
+   "hash": "399ffcc8291642a00da8db57f1b4d545e18b89de14ff7473fd62fee50280d90c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca25/": {
+   "hash": "d157246a5fc304dc1386dd02a3df1c43bb1f7cec99e0a74e7432a4b302ee3a66",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-blumenthal-ct/": {
+   "hash": "648b6370377efd0885f0a8544900ace71a27a2accd3a55c696bb346d7bfa7425",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc09/": {
+   "hash": "8eb786d6385defb8de91b07c2dd419bfaae7c921a5986c8f0804ab4475a02fe0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-durbin-il/": {
+   "hash": "0fbfa95beafea1c94ddfd9084f53f9db8a08998869bba47192f31869bcc5f884",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga07/": {
+   "hash": "13459fb06d417bd0880248a5b6c6865131d19f58336789e29f8d4d8baba0583b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma01/": {
+   "hash": "7ae491c1f051cd1b19efedd7a83bd27ab142391c1a209a13161306c1a78077f5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga12/": {
+   "hash": "221b7197873e875cda0162013a203c20336db5db80bf75e3d62ffb3cc1f09775",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa02/": {
+   "hash": "3e1a9d46ae460afab37a48d824506e0dd6350a05266c51296693ed18bcc9d1d1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-scott-fl/": {
+   "hash": "50959b0f0d4c0dde7009fb55764eec054a6320f08345a1990046d0c9d1c9d414",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wv02/": {
+   "hash": "711fd3fc9ae102ff4b394f483f46af5d811c4f1561bcf1ac616894217ef7b2b8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny15/": {
+   "hash": "6aabaa1ea9a5f00419a9eca92fc4dcd1475a4686c186127b532d007ab9b7adf5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca17/": {
+   "hash": "cfe58fe9332897b0a2275618acede54d308e08a2ae579ef7fccdb8c6e639a79e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al04/": {
+   "hash": "5cb0f3dbae4ecab584aabd224d33c5b8c74b13c5a3c51402ad21959cb0c403c6",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa08/": {
+   "hash": "7515bb4ffb4a3a3b97819f5db1fe8bb941e8207b3fd23e3d65a8bf1467a0c04a",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-cekada/": {
-   "hash": "fee2588c9dc49f47de58d4b44c699c0ce1b43ae2b653151391892596256803c5",
-   "lastmod": "2026-11-11"
+   "hash": "efa8c5d80505dc56026913a99f680619fcc8a456dbe1b38e0ec5e8e9df14b4fc",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-jr/": {
-   "hash": "dd0bb13c7051248720330dae169689a592a6aab9ba883a63b1d8fcd421bcdd82",
-   "lastmod": "2026-11-11"
+   "hash": "b1d61e6066a8c14460b6386ca8ec1700773145cc1eae559d150332deb53766c8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca42/": {
+   "hash": "3c90c66da30e650ccb96eaefb3f5f3292506c56ddc98667cf08c5e024c7b9f62",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh05/": {
+   "hash": "dc55875aecebf6e311eb5b1ef8c51f086bcf8bc6c3ba97da7b138980527ff689",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj08/": {
+   "hash": "69c1227699c02397c530e672b9b9763d4a2ef8bf6dcc32c1cf3f34e995e042ee",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo03/": {
+   "hash": "803eb5576182985b3b81edfbdee9ba1761278dfc47f00e2a3946dd09c7d255e0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va03/": {
+   "hash": "e7ac4044a2ab31b3868b56bc262d8dffe0e3a751e9ed07fac490be6487d79d14",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va01/": {
+   "hash": "f4871233a74672eaf8268a88ac1e3575ce0b6abb4a874f250209325e80f799f2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il02/": {
+   "hash": "7f60254db13efea8d18266eeef12ff30694f34dfae7e31fd588c90aa516a1dce",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-scott/": {
-   "hash": "48ad10ce8ca84b50c3c61a953d1d74e3436066f1d84f8ec5492d14dfa5211ab3",
-   "lastmod": "2026-11-11"
+   "hash": "b8e2c87c94535001bf25660ff165d4fc45c6b7e5d25e36388dc04d357390be3d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-wicker-ms/": {
+   "hash": "4c93d9f5aaf8ccac443cb1849abe648ab8fbf0f7704d466ed9791b7384a6dec0",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-marshall-ks/": {
+   "hash": "8641494632d78fe501af1c7a6ea22a0b3695943a17bb4a69b3da3d656de64625",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx25/": {
+   "hash": "a2cb2d3a328be7bb43b4a34047f1f86a7c35f53f7f0c0164f94455f15027d52c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ks04/": {
+   "hash": "5efb3f544f1ce3a90072c6e20dae0c061295dcf3c2ce5c4aef8b7ea4af01b5f5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-johnson-wi/": {
+   "hash": "8a4cc927461781450c0e9c3af0b7330a4cdc9e6bd3d7e69356c24b7b8a585b4a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-wyden-or/": {
+   "hash": "39c9390c601da849aab5d2e3c2541ab098cc965d2d0c27129c5c22e3006eb1dd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx13/": {
+   "hash": "e3a2e2e11cc1608194b95d593bc768c23d7751c55bf9e86e7dc3414aa11ff4eb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ct03/": {
+   "hash": "4edfad036469dc6e78b8d1badb550fc723953f0af3995637142c98b67709dd41",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-gallego-az/": {
+   "hash": "6ce5f1793c4b93912c3cb428de0d9417c8842799689c8b9810d76ac29b0bcf9c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in02/": {
+   "hash": "f15f60a254b37b878e511b0762e5054a9ef589c800324630a90044983ba8db9f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-id01/": {
+   "hash": "cbdb6c9f4020b22ed3b612bb77152c584284ee36212f8e6e1d157db9484c47db",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-vought/": {
-   "hash": "c03d41ee2bbf8e3ca6e59560c62f226ef4beab9dd1dbb04262a77c25b35fc379",
-   "lastmod": "2026-11-11"
+   "hash": "20012f3bf0de0475cbdc0b0b635017892ddb819b1e4ec5fcd4a396969d59fce8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc07/": {
+   "hash": "68e69c987c2af5ee2a25421c28cab5dc5e186401fb876f075527c6e3d1220d78",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa07/": {
+   "hash": "a24d433eaffef419fdd5ed90d602b997de9595bf7ed0177cc4c637f12393bc9b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mt01/": {
+   "hash": "2f90c376e57b31932c69bc5d3e81232123605118c8518ab2f2518a68ad531c28",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca24/": {
+   "hash": "2daf199fb13a3d47c7ae97c1d884410beaa4325f0d425c267fa2b6b7a5882df3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo06/": {
+   "hash": "3e3df890f0c80ad9b88a22c3b67964250ea9638ddb3239d27509cdf1239eceb7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca16/": {
+   "hash": "de22f8f735e7a9eea866fabc70fe19ede7ee377e38b46ef0427d069225e27a10",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ga02/": {
+   "hash": "1536a8c4b51cd416decafcfbb5dab96985ee9fcdd4dcfb44fb48003a6ad7c0ca",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca51/": {
+   "hash": "36ea1672b31f08fd9337ebbe40c7fca151e31c752034434c864450725806f287",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md03/": {
+   "hash": "6ed65d8f908fe0ff4e10774a965fc13e34eeedda51a19013a4fe2c81a86e0ac3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-de00/": {
+   "hash": "c3969d8c87a4b66b9f055aeb915509710212484c9c21aabe0b26d0d10eb55809",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-bessent/": {
-   "hash": "112dba8decec636f5ca071200046a3ee11e561431b697055ebec517942aec797",
-   "lastmod": "2026-11-11"
+   "hash": "0a0abb87a1e71e7b9e7c3ff98ebd544a5418d2b28d6e1cc64352c78dacdd3016",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn04/": {
+   "hash": "796c81f27c15de7f00a8a441dc91d54206463c47226a822f15b2e307c781c8e1",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi05/": {
+   "hash": "fb43b4ed6bdce3e5bcb4647a48099d485a9e9805f11e7a5e76c8124ec7b57f9e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl18/": {
+   "hash": "c102df9a78a754d16c8a5d4cd886893bce7c8a697163070e88082a9878d6a408",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa10/": {
+   "hash": "ee89dc4cf424c369d224d836bcc199ced8d3f6bd873d3381853f0e7186d1d83b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca50/": {
+   "hash": "8e3786a6a4542eb26b9673e93b268ca43accfef65a272bcfc746bba86f7113f0",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-turner/": {
-   "hash": "558ad274e1ad2e7695e6d0122e91e5bf786f7edc8309c888b2d224ad212308bc",
-   "lastmod": "2026-11-11"
+   "hash": "78606ccdce2f568510c3a85b74e4a6b8477ede300ff395f52b47b85cb545ddaa",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-il06/": {
+   "hash": "a76612061f317e5a43b569eda4164ec740745763334dc968fac3bf2910f56db3",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-duffy/": {
-   "hash": "39d30f65490ac381562b2cb6b3673edd5bc92909f9e1891180a43ab6aec96fd3",
-   "lastmod": "2026-11-11"
+   "hash": "48cee19115d63298896cb194fd6c285b7d2e5e222f4da65826b04c1a33923e85",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-curran/": {
-   "hash": "2d0fbf4f60fdb03bf2326a5d68385ea2758a677b34362e590ca7a5e37c5f1839",
-   "lastmod": "2026-11-11"
+   "hash": "b13f302098b38912ac9dd6335d321486f40375d77b8f013a1f3de0d0e4c43c77",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ri02/": {
+   "hash": "3c7a9f50614f9b10831dbe8f7497fbc18a7b78f59923b9f53b709414cfbf0b84",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma06/": {
+   "hash": "8f7c7350f4ff27b897eeb9f5557491080cd6ff450a24f3bc98178c78e7cf9585",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ks03/": {
+   "hash": "1c0365c2248df47d5a8febd4ef650a8b18f4e54887b70b09d6337d2d35fd4d18",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-whitehouse-ri/": {
+   "hash": "ac16f57a525ae76e9b6434cd8312380f896ef055bea096593b3ebb73b026499a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-capito-wv/": {
+   "hash": "0c6060f2aa0f9bfdd1c8c04de2b1a1b259a09c94749369fb1713d2bea665c687",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc03/": {
+   "hash": "844040f50a1df49c895c9c1295ffefc606274fb03305ac5d7147d846e73499bb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/arch-sherrod-brown/": {
+   "hash": "3aeb8ffddeda02dbbd33fec7dbf2ae309f7ef4d281bff0f161e3cc95e1c70819",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al02/": {
+   "hash": "586359bb8ca94490ce697729fbb42f30622f9a77f5e1273866bbe53d4343c252",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh11/": {
+   "hash": "30a7689de3c9748504ee5eb420e5e921b1ae541ea4728c982b0141998cf360e9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi13/": {
+   "hash": "77561feb4af7d988307bfb5ace4c46005c53133da1d18112568c6d994d829815",
+   "lastmod": "2026-11-28"
+  },
+  "officials/past-perdue/": {
+   "hash": "a5b7e1452141d051e2a63ce8c789caa6f931a45f3ac3261a16ba82674c3c0bce",
+   "lastmod": "2026-11-28"
+  },
+  "officials/del-plaskett/": {
+   "hash": "29cd8f214c6124b336f710b98cb124534178a39cf69941cd38082d2f21153f14",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-md05/": {
+   "hash": "2ea2e540d6b66e3ef95973c04da8afa9e864eedf5aeb37a2fd9d0e649b56cdea",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ok05/": {
+   "hash": "0e4b603e0063f70a84bdd66fd363dada687a874bb11e51ccb80396c3f5250e17",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma08/": {
+   "hash": "76b3f9a39dff70c0127249bc3aea52d2d835265b9b26c3fb57fffae54aaddeb7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn09/": {
+   "hash": "071a7dbb2c42baa8cefb9665fa5fcb932d59a0436154c74dabfe608fe58ea228",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-daines-mt/": {
+   "hash": "cc967f6ada059a6f8ab397585b3b21471e616929807bc2461a71c06ca06da23d",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-la01/": {
+   "hash": "d0c912d86ce56bdf9a3506effa1041179a151a1e98b53b7d9e020f3401f8362c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ar03/": {
+   "hash": "aedeeec4c8c15df8a0ee0bd22c06970045be150b759b67c59841550da94bbe5b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nv04/": {
+   "hash": "2d30daba35841c54613b85b1e2cc3ac936632976c29342775572c1bdf197642c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-va10/": {
+   "hash": "86679e324f592666192a7c5761376d25af200ef72e313f3339be578d8f045db7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-pa12/": {
+   "hash": "2539cde175f747ffe57dcc537964b0374446fb3a001b967758dbe53bd23d388e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-collins-me/": {
+   "hash": "d1c8d8093e29f34d94d8df12a03cf2ea72d82559c95e65e03469c0311c756547",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nv03/": {
+   "hash": "0f3cabc109e94c5694b29f0949c59a01345c52101624971b459435f0ba1ea265",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wa01/": {
+   "hash": "b4b56265dfd77c554417dbb6db0f46d61b04d054e49b5c1bef3aaa35d44465ea",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-or01/": {
+   "hash": "5812d187ba4ffd4f3787f59b65a50215b4d5bae1cb257e83e9209ac5a6f2b989",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca37/": {
+   "hash": "700b25811407bb85c8d16403b20a9729a24566d128dda913e674b6b443791cc5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx29/": {
+   "hash": "31369938025789e844db94cff4e73b05603b58463e16de92b5526403d6c1870f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-baldwin-wi/": {
+   "hash": "64ec4e6585478cfafed3e1fa3dacbdd915db65c1ef6d18172581469eea4cd041",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-duckworth-il/": {
+   "hash": "9cbdbd71172d0665d58578df721779076e696a9e10be9df0bf8cb2da71c9a47e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-budd-nc/": {
+   "hash": "16f2836b5a2a07755aea19b5dcd1bf76b4d25549adfd6df6769ccd903eb8a4d4",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-cruz-tx/": {
+   "hash": "60dd90b49c9f05b77e88eb9b9dfcc1305d6411f51afe981a7be598132d021508",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca36/": {
+   "hash": "4139b182ac3f6a2530ee7bc71f3e73a9087b99fb97c9970e54ff5d5d2e73ed74",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nm03/": {
+   "hash": "23249eb6011187a97da1f0c3dbd8f6e12fb4f0a3b8596f87fadcfb3e7373b999",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-cole/": {
-   "hash": "a31188b62871a94e95fd2f3652d4a45c542007b1d56f829baa48eedeab58a5b4",
-   "lastmod": "2026-11-11"
+   "hash": "94688d97c63daa4b6821f0927527e7d958172b015c159e2d4e5beb724de88b1f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-al07/": {
+   "hash": "cf01a8e730a7946e57b8277748d25171faad8467d567686dda2f89319b28e34c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-tillis-nc/": {
+   "hash": "4574506a3f1881ba4bed452e211a5b371209938ad93497faaf815e6941d238e8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nj07/": {
+   "hash": "ed19ae7ee0711260c0007a828bc43aba95503544345a37c590a49d5ea8f24545",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ky04/": {
+   "hash": "e0d5ad27168dc0e3f80e1ae49400658b2cfced5cd2dcdc52dc82b961594d7753",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny03/": {
+   "hash": "bf84db4f852fa16c549915ba3a49d4b04664c4040985c4229464caec1eb38852",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi07/": {
+   "hash": "270ae6b6e9d6414c187f7f8d2cc95c774495d8f361e156f82928a820ebb485a5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tn02/": {
+   "hash": "2e856f2499e83458a2313b4b4d17ede666f1fa7b79b6616d16197198eba812c8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-kaine-va/": {
+   "hash": "e08db2b594268a1047da4023e78202bdd2f19b21a0daef625409d8c5518e2244",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc14/": {
+   "hash": "e2bc16185e5b85223b1d0f89c794ba003b25050ec446e14b6face3f95cd37f98",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-scott-sc/": {
+   "hash": "0fe0fcea87726d5198c9d854901bc90fb66ebd0622fc877d777e862ca4f8b289",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-sheehy-mt/": {
+   "hash": "f1dc48915f0d47422a7d912a323e2d303b5222a83954beb55993cebcc7d91fbc",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi05/": {
+   "hash": "996ef32e474f01ef0f9d455368a544601d07814b3e021358d06b09750204877f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny26/": {
+   "hash": "84340f90a42f2b8b27a44a9cb1cf40e2d1f9434634371a45cd545d4b5d663a2f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-smith-mn/": {
+   "hash": "81ec8ad6a0221b5d97772f5ab213fe0d8aea9f346b02595c32c3e86ee5d40c66",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-blanche/": {
-   "hash": "902e0b12ec52d6f70eb3a256aee05cdaf943c0498cae80694ac9118451637100",
-   "lastmod": "2026-11-11"
+   "hash": "a9833237c06c24d82560b73be005610d5571c264023edd50230de1016572cc29",
+   "lastmod": "2026-11-28"
   },
   "officials/agh-lyons/": {
-   "hash": "89f22a0d26d0f0e19f8aac15709553029dd537e038eb6a714e4a566f356a7a77",
-   "lastmod": "2026-11-11"
+   "hash": "c39d12983d36a7dcb3c670a4330fc4786a5d1e57fa1b678655f8e6c92eb375d7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-young-in/": {
+   "hash": "e7bbae50c92581134d94889aeea0000b1f941dc9d3b784d3f7c78ef56000e6a9",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mi07/": {
+   "hash": "b1cc653d0f5a9840e7598b014881a75ee22d3246f3c8704b5511b812c762ede3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ok04/": {
+   "hash": "f58c3ffd6c1eeac55a8b06d7a364d0241f6520a50fab91016839fe5802a26947",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-cotton-ar/": {
+   "hash": "76a4c15031ee1a95ef6fe5d3d0b8287d642fb623c2a0e787be69ced7c1cfdbbc",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mn06/": {
+   "hash": "4404c9c9bf59d928ed078e729fef00800d39210a4806cd48ed6f1f7092d96c6b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca05/": {
+   "hash": "c2399fe049a402ad9ea55e7447a371c518b03f0492a3a301d0e890e16a194605",
+   "lastmod": "2026-11-28"
+  },
+  "officials/sen-tuberville-al/": {
+   "hash": "40a4ecae6ff5240749c391369bc9d643bd514e0ac8fc06e8cb6005031c89b3b2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-wi08/": {
+   "hash": "7077c91c15d1cfbc06bf0be543265c688a79e4b8cb9ba9c942eacbffcec3743f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ks01/": {
+   "hash": "1d7fdebc3127f5003536fe9f4c5a7a233217a85b579eef488b9b74a6f9c16c65",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ms01/": {
+   "hash": "65fc2f567c9d59084e898ddff4f9b9568ece9f6c0a93a252fd11fa5bc18f3ad3",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh12/": {
+   "hash": "3826400d0e25a42abed10d2c62039357c08bc74fe2af5e725577321778dfadf2",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-la02/": {
+   "hash": "8ea68d36cf0c5309fb72efc22f44b44944a08b26883214d180cd8af5a1bd8ef8",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mt02/": {
+   "hash": "23548b5c39f1ddbfeba7169695026c56d6ba7e71c23ac3ff42f4af3601942995",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx22/": {
+   "hash": "59cc006c5488c48c3e74cb3114ee24090c8d6568c6de788359492bdd17fbf6f7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/hoyle-or/": {
+   "hash": "689b63605ee10f6f14ddcd7a3b75147b3f5f4832039e91c9583f91eb8e07ea95",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc04/": {
+   "hash": "aace0e3aab1113fd0395c9c2dc793557f7beb5c801c1ee3611713ff10872285f",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl16/": {
+   "hash": "77e32956166d69af20daaeb51d6e6a25c12ffd369d426eb14ed4858d391c9d0a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx16/": {
+   "hash": "902f144800d9794efdb0876c7429e03bcdfbaa8933802f4b50307246fdc0412a",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx34/": {
+   "hash": "709414b7c473dd6264502e21a5a2b5fae1218aafb6ef76ef61d1733256fbb3d7",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-in05/": {
+   "hash": "71edd296c7325892539e85577737aefb5123c19f062db4ddaa07159de0a00519",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca20/": {
+   "hash": "58591b42cd2448913981082dccf727d14edcb2aa570b9a79aea774d9a77bf940",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-nc05/": {
+   "hash": "e87448bdbe8b9e50f2a8da250a8f422d8301e46a86bc3403585173d4d348bb55",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-fl17/": {
+   "hash": "09b90f8df5cddf53d1c9e6f79065df01255c906883fd0b77f32a161f03b02aeb",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-oh08/": {
+   "hash": "d7931f823796e508f9fa56eef7874bd601abe49e4c178cb31bce4f835dc949a5",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-mo01/": {
+   "hash": "a460b94cf64c122b6d0337278257012c786754ff872c0e0b8df1060b449c9698",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-tx38/": {
+   "hash": "c3ca4996ef03dde3bef7a990ccc249eb54c71093d718f4948ae10977e232c586",
+   "lastmod": "2026-11-28"
+  },
+  "officials/past-ross/": {
+   "hash": "e3ce978cc28ee68aeda174ca42ee1d043495ed87b8c4c1480d345a4766c4bf49",
+   "lastmod": "2026-11-28"
+  },
+  "officials/past-barr/": {
+   "hash": "6dc9056be94b0d741e8709aef9ffe7b3a45214dbcc818692e45e307b20617e5a",
+   "lastmod": "2026-11-28"
   },
   "officials/cab-pulte/": {
-   "hash": "00d5ffe6fb599b014a42a4ffc877f69e1c1388c2af7c4b41b0653df750ee2e33",
-   "lastmod": "2026-11-11"
+   "hash": "57981591faf8f8c92f6d35cc3a58d90335b157d422a78b8f9db1a93f3aaaa48b",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ma09/": {
+   "hash": "66b5df0d02c813a16bde72f10f18d89024d926530812aa958826bb5e475337dd",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-sc04/": {
+   "hash": "d193d0bfc23eb3cee31817345351040b35281c6c44c91f5f4ceb6e7ee6bce05c",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-az03/": {
+   "hash": "f231b9839dc0be2096423fbbdd339db42c7fde31a2033d0c5b7e0ca6fba14c80",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca40/": {
+   "hash": "e5750c85bb27838aec2199ddd022ae1cac3de93f759dc02cf6c595aa9926672e",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ny09/": {
+   "hash": "226215233f4020775534b67fdc5b3ba8c5c558e6de8c4965227e9c2bfb4ab326",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ia03/": {
+   "hash": "36d64139d63658c57957d0253d175585cbe8849491d9b59bffa671a0913bf532",
+   "lastmod": "2026-11-28"
+  },
+  "officials/rep-ca18/": {
+   "hash": "31ad80024ce27549af95009c140eb3543d43bd6215a1229382bf21e6b0b9f6d0",
+   "lastmod": "2026-11-28"
   },
   "officials/": {
-   "hash": "351af49c56ec670178c84c136810cd2ab8fbb55f6456eec54230cf17bc491dc4",
-   "lastmod": "2026-11-11"
+   "hash": "95df40fa845d76949a6c976df2e8f191f5166f629914b63a1bd7a03007240cd9",
+   "lastmod": "2026-11-28"
   },
   "methodology/": {
-   "hash": "258511c22ea4998fb40271346eaed350911ee496f45b71842272fffaf90cd0d1",
-   "lastmod": "2026-11-11"
+   "hash": "11be09497d76ceaa93fee8f4a1f1ed7993a2eacc457f5e73d04c626f0d7eb68a",
+   "lastmod": "2026-11-28"
   },
   "about/": {
    "hash": "343815c77b4da8a9f3aa32669b12bf576c1aa051d9136859147f5887649d1b0b",
@@ -143,24 +2315,232 @@
    "lastmod": "2026-11-11"
   },
   "administration/": {
-   "hash": "e2a98cddf243e7516918cea7936c4e1f079ded99dc024be9f7f19e74bf3fa644",
-   "lastmod": "2026-11-11"
+   "hash": "3c24edc6bc87f5062bd5c42fc24154783f18ea6ea270ab37a4d5f998c0d844a7",
+   "lastmod": "2026-11-28"
+  },
+  "congress/house/": {
+   "hash": "20358a64fc78d91fbeb416531addea7475874d9ce0669c62dc47164e21fc8021",
+   "lastmod": "2026-11-28"
+  },
+  "congress/senate/": {
+   "hash": "b15121952f3e7acd478f2e1d4e0b4f8178ba82a62b32069bc09e4a20449eb56b",
+   "lastmod": "2026-11-28"
+  },
+  "states/alabama/": {
+   "hash": "2fc5520b4cca4f171076f2a0e919a28aa4880c6df54424c30d4c8f5b308926e0",
+   "lastmod": "2026-11-28"
+  },
+  "states/alaska/": {
+   "hash": "368e1190987bea4145977c6bf1bd8ba5b43fbf06369a80da224b827be31c6e5f",
+   "lastmod": "2026-11-28"
+  },
+  "states/arizona/": {
+   "hash": "e29cbefaa42f0d6357e1d24d8f7231d30aa4a1977d915eba4d563e1baf900cd3",
+   "lastmod": "2026-11-28"
+  },
+  "states/arkansas/": {
+   "hash": "7992df750757d678ab2282dc545fca0d4d4967d8af4931f8769af37c39c4e10c",
+   "lastmod": "2026-11-28"
+  },
+  "states/california/": {
+   "hash": "1179e7eb0c8c95d9a8e9df03304d1acca3f9d5dcaf22e9fdfd66d8bfa8cc6834",
+   "lastmod": "2026-11-28"
+  },
+  "states/colorado/": {
+   "hash": "a9bd5c21d8abfe4d0e921990ecbef9e7f9c2473316679ae1d8f5af05fd1f9441",
+   "lastmod": "2026-11-28"
+  },
+  "states/connecticut/": {
+   "hash": "f74ba28e23fde76ac61a77381b77c2612c599ed82adae8a90aef7f534053d78f",
+   "lastmod": "2026-11-28"
+  },
+  "states/delaware/": {
+   "hash": "2504e18607816fcd75197ea900a5e3d5da6c40e8c58a8ff42331b28103cd246c",
+   "lastmod": "2026-11-28"
+  },
+  "states/florida/": {
+   "hash": "47d3ce6d07c533f998d10748ac41ac260ece48efc6aa730cb544cfb08548eb57",
+   "lastmod": "2026-11-28"
+  },
+  "states/georgia/": {
+   "hash": "1f42dae1c0ca8faf2cae9d26b70305883740c5d83a1c8ef054007b742cb8bfad",
+   "lastmod": "2026-11-28"
+  },
+  "states/hawaii/": {
+   "hash": "26028862ba4c70b2e72c573c6fbfcb8a0a22159741b9e58fe835593ac40f4e0a",
+   "lastmod": "2026-11-28"
+  },
+  "states/idaho/": {
+   "hash": "aa3bc9159020cf54d266c4b56e54fcc05a2e12ed14ba2deef4e5970ddaea5fb3",
+   "lastmod": "2026-11-28"
+  },
+  "states/illinois/": {
+   "hash": "35cc76b2a25eecc0ac42ab39ad8b3b2cbd99f0b775bf1b1adb3a7a74e20ee21f",
+   "lastmod": "2026-11-28"
+  },
+  "states/indiana/": {
+   "hash": "c7e1cdc838c1e85c3bdc8a44e413511720af0a3839c8cbfe222fc75c66f04f7e",
+   "lastmod": "2026-11-28"
+  },
+  "states/iowa/": {
+   "hash": "c62d316b13553bdcbd361b04b2938217fa7d66e1aaae50ddda6c52e857b2e40a",
+   "lastmod": "2026-11-28"
+  },
+  "states/kansas/": {
+   "hash": "17431fff78211235101bb3677065fbe713a81f182d47b1559d8759b2e1cdd1c8",
+   "lastmod": "2026-11-28"
+  },
+  "states/kentucky/": {
+   "hash": "813b5c23f48346ff1fc827e01b51aff685b9c0b441cdd942b3226da26a57e100",
+   "lastmod": "2026-11-28"
+  },
+  "states/louisiana/": {
+   "hash": "92f52dde0c27279e377e3575bc7d4244cf63f2b1b1b18a790dedf997b5648c55",
+   "lastmod": "2026-11-28"
+  },
+  "states/maine/": {
+   "hash": "7df566fdedaf09e5422918139ae6f7182f554ab03a5bd948b938a5dda773dada",
+   "lastmod": "2026-11-28"
+  },
+  "states/maryland/": {
+   "hash": "42d6812af6a9d9a99c6da3fd89a2518f45e4d36df6b67d93919c33451028b523",
+   "lastmod": "2026-11-28"
+  },
+  "states/massachusetts/": {
+   "hash": "5c63669a674159d8cf22f65e7e8561ec7248d309c9093da7eaba045e8a1230e8",
+   "lastmod": "2026-11-28"
+  },
+  "states/michigan/": {
+   "hash": "7efef5e4abfc405d6e3946562690960eb982b3430bebf69cb5f08af270a6dca0",
+   "lastmod": "2026-11-28"
+  },
+  "states/minnesota/": {
+   "hash": "72f9800e6ca9bc01e9414188fdb2ff2be53f702e456721e41d071d02f413db91",
+   "lastmod": "2026-11-28"
+  },
+  "states/mississippi/": {
+   "hash": "7bf332fef5bf4bd9d3f46bebf38a02ba9abbd8ca1c3bcea5c9303edfc668468f",
+   "lastmod": "2026-11-28"
+  },
+  "states/missouri/": {
+   "hash": "7dbad0989c75f63150618859a7f9495cc0ea043caff84d83d854eed88f571faa",
+   "lastmod": "2026-11-28"
+  },
+  "states/montana/": {
+   "hash": "6e03465077e94b2e9702a91e55580e86c1e408b48cf7fc599acebd1657028cbe",
+   "lastmod": "2026-11-28"
+  },
+  "states/nebraska/": {
+   "hash": "b5d68431cfbbbc0c8065052eefebf2a3a06512d56558afb172139906d004ed0c",
+   "lastmod": "2026-11-28"
+  },
+  "states/nevada/": {
+   "hash": "b7fddfbc1757e099e2484f85d36240c6dda0e577078479384f9d104e13108fd3",
+   "lastmod": "2026-11-28"
+  },
+  "states/new-hampshire/": {
+   "hash": "f2067ee74a875b89d77974ba309953c364a0ff87e8890f0dd831b0dbc584be73",
+   "lastmod": "2026-11-28"
+  },
+  "states/new-jersey/": {
+   "hash": "98b4c47761c4387f6116aba18dde13ff3428b9566b7fb82d8012e9bc44558bb2",
+   "lastmod": "2026-11-28"
+  },
+  "states/new-mexico/": {
+   "hash": "35103021a7b91f821a7c9f73666f7a9442f81443211dca4fbc8d06bfe778448c",
+   "lastmod": "2026-11-28"
+  },
+  "states/new-york/": {
+   "hash": "13477943a8978e39f92c15dc366170345730d107609408fc25c0703a98f266bf",
+   "lastmod": "2026-11-28"
+  },
+  "states/north-carolina/": {
+   "hash": "c770d2d298f76da5001322da2e69ee4612e5f444aa8e1a66252f30f148bea309",
+   "lastmod": "2026-11-28"
+  },
+  "states/north-dakota/": {
+   "hash": "4fabc0b0bfb8ff259a461b514c6e97152e092bf38f817e9a47c69186ba223b42",
+   "lastmod": "2026-11-28"
+  },
+  "states/ohio/": {
+   "hash": "8015f5b86404165ed3a5e78070d2b1a6e992ac92309c1866211ead54bc22a965",
+   "lastmod": "2026-11-28"
+  },
+  "states/oklahoma/": {
+   "hash": "2e586e6ec00b4706ff40a28a85c80a8073a6c964fff02b7e020252fe55d05571",
+   "lastmod": "2026-11-28"
+  },
+  "states/oregon/": {
+   "hash": "0442a3dd66e7810a3326805a202252d67cba433a1463d4e9749d0f13f2eb6ebf",
+   "lastmod": "2026-11-28"
+  },
+  "states/pennsylvania/": {
+   "hash": "c00537425b42d70d545e1262164649646f813028d20ce3dac955b7d6535fef38",
+   "lastmod": "2026-11-28"
+  },
+  "states/rhode-island/": {
+   "hash": "17c1b06406caf9bbc106f214d52c8eb05bb4d65b14978c1bba36db4108c55dde",
+   "lastmod": "2026-11-28"
+  },
+  "states/south-carolina/": {
+   "hash": "cd8a6f429ba80034409aa29aeba3d07dc133bb30b2ffccbb25c7f18a0240c821",
+   "lastmod": "2026-11-28"
+  },
+  "states/south-dakota/": {
+   "hash": "3f7bc97b752e7c3a603d2f8cccf87e12a87f35e5c197951ce6828d860e0b4f46",
+   "lastmod": "2026-11-28"
+  },
+  "states/tennessee/": {
+   "hash": "417b24c55cdd938bc14b5a67b021e84f6257c91809680bbbb385e56b9dd7a7e3",
+   "lastmod": "2026-11-28"
+  },
+  "states/texas/": {
+   "hash": "cb3d85dd816e1188ee1859fec9cdbc85851757f02d9848957785e4aa0ac13860",
+   "lastmod": "2026-11-28"
+  },
+  "states/utah/": {
+   "hash": "68a11aa35db196612a46b335f0cc6db0ebcc8cf03206d883fab422eca1bbb548",
+   "lastmod": "2026-11-28"
+  },
+  "states/vermont/": {
+   "hash": "cba8cb9f76c184ef68b405d284b5b1265c05db6570cf4901353c9cc999c51f07",
+   "lastmod": "2026-11-28"
+  },
+  "states/virginia/": {
+   "hash": "1a5e7c20c06df263ff10072706234a702008ce3376624aef3c49e9035a41a394",
+   "lastmod": "2026-11-28"
+  },
+  "states/washington/": {
+   "hash": "8b30f9c97776070d24a58549a1a13be843765718379fec78b85323f9d3904482",
+   "lastmod": "2026-11-28"
+  },
+  "states/west-virginia/": {
+   "hash": "f02e9cb616d541e229bdc73a589f1ed0113d285d6d5b6c6cc078def376629d24",
+   "lastmod": "2026-11-28"
+  },
+  "states/wisconsin/": {
+   "hash": "95603379feae80f92ed7f1dce74c1c04b823ce84a034199db4c3c30a293aebb3",
+   "lastmod": "2026-11-28"
+  },
+  "states/wyoming/": {
+   "hash": "daeacf453ec365430a62d9777edd99479c4e8032ebd2fc7d87d678edc144dc8f",
+   "lastmod": "2026-11-28"
   },
   "aow-index.html": {
-   "hash": "caea46860fb8263e931b19ccd9548c2bd8ce4ac3f778f1e8b50266378564c0c8",
-   "lastmod": "2026-11-24"
+   "hash": "e08d489c464176e835f0b0c0392c69fcebe80dd785c03a9c3cd88742bba5892c",
+   "lastmod": "2026-11-28"
   },
   "privacy-policy.html": {
-   "hash": "f2dc53c0b5035a333db3350a39861718a74402978f426bb2ff28d21ba911cbbc",
-   "lastmod": "2026-11-24"
+   "hash": "7da1c5a98987b042a95c7bf55185a836bae9c46ff1ddeb924397b69e571a41a0",
+   "lastmod": "2026-11-28"
   },
   "terms-of-service.html": {
-   "hash": "31ecb95258e0b368369d6f33ad854d1dec7f691bbcf829d49f4480f77351211b",
-   "lastmod": "2026-11-24"
+   "hash": "938a07547fca3154db8caebe0c1410f21f9bf80da9c7290faae44a270dafb9bb",
+   "lastmod": "2026-11-28"
   },
   "cookie-policy.html": {
-   "hash": "c7cb959b177015a1614d28584eeaf570ebabf5d1becba76edf64dcb4df338023",
-   "lastmod": "2026-11-24"
+   "hash": "fec3e8c2f0465984e00124128b380ce1e684556ef92faebd36a335c39bb17c6a",
+   "lastmod": "2026-11-28"
   },
   "dmca-policy.html": {
    "hash": "aa9d24e58baf30ffeec0a45e1fec5f1d9c3637a839ec6b542ea88c4d24ce5368",
