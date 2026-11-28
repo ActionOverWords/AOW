@@ -7,43 +7,63 @@ Desktop\AOW\AOW-main already has these same files (it is your full copy of the s
 Older packages are kept in Desktop\AOW\_archive\site-updates - never upload from there.
 
 WHAT'S IN HERE NOW:
-Infolinks ads + the Members tab fix. Mon Nov 23 2026
-====================================================
+A page for every official + Infolinks off the site. Sat Nov 28 2026
+==================================================================
 
-FILES (six files, all go in the repo ROOT, replacing the old ones)
-  aow-index.html
-  privacy-policy.html
-  cookie-policy.html
-  terms-of-service.html
-  cookie-consent.js
-  members.js          (the Nov 21 Members tab fix - it was never uploaded, so it rides along)
+FILES (one upload, one commit)
+  aow-index.html            -> repo ROOT
+  privacy-policy.html       -> repo ROOT
+  cookie-policy.html        -> repo ROOT
+  terms-of-service.html     -> repo ROOT
+  cookie-consent.js         -> repo ROOT
+  tools\build-pages.js      -> the repo's tools folder
 
-  On github.com/actionoverwords/AOW: Add file > Upload files, drag in all six, commit to main.
-  The site updates in 1 to 2 minutes.
+  On github.com/actionoverwords/AOW (the main page of the repo): Add file > Upload files.
+  Select everything in this folder EXCEPT this read-me (the five files AND the "tools" folder),
+  drag it all in together, and commit to main. Dragging the "tools" folder puts build-pages.js
+  in the right place.
+
+WHAT HAPPENS AFTER YOU UPLOAD
+  Uploading tools\build-pages.js starts the "Build static pages" job by itself (Actions tab).
+  It takes a minute or two, then the site updates 1 to 2 minutes later. You don't need to do anything.
+  If the job shows a red X, nothing on the site changed - tell Claude.
 
 WHAT IT CHANGES
-  1. Infolinks ads (publisher 3449895) now load on the tracker for signed-out visitors and free
-     accounts. Paid members load no ad code, same as before. Google AdSense code is unchanged.
-     Ads may stay blank until Infolinks finishes reviewing the site (up to about 48 hours).
-     To switch Infolinks off later: in aow-index.html set INFOLINKS_PID to 0.
-  2. Privacy Policy, Cookie Policy, Terms and the cookie banner now name Infolinks next to
-     Google and link Infolinks' opt-out page (Infolinks' agreement requires this).
-     The three pages say "Last updated November 23, 2026".
-  3. members.js: if the Members tab is ever switched back off, someone on that tab no longer
-     loses the green title band on the other tabs. You won't see a difference while it's on.
-
-STILL TO DO (not in this upload)
-  - ads.txt: Infolinks' lines come from your Infolinks dashboard. Claude adds them once found.
-  - In the Infolinks dashboard, switch InText (underlined-word ads) OFF.
+  1. A PAGE FOR EVERY OFFICIAL. Until now Google could read pages for only 29 officials, built from
+     old files in the repo. The page builder now reads the same live data the tracker shows, so
+     every official with at least one fully sourced promise gets a page (about 570 today, plus
+     the past-administration and Archive people who qualify), and 50 state pages plus Senate and
+     House pages switch on. The officials directory, the sitemap and the home page update with them.
+     - Each page lists the promises whose sourcing is finished, with their sources.
+     - Promises still being sourced are NOT listed on the page (they stay in the tracker with the
+       "Still finding sources" tag); the page says how many there are.
+     - The AOW Score on each page counts every tracked promise, exactly like the tracker, so the
+       two always show the same score.
+     - Headline counts are rounded down with a "+" (for example "560+ people").
+     - The pages rebuild every night from the live data, so new promises and status changes
+       reach them within a day.
+     - If the live data can't be read, or looks incomplete, the job stops and the pages already
+       on the site stay as they are.
+  2. INFOLINKS OFF THE SITE (they turned the site down on Nov 26). The tracker stops loading
+     Infolinks; the Privacy Policy, Cookie Policy, Terms and cookie banner go back to naming only
+     Google. Google AdSense code is unchanged. These five files are exactly the versions from
+     before Infolinks went in.
 
 CHECKED
-  - Built on the live copy at GitHub commit 85dd5a5 (Nov 22). The five pages matched your
-    AOW-main copies except cookie-consent.js, where AOW-main had an older copy.
-  - Every script on the tracker passes a syntax check; tags balance on all four pages.
-  - Tested in Chrome: a signed-out visit loads the Infolinks script with no page errors; a paid
-    member loads no ad script; the cookie banner and its panel show the new wording.
+  - Built on the live copy at GitHub commit 51bd3a4 (Nov 24), unchanged on Nov 28.
+  - Tested against a full-size copy shaped like the live data (736 officials, 20,000+ promises):
+    every page's score matched the tracker's own scoring code (591 of 591), every page's tags
+    balance, nothing in a promise's text can turn into code, a second run changes nothing, the
+    accented id sen-luján-nm gets the address /officials/sen-lujan-nm/, and missing, broken or
+    too-small data stops the job without writing anything.
+  - Checked on desktop and phone width: official page, directory and a state page.
+  - Not tested from here: the real live data (the test machine can't reach the database).
+    The job's first run on GitHub is the real test; Claude checks the result afterwards.
 
 TO UNDO
-  Re-upload the five files from
-  Desktop\AOW\_archive\site-updates\2026-11-23-before-infolinks-UNDO\
-  (members.js: from Desktop\AOW\_archive\site-updates\2026-11-21-member-votes-forums-LIVE\)
+  Infolinks: re-upload the five files from
+    Desktop\AOW\_archive\site-updates\2026-11-23-infolinks-LIVE\
+  The official pages: tell Claude. Re-uploading the old builder alone won't remove the new pages,
+  because the builder refuses to delete more than 15% of the pages in one run (a safety rule).
+  The old builder is saved in
+    Desktop\AOW\_archive\site-updates\2026-11-28-before-every-official-UNDO\tools\

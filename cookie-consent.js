@@ -19,9 +19,8 @@
  *   window.AOWConsent.openPreferences()                -> reopens the panel
  *   window.AOWConsent.onChange(fn)                     -> fn(consentObject) on every save/accept
  *
- * Advertising is NOT controlled by this file. Ads are served by Google AdSense and
- * Infolinks to signed-out visitors and free accounts only (see maybeLoadAds() in
- * aow-index.html).
+ * Advertising is NOT controlled by this file. Ads are served by Google AdSense to
+ * signed-out visitors and free accounts only (see maybeLoadAds() in aow-index.html).
  * Consent Mode v2 starts every ad signal as 'denied', and consent for personalized
  * ads is collected by Google's certified "Privacy & messaging" tool, which has to be
  * switched on in the AdSense dashboard. The Advertising row below is informational
@@ -138,7 +137,7 @@
     wrap.className = 'aow-cc';
     wrap.innerHTML =
       '<div class="aow-cc-banner" id="aowCCBanner" role="region" aria-label="Cookie notice" aria-hidden="true">'
-        + '<p class="aow-cc-text">We use browser storage to keep you signed in, and no analytics are active today. Signed-out visitors and free accounts may also see ads from Google and Infolinks, which can use cookies; paid members see none. Ad choices are handled by the ad networks — see Manage preferences. <a href="cookie-policy.html">Cookie Policy</a></p>'
+        + '<p class="aow-cc-text">We use browser storage to keep you signed in, and no analytics are active today. Signed-out visitors and free accounts may also see ads from Google, which can use cookies; paid members see none. Ad choices are handled by Google — see Manage preferences. <a href="cookie-policy.html">Cookie Policy</a></p>'
         + '<div class="aow-cc-actions">'
           + '<button type="button" class="aow-cc-btn aow-cc-btn-ghost" data-aow-cc="manage">Manage preferences</button>'
           + '<button type="button" class="aow-cc-btn aow-cc-btn-secondary" data-aow-cc="necessary">Necessary only</button>'
@@ -148,7 +147,7 @@
       + '<div class="aow-cc-backdrop" id="aowCCBackdrop">'
         + '<div class="aow-cc-modal" role="dialog" aria-modal="true" aria-labelledby="aowCCModalTitle">'
           + '<h2 id="aowCCModalTitle">Cookie preferences</h2>'
-          + '<p class="aow-cc-intro">Here’s exactly what’s in use. Signed-out visitors and free accounts may see ads from Google and Infolinks; paid members see none.</p>'
+          + '<p class="aow-cc-intro">Here’s exactly what’s in use. Signed-out visitors and free accounts may see ads from Google; paid members see none.</p>'
           + '<div class="aow-cc-row">'
             + '<div><p class="aow-cc-row-title">Strictly necessary</p><p class="aow-cc-row-desc">Keeps you signed in on this device and keeps the site secure. The site can’t function without this, so it’s always on.</p></div>'
             + '<span class="aow-cc-locked">Always on</span>'
@@ -158,8 +157,8 @@
             + '<label class="aow-cc-switch"><input type="checkbox" id="aowCCAnalyticsToggle" aria-describedby="aowCCModalTitle"><span class="aow-cc-slider"></span></label>'
           + '</div>'
           + '<div class="aow-cc-row">'
-            + '<div><p class="aow-cc-row-title">Advertising</p><p class="aow-cc-row-desc">Signed-out visitors and free accounts may see ads served by Google AdSense and Infolinks, which can use cookies to deliver and measure them. Google ads start in a non-personalized state. Ad choices are made through Google’s own consent message, <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> and <a href="https://www.infolinks.com/opt-out/" target="_blank" rel="noopener noreferrer">Infolinks’ opt-out page</a>, not this panel. Paid members see no ads.</p></div>'
-            + '<span class="aow-cc-locked">Managed by the ad networks</span>'
+            + '<div><p class="aow-cc-row-title">Advertising</p><p class="aow-cc-row-desc">Signed-out visitors and free accounts may see ads served by Google AdSense, which can use cookies to deliver and measure them. Ads start in a non-personalized state, and personalization choices are made through Google’s own consent message and <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>, not this panel. Paid members see no ads.</p></div>'
+            + '<span class="aow-cc-locked">Managed by Google</span>'
           + '</div>'
           + '<div class="aow-cc-actions aow-cc-actions-end">'
             + '<button type="button" class="aow-cc-btn aow-cc-btn-secondary" data-aow-cc="necessary">Necessary only</button>'

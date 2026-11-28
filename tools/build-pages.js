@@ -2,14 +2,16 @@
 /*!
  * ActionOverWords — static page generator
  * ------------------------------------------------------------------------
- * Reads the SAME data files the live site renders from (data.js + data/**) and
+ * Reads the SAME data the live tracker renders from: the roster and the promises from the public database
+ * (aow_officials, aow_promises and aow_archive_promises, fetched with the publishable key the tracker already ships),
+ * and the past administrations, Archive people, person links and earlier roles from data.js + data/**. It
  * writes crawlable HTML pages with no JavaScript (apart from JSON-LD data blocks, and the home page's two small inline
  * scripts: the redirect and the live headline counts, both described in the home page section below):
  *
  *   index.html                  OFF by default. A home page is written here only if the file in the repo root
  *                               already carries the marker. Normally that file is a hand-written redirect to
  *                               the tracker (no marker), and this script leaves it alone
- *   officials/<id>/index.html   one page per person with qualifying promises
+ *   officials/<id>/index.html   one page per person with at least one fully sourced promise
  *   officials/index.html        directory of those people
  *   methodology/index.html      how promises are sourced, rated and scored (fixed text)
  *   administration/index.html   hub: the current administration's officials who have pages
@@ -26,9 +28,11 @@
  * refuses to overwrite or delete anything that does not.
  *
  * Usage:  node tools/build-pages.js [--root .] [--site https://action-over-words.com]
- *                                   [--min-publishers 3] [--hub-min 3] [--today YYYY-MM-DD]
- *                                   [--allow-shrink]
- * Requires Node 18+. No npm install, no network access, no secrets.
+ *                                   [--hub-min 3] [--today YYYY-MM-DD] [--allow-shrink]
+ *                                   [--live-file snapshot.json] [--local-data]
+ * Requires Node 18+. No npm install, no secrets. One network read: the public data, with the publishable key
+ * (--live-file reads a saved copy of that answer instead; --local-data uses only the repo's data files, as before
+ * Nov 28, 2026, and is meant for testing).
  * (tools/indexnow.js is a separate script: it tells Bing and the other IndexNow engines which URLs changed.)
  */
 'use strict';
@@ -41,7 +45,16 @@ const crypto = require('crypto');
 const argv = parseArgs(process.argv.slice(2));
 const ROOT = path.resolve(argv.root || process.cwd());
 const SITE = String(argv.site || 'https://action-over-words.com').replace(/\/+$/, '');
-const MIN_PUBLISHERS = Number(argv['min-publishers'] === undefined ? 3 : argv['min-publishers']);
+// Live data (Batch 9, Nov 28, 2026). Pages are built from the same public database the tracker reads, so a page's
+// score, statuses and counts match the tracker's. A promise is LISTED on a page once its sourcing is finished (the
+// tracker shows the rest with a "Still finding sources" tag); every tracked promise counts toward the score, exactly
+// as in the tracker. If the database can't be read, or answers with something that doesn't look like the full data,
+// the build stops before writing anything, so the pages already on the site stay as they are.
+const LIVE_FILE = argv['live-file'] ? path.resolve(String(argv['live-file'])) : '';
+const LOCAL_ONLY = !!argv['local-data'];
+const LIVE_TIMEOUT_MS = 90000;
+const LIVE_MIN = { officials: 500, promises: 5000 };   // the live data held 736 and 19,661 on 2026-11-28
+const LIVE_KEYS = ['aow_officials', 'aow_promises', 'aow_archive_promises'];
 const HUB_MIN = Number(argv['hub-min'] === undefined ? 3 : argv['hub-min']);
 const TODAY = String(argv.today || new Date().toISOString().slice(0, 10));
 const CONTACT = 'info@action-over-words.com';
@@ -192,7 +205,68 @@ function byAdminPrecedence(a, b) {
 const ADMIN_ORDER_NOTE = 'People are listed in the official order: the President, the Vice President, the heads of the executive departments in their legal order of succession, then other Cabinet-level officials and agency heads by last name.';
 
 /* ------------------------------ load the dataset ---------------------------- */
-function loadDataset() {
+// The public read: GET <project>/rest/v1/app_data?select=key,value&key=in.(...) with only the publishable key in an
+// "apikey" header (no cookies, no sign-in). Row-level security already lets anyone read exactly these keys; it is the
+// same read every visitor's browser makes when the tracker loads.
+async function fetchLiveRows() {
+  if (LIVE_FILE) {
+    if (!fs.existsSync(LIVE_FILE)) fatal('--live-file not found: ' + LIVE_FILE);
+    return { rows: JSON.parse(fs.readFileSync(LIVE_FILE, 'utf8')), from: 'file ' + path.basename(LIVE_FILE) };
+  }
+  const cfg = liveCountsConfig();
+  if (!cfg.origin) fatal('Cannot read the live data: ' + cfg.why + '. Nothing was written.');
+  const url = cfg.origin + '/rest/v1/app_data?select=key,value&key=in.(' + LIVE_KEYS.join(',') + ')';
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), LIVE_TIMEOUT_MS);
+  let res;
+  try {
+    res = await fetch(url, { headers: { apikey: cfg.key, Accept: 'application/json' }, signal: ctl.signal });
+  } catch (e) {
+    fatal('Cannot read the live data (' + (e && e.name === 'AbortError' ? 'no answer in ' + (LIVE_TIMEOUT_MS / 1000) + ' s' : String(e && e.message || e)) + '). Nothing was written.');
+  } finally { clearTimeout(timer); }
+  if (!res.ok) fatal('Cannot read the live data: HTTP ' + res.status + '. Nothing was written.');
+  return { rows: await res.json(), from: 'the public database' };
+}
+// Checks the answer has the shape and size of the real data before anything is built from it.
+function parseLive(rows) {
+  if (!Array.isArray(rows)) fatal('Live data: expected a list of rows. Nothing was written.');
+  const byKey = new Map(rows.filter(r => r && typeof r.key === 'string').map(r => [r.key, r.value]));
+  const officials = byKey.get('aow_officials'), promises = byKey.get('aow_promises');
+  const archive = byKey.has('aow_archive_promises') ? byKey.get('aow_archive_promises') : [];
+  if (!Array.isArray(officials) || !Array.isArray(promises)) fatal('Live data: aow_officials or aow_promises is missing or not a list. Nothing was written.');
+  if (officials.length < LIVE_MIN.officials || promises.length < LIVE_MIN.promises)
+    fatal(`Live data looks incomplete (${officials.length} officials, ${promises.length} promises; expected at least ${LIVE_MIN.officials} and ${LIVE_MIN.promises}). Nothing was written.`);
+  const okStr = v => typeof v === 'string' && v.trim() !== '';
+  const badO = officials.filter(o => !o || !okStr(o.id) || !okStr(o.name));
+  if (badO.length) fatal(`Live data: ${badO.length} official(s) without an id or a name. Nothing was written.`);
+  const badP = promises.filter(p => !p || !okStr(p.id) || !okStr(p.memberId));
+  if (badP.length > promises.length * 0.01) fatal(`Live data: ${badP.length} promises without an id or an official. Nothing was written.`);
+  if (badP.length) warn(`Live data: ${badP.length} promise(s) without an id or an official were left out.`);
+  return { officials, promises: promises.filter(p => p && okStr(p.id) && okStr(p.memberId)), archive: Array.isArray(archive) ? archive : [] };
+}
+// Mirrors mergeArchivePromises() in aow-index.html: a published archive row joins the past-administration or Archive
+// list only when its person is on that list, and never twice (same id, or the same person with the same words).
+function mergeArchiveRows(D, rows) {
+  const pastIds = new Set();
+  D.PAST_ADMINISTRATIONS.forEach(a => (a.people || []).forEach(p => pastIds.add(p.id)));
+  const archIds = new Set(D.ARCHIVE.map(p => p.id));
+  const norm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const seenId = new Set(), seenText = new Set();
+  D.PAST_PROMISES.concat(D.ARCHIVE_PROMISES).forEach(p => { seenId.add(p.id); seenText.add(p.memberId + '|' + norm(p.text)); });
+  let added = 0;
+  rows.forEach(r => {
+    if (!r || typeof r !== 'object' || typeof r.id !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(r.id) || typeof r.memberId !== 'string' || typeof r.text !== 'string' || !r.text.trim()) return;
+    const textKey = r.memberId + '|' + norm(r.text);
+    if (seenId.has(r.id) || seenText.has(textKey)) return;
+    const target = pastIds.has(r.memberId) ? D.PAST_PROMISES : (archIds.has(r.memberId) ? D.ARCHIVE_PROMISES : null);
+    if (!target) return;
+    target.push(Object.assign({}, r));
+    seenId.add(r.id); seenText.add(textKey); added++;
+  });
+  return added;
+}
+
+async function loadDataset() {
   const dataJs = path.join(ROOT, 'data.js');
   if (!fs.existsSync(dataJs)) fatal('data.js not found under ' + ROOT + ' (run from the repo root, or pass --root).');
   const ctx = vm.createContext({});          // data files are pure data; no DOM, no network, no require
@@ -201,11 +275,40 @@ function loadDataset() {
   const files = fs.existsSync(path.join(ROOT, 'data')) ? walk(path.join(ROOT, 'data')).filter(f => f.endsWith('.js')).sort() : [];
   files.forEach(run);
   const D = vm.runInContext('({DEFAULT_MEMBERS,DEFAULT_PROMISES,PAST_ADMINISTRATIONS,PAST_PROMISES,ARCHIVE,ARCHIVE_PROMISES,PERSON_LINKS,PRIOR_ROLES})', ctx);
-  const hash = sha([dataJs, ...files].map(f => fs.readFileSync(f, 'utf8')).join('\u0000'));
-  return { D, hash, fileCount: files.length + 1 };
+  const repoText = [dataJs, ...files].map(f => fs.readFileSync(f, 'utf8')).join('\u0000');
+  if (LOCAL_ONLY) return { D, hash: sha(repoText), fileCount: files.length + 1, source: 'repo data files only (--local-data)' };
+  const { rows, from } = await fetchLiveRows();
+  const live = parseLive(rows);
+  // Plain copies, so nothing built later can reach back into the vm context's objects.
+  D.DEFAULT_MEMBERS = JSON.parse(JSON.stringify(live.officials));
+  D.DEFAULT_PROMISES = JSON.parse(JSON.stringify(live.promises));
+  D.PAST_PROMISES = JSON.parse(JSON.stringify(D.PAST_PROMISES));
+  D.ARCHIVE_PROMISES = JSON.parse(JSON.stringify(D.ARCHIVE_PROMISES));
+  const added = mergeArchiveRows(D, JSON.parse(JSON.stringify(live.archive)));
+  const hash = sha(repoText + '\u0000' + JSON.stringify(rows));
+  return { D, hash, fileCount: files.length + 1,
+    source: `live data from ${from}: ${live.officials.length} officials, ${live.promises.length} promises, ${added} of ${live.archive.length} archive rows merged` };
 }
 
 /* ------------------------- people, links, promises -------------------------- */
+// A page address from an id: accents dropped (the roster holds sen-luján-nm, whose page is /officials/sen-lujan-nm/),
+// otherwise the id as it is. Anything still outside a-z, 0-9 and hyphens stops the build.
+const pageSlug = id => String(id).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+// Mirrors raceYearOf() / isRacePledge() in aow-index.html: an Archive candidate's pledge for a 2026-or-later race
+// is a Campaign promise (a record, not a verdict, left out of the score), win or lose.
+function raceYearOf(e) {
+  const m = /^(?:candidate|elected)-(\d{4})$/.exec((e && e.category) || '') || /\((\d{4}), lost\)/.exec((e && e.seat) || '');
+  return m ? Number(m[1]) : null;
+}
+function isRacePledge(e, p) {
+  const y = raceYearOf(e);
+  if (!y || y < 2026) return false;
+  const d = String((p && (p.promisedOn || p.promised_on)) || '');
+  if (!/^\d{4}-\d{2}/.test(d)) return true;
+  const nov1 = new Date(Date.UTC(y, 10, 1)).getUTCDay();
+  const start = new Date(Date.UTC(y, 10, 2 + ((8 - nov1) % 7)) - 730 * 86400000).toISOString().slice(0, 10);
+  return d.length >= 10 ? d.slice(0, 10) >= start : d.slice(0, 7) >= start.slice(0, 7);
+}
 function buildModel(D) {
   const entries = new Map();
   const add = (e, kind, extra) => {
@@ -234,9 +337,15 @@ function buildModel(D) {
   const byMember = new Map();
   const excluded = [];
   const all = [['current', D.DEFAULT_PROMISES], ['past', D.PAST_PROMISES], ['archive', D.ARCHIVE_PROMISES]];
+  const held = { sourcing: 0, noLinks: 0, unknownMember: 0 };
   all.forEach(([kind, arr]) => arr.forEach(p => {
-    if (p.draft) return;                                    // drafts never leave the admin view
-    if (!entries.has(p.memberId)) { warn('Promise ' + p.id + ' references unknown member ' + p.memberId); return; }
+    // Drafts are the tracker's "Still finding sources" entries: public in the tracker and counted in its score, so they
+    // count here too, but they are not LISTED on a page until their sourcing is finished.
+    if (!entries.has(p.memberId)) { held.unknownMember++; return; }
+    if (kind === 'archive' && p.status !== 'campaign_promise' && isRacePledge(entries.get(p.memberId), p)) {
+      excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'a pledge for a 2026 race (shown as Campaign promise, left out of scores)' });
+      return;
+    }
     if (p.status === 'undetermined') {                       // a placeholder, not a verdict: never published, never scored
       excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'status is Undetermined (a placeholder, left out of scores)' });
       return;
@@ -250,18 +359,20 @@ function buildModel(D) {
         reason: 'status is ' + STATUS[p.status] + ', which can\'t apply to someone not in office (the tracker shows Undetermined until the final outcome is checked)' });
       return;
     }
-    if (!STATUS[p.status]) fatal('Promise ' + p.id + ' has invalid status: ' + p.status);
-    if (!String(p.text || '').trim()) fatal('Promise ' + p.id + ' has empty text');
+    if (!STATUS[p.status]) {                                 // the tracker draws an unknown status as Undetermined and never scores it
+      excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'unknown status "' + String(p.status) + '" (the tracker shows it as Undetermined)' });
+      return;
+    }
+    if (!String(p.text || '').trim()) { excluded.push({ id: p.id, member: entries.get(p.memberId).name, reason: 'empty text' }); return; }
     const src = (Array.isArray(p.sources) && p.sources.length ? p.sources : (p.source ? [p.source] : []))
       .map(s => ({ publisher: String(s.publisher || '').trim(), type: String(s.type || ''), url: safeUrl(s.url) }))
       .filter(s => s.publisher && s.url);
-    const pubs = new Set(src.map(s => s.publisher.toLowerCase()));
-    const hasPrimary = src.some(s => PRIMARY_TYPES.has(s.type));
     const rec = { id: p.id, memberId: p.memberId, text: String(p.text).trim(), category: p.category || '', status: p.status, note: p.note || '', sources: src };
     if (!byMember.has(p.memberId)) byMember.set(p.memberId, { all: [], shown: [] });
-    byMember.get(p.memberId).all.push(rec);
-    if (pubs.size >= MIN_PUBLISHERS && hasPrimary) byMember.get(p.memberId).shown.push(rec);
-    else excluded.push({ id: p.id, member: entries.get(p.memberId).name, publishers: pubs.size, primary: hasPrimary });
+    byMember.get(p.memberId).all.push(rec);                 // every tracked promise counts toward the score
+    if (p.draft) held.sourcing++;                            // "Still finding sources": tracker only
+    else if (!src.length) held.noLinks++;                    // finished, but no working source link to show: tracker only
+    else byMember.get(p.memberId).shown.push(rec);
   }));
 
   // one page model per group that has at least one publishable promise
@@ -272,14 +383,17 @@ function buildModel(D) {
     const roles = list.filter(e => e.kind !== 'prior' && byMember.has(e.id) && byMember.get(e.id).shown.length)
       .map(e => ({ entry: e, all: byMember.get(e.id).all, shown: byMember.get(e.id).shown }));
     if (!roles.length) return;
-    if (!/^[a-z0-9][a-z0-9-]*$/.test(primary.id)) fatal('Unsafe page slug (ids must be a-z, 0-9, hyphen): ' + primary.id);
-    pages.push({ slug: primary.id, name: primary.name, primary, roles, priors: list.filter(e => e.kind === 'prior'), ids: list.map(e => e.id) });
+    const slug = pageSlug(primary.id);
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) fatal('Unsafe page slug (ids must be a-z, 0-9, hyphen): ' + primary.id);
+    pages.push({ slug, name: primary.name, primary, roles, priors: list.filter(e => e.kind === 'prior'), ids: list.map(e => e.id) });
   });
+  const seenSlug = new Map();
+  pages.forEach(pg => { if (seenSlug.has(pg.slug)) fatal(`Two pages would share the address officials/${pg.slug}/ (${seenSlug.get(pg.slug)} and ${pg.primary.id}).`); seenSlug.set(pg.slug, pg.primary.id); });
   pages.sort((a, b) => a.name.localeCompare(b.name) || a.slug.localeCompare(b.slug));
   const covered = new Set(pages.flatMap(pg => pg.ids));
   const roster = [...entries.values()].filter(e => e.kind === 'current' && !covered.has(e.id))
     .sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
-  return { entries, pages, excluded, roster };
+  return { entries, pages, excluded, roster, held };
 }
 
 /* --------------------------------- scoring --------------------------------- */
@@ -493,7 +607,7 @@ function renderOfficial(pg, ctx) {
   const allShown = pg.roles.flatMap(r => r.shown);
   const dist = distOf(allShown);
   const bits = Object.keys(STATUS).filter(k => dist[k]).map(k => `${dist[k]} ${STATUS[k].toLowerCase()}`);
-  let desc = `${pg.name}${p0.party ? ' (' + partyLabel(p0.party) + ')' : ''}, ${seatText(p0.seat)}: ${allShown.length} sourced promise${allShown.length === 1 ? '' : 's'} tracked — ${bits.join(', ')}. See each status, the evidence, and the sources.`;
+  let desc = `${pg.name}${p0.party ? ' (' + partyLabel(p0.party) + ')' : ''}, ${seatText(p0.seat)}: ${allShown.length} sourced promise${allShown.length === 1 ? '' : 's'} listed — ${bits.join(', ')}. See each status, the evidence, and the sources.`;
   if (desc.length > 300) desc = desc.slice(0, 297) + '...';
   const title = `${pg.name} — Campaign Promise Tracker | ActionOverWords`;
 
@@ -518,7 +632,7 @@ ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
 <div class="sec-head">${multi ? v2Ring(sc) : ''}<div><h2 id="r-${esc(r.entry.id)}">${esc(roleLabel(r.entry))}</h2><p class="count">${r.all.length} tracked promise${r.all.length === 1 ? '' : 's'}</p></div></div>
 <p class="summary">${esc(roleSummary(pg.name, r, sc, d))}</p>
 ${multi ? v2Mix(d, r.all.length) : ''}
-${hidden ? `<p class="held">${r.shown.length} of ${r.all.length} are listed on this page; the rest do not yet meet the three-publisher sourcing standard for publication here and appear only in the interactive tracker.</p>` : ''}
+${hidden ? `<p class="held">The other ${hidden} ${hidden === 1 ? 'is' : 'are'} still being sourced: ${hidden === 1 ? 'it appears' : 'they appear'} in the <a href="../../aow-index.html">interactive tracker</a> marked “Still finding sources”. The score counts all ${r.all.length}, the same as the tracker.</p>` : ''}
 ${r.shown.length ? `<div class="ledger"><div class="ledger-head" aria-hidden="true"><span>What they said</span><span>What happened</span></div>${r.shown.map(entry).join('')}
 </div>` : ''}
 </section>`;
@@ -539,7 +653,7 @@ ${v2Mix(d0, r0.all.length)}
 ${roles}
 ${priors}
 ${relatedHtml(pg, ctx)}
-<div class="info"><strong>How to read this page.</strong> Each status is ActionOverWords' assessment based on the sources listed. A listed promise needs sources from at least three distinct publishers, including at least one primary record. The AOW Score averages a person's tracked promises: Completed 100, Compromise 60, In progress 40, Stalled 15, Not started 0, Broken 0. <a href="../../methodology/">Full methodology</a> and the <a href="../../aow-index.html">interactive tracker</a>.</div>`;
+<div class="info"><strong>How to read this page.</strong> Each status is ActionOverWords' assessment based on the sources listed. A promise is listed here once its sourcing is finished; the ticks above each one show which kinds of sources were found (a government record, a mainstream outlet, a right-leaning outlet). The AOW Score averages a person's tracked promises: Completed 100, Compromise 60, In progress 40, Stalled 15, Not started 0, Broken 0. <a href="../../methodology/">Full methodology</a> and the <a href="../../aow-index.html">interactive tracker</a>.</div>`;
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -578,15 +692,15 @@ function renderDirectory(pages, roster, hubs) {
   const rKeys = [...rBy.keys()].sort((a, b) => a.split('|')[0].localeCompare(b.split('|')[0]) || a.split('|')[1].localeCompare(b.split('|')[1]));
   const rosterHtml = roster.length ? `
 <h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
-<p class="sub">${roster.length} more current officials are tracked in <a href="../aow-index.html">the interactive tracker</a> and have no promises published on this site yet. A page appears here automatically once an official has promises that meet the sourcing standard.</p>
+<p class="sub">${roster.length} more current officials are tracked in <a href="../aow-index.html">the interactive tracker</a> and have no promises published on this site yet. A page appears here automatically once an official has a promise whose sourcing is finished.</p>
 ${rKeys.map(k => `<section class="dir-sec"><h3>${hubLink(k, k.split('|')[1])}</h3><ul class="dir names">${rBy.get(k).map(rosterRow).join('')}</ul></section>`).join('')}` : '';
   const canonical = SITE + '/officials/';
   const title = 'Officials With Tracked Promises | ActionOverWords';
-  const description = `${pages.length + roster.length} current and past officials tracked, ${pages.length} with ${total} sourced promises published: what was promised, what happened, and the evidence.`;
+  const description = `${roundedPlus(pages.length + roster.length)} current and past officials tracked, ${roundedPlus(pages.length)} with ${roundedPlus(total)} sourced promises published: what was promised, what happened, and the evidence.`;
   const body = `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref('../')}">Home</a> › Officials</nav>
 <h1>Officials with tracked promises</h1>
-<p class="sub">${pages.length} people have promises published here, ${total} in all. Every published promise carries sources from at least three distinct publishers, including at least one primary record. The rest of the roster is listed further down. See the <a href="../methodology/">methodology</a> for how sources, statuses and scores work.</p>
+<p class="sub">${roundedPlus(pages.length)} people have promises published here, ${roundedPlus(total)} in all. A promise is published here once its sourcing is finished; promises still being sourced are in the <a href="../aow-index.html">interactive tracker</a>. The rest of the roster is listed further down. See the <a href="../methodology/">methodology</a> for how sources, statuses and scores work.</p>
 ${list}
 ${rosterHtml}`;
   const ld = { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, url: canonical };
@@ -650,13 +764,13 @@ function renderHub(h, ctx) {
 
   const rosterHtml = h.roster.length ? `
 <h2 id="all-officials" style="margin-top:44px">Everyone else on the roster</h2>
-<p class="sub">${h.roster.length} more current ${esc(h.roster.length === 1 ? m.one : m.who)} ${h.roster.length === 1 ? 'is' : 'are'} tracked in <a href="${up}aow-index.html">the interactive tracker</a> and ${h.roster.length === 1 ? 'has' : 'have'} no promises published on this site yet. A page appears here automatically once an official has promises that meet the sourcing standard.</p>
+<p class="sub">${h.roster.length} more current ${esc(h.roster.length === 1 ? m.one : m.who)} ${h.roster.length === 1 ? 'is' : 'are'} tracked in <a href="${up}aow-index.html">the interactive tracker</a> and ${h.roster.length === 1 ? 'has' : 'have'} no promises published on this site yet. A page appears here automatically once an official has a promise whose sourcing is finished.</p>
 ${rosterSecs.map(([l, xs]) => `<section class="dir-sec">${secs ? `<h3>${esc(l)}</h3>` : ''}<ul class="dir names">${xs.map(rosterRow).join('')}</ul></section>`).join('')}` : '';
 
   const body = `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="${homeHref(up)}">Home</a> › <a href="${up}officials/">Officials</a> › ${esc(m.label)}</nav>
 <h1>${esc(m.h1)}</h1>
-<p class="sub">${esc(nOf(h.pages.length, m.one, m.who))} ${h.pages.length === 1 ? 'has' : 'have'} promises published here, ${total} in all. Every published promise carries sources from at least three distinct publishers, including at least one primary record. ${h.key === 'administration' ? ADMIN_ORDER_NOTE : 'People are listed alphabetically within each group.'} See the <a href="${up}methodology/">methodology</a> for how sources, statuses and scores work.</p>
+<p class="sub">${esc(nOf(h.pages.length, m.one, m.who))} ${h.pages.length === 1 ? 'has' : 'have'} promises published here, ${roundedPlus(total)} in all. A promise is published here once its sourcing is finished. ${h.key === 'administration' ? ADMIN_ORDER_NOTE : 'People are listed alphabetically within each group.'} See the <a href="${up}methodology/">methodology</a> for how sources, statuses and scores work.</p>
 ${pageSecs.map(([l, xs]) => `<section class="dir-sec"><h2>${esc(l)}</h2><ul class="dir">${xs.map(pg => dirRow(pg, up + 'officials/')).join('')}</ul></section>`).join('')}
 ${rosterHtml}`;
 
@@ -707,7 +821,7 @@ function renderMethodology() {
 <p>A promise to introduce, sponsor or pass a specific, named bill is checked against the congressional record, which shows exactly what happened to the bill. For other promises, such as a policy goal or a campaign commitment, the standard is all three kinds of sources.</p>
 <p>This is a new dataset, and sourcing is still being completed for many entries. Many of those entries carry a <strong>Still finding sources</strong> tag in the interactive tracker instead of being presented as fully verified. A status is our good-faith reading of the sources linked on the entry, not an audited record, and every call is open to appeal (see Corrections and appeals below).</p>
 <p>Every source is linked on the promise and labeled by type: campaign statement, interview, voting record, official record, the official's own office, or news report. A campaign statement and an independently reported outcome are not presented as equally strong evidence, and the reader weighs the sources rather than being told what to think.</p>
-<p>A promise is listed on the pages of this site only when its sources come from at least three distinct publishers and at least one of them is a primary record: an official record, a voting record, or the official's own office. Promises that do not yet meet that standard stay in the interactive tracker, and an official's page says when some of their tracked promises are not listed yet.</p>
+<p>A promise is listed on the pages of this site once its sourcing is finished. Promises still being sourced stay in the interactive tracker, marked <strong>Still finding sources</strong>, and an official's page says how many of their tracked promises are not listed yet. Every tracked promise counts toward the AOW Score, on the official's page and in the tracker alike, so the two always show the same score.</p>
 
 <h2 id="statuses">The six statuses</h2>
 <p>Every promise gets one of six statuses, based on what has actually happened, not on intent.</p>
@@ -1318,7 +1432,7 @@ function renderHome(ctx) {
 
   const link = (href, name, text, lead) => `<li${lead ? ' class="lead"' : ''}><a href="${href}"><b>${name}</b><span>${text}</span></a></li>`;
   const browse = [link(tracker, 'The interactive tracker', 'Search officials by name or state, filter by status and read each promise with its sources.', true),
-    link(up + 'officials/', 'Officials directory', `${esc(nOf(people, 'person', 'people'))} and ${esc(nOf(total, 'promise', 'promises'))}, each promise with sources from at least three distinct publishers, including a primary record.`)]
+    link(up + 'officials/', 'Officials directory', `${esc(roundedPlus(people))} people and ${esc(roundedPlus(total))} promises, each listed with its sources.`)]
     .concat([...hubs.values()].map(h => link(up + esc(h.key) + '/', esc(cap(hubMeta(h.key, model).label)), `${esc(nOf(h.pages.length, 'person', 'people'))} with promises published here.`)))
     .concat([link(up + 'methodology/', 'Methodology', 'Sources, statuses, the AOW Score and how the tracker stays nonpartisan.'),
       link(up + 'about/', 'About', 'Who runs the Index, how it is paid for and what its limits are.'),
@@ -1528,7 +1642,7 @@ function renderContact() {
 }
 
 /* ---------------------------------- build ---------------------------------- */
-function main() {
+async function main() {
   // New folders (methodology/, administration/, congress/, states/) only reach the site if the workflow stages them.
   // With an older workflow that stages a fixed list, the sitemap would name pages that never get committed (404s),
   // so in CI stop before writing anything and say what to upload.
@@ -1540,12 +1654,12 @@ function main() {
   // The bare domain is generated only if index.html already carries the marker. A hand-written redirect to the
   // tracker (the normal state) is never overwritten, and "Home" stays the tracker.
   HOME_LANDING = isOurs(path.join(ROOT, 'index.html'));
-  const { D, hash: dataHash, fileCount } = loadDataset();
+  const { D, hash: dataHash, fileCount, source: dataSource } = await loadDataset();
   const model = buildModel(D);
   const manifestFile = path.join(ROOT, 'tools', 'pages-manifest.json');
   const prev = fs.existsSync(manifestFile) ? JSON.parse(fs.readFileSync(manifestFile, 'utf8')) : { pages: {}, officialCount: 0 };
 
-  if (!model.pages.length) fatal('No publishable promises found. Refusing to publish an empty site (is the data directory intact?).');
+  if (!model.pages.length) fatal('No publishable promises found. Refusing to publish an empty site (is the data intact?).');
   if (prev.officialCount >= 10 && model.pages.length < prev.officialCount * 0.85 && !argv['allow-shrink'])
     fatal(`Official pages would drop from ${prev.officialCount} to ${model.pages.length} (>15%). Looks like a data problem. Re-run with --allow-shrink if intentional.`);
 
@@ -1614,19 +1728,19 @@ Sitemap: ${SITE}/sitemap.xml
 
   const report = [
     'AOW static pages report (deterministic; no timestamps)',
-    `data files read: ${fileCount}`,
+    `data: ${dataSource}; repo data files read: ${fileCount}`,
     HOME_LANDING ? `home page (/): generated landing page; live headline numbers: ${HOME_LIVE_STATE}` : 'home page (/): off. index.html is a hand-written redirect to the tracker and is left alone (to switch the landing page on, replace index.html with a file that contains the marker comment, then run this script)',
     'design: the redesign ("The record") on every generated page; the /preview/ folder from before the switch-over is removed when found',
     `officials with a page: ${model.pages.length}`,
     `promises published on pages: ${model.pages.reduce((t, pg) => t + pg.roles.reduce((n, r) => n + r.shown.length, 0), 0)}`,
-    `current officials listed by name only (no publishable promises yet): ${model.roster.length}`,
+    `current officials listed by name only (no promise with finished sourcing yet): ${model.roster.length}`,
+    `promises counted in scores but not listed: ${model.held.sourcing} still being sourced (tracker only, "Still finding sources"), ${model.held.noLinks} finished but with no working source link`,
+    `promises whose official is not on any list (ignored, as in the tracker): ${model.held.unknownMember}`,
     `hub pages (a group needs at least ${HUB_MIN} people with pages): ${hubs.size}`,
     ...[...hubs.values()].map(h => `  - ${h.key}: ${h.pages.length} with pages, ${h.roster.length} listed by name only`),
     `groups with a page but below that minimum, so no hub yet: ${[...ctx.groups.keys()].filter(k => !hubs.has(k)).length}`,
-    `promises held back (fewer than ${MIN_PUBLISHERS} distinct publishers, no primary-record source, status Undetermined or Campaign promise, or a status that can't apply to someone not in office): ${model.excluded.length}`,
-    ...model.excluded.map(x => x.reason
-      ? `  - ${x.id} (${x.member}): ${x.reason}`
-      : `  - ${x.id} (${x.member}): ${x.publishers} publisher(s), primary-record source: ${x.primary ? 'yes' : 'no'}`),
+    `promises left out of pages and scores (Undetermined, Campaign promise, an unknown status, or a status that can't apply to someone not in office): ${model.excluded.length}`,
+    ...[...model.excluded.reduce((m, x) => m.set(x.reason, (m.get(x.reason) || 0) + 1), new Map())].sort((a, b) => b[1] - a[1]).map(([r, n]) => `  - ${n} × ${r}`),
     ''
   ].join('\n');
 
@@ -1671,6 +1785,6 @@ Sitemap: ${SITE}/sitemap.xml
   if (writeIfChanged(manifestFile, JSON.stringify(manifest, null, 1) + '\n')) changed++;
   if (writeIfChanged(path.join(ROOT, 'tools', 'pages-report.txt'), report)) changed++;
 
-  console.log(`Built ${model.pages.length} official pages + directory + methodology + about + contact + ${hubs.size} hub page${hubs.size === 1 ? '' : 's'}${HOME_LANDING ? ' + home page' : ''}; ${model.excluded.length} promises held back; ${changed} files changed, ${removed} stale pages removed, ${warnings.length} warnings.`);
+  console.log(`Built ${model.pages.length} official pages + directory + methodology + about + contact + ${hubs.size} hub page${hubs.size === 1 ? '' : 's'}${HOME_LANDING ? ' + home page' : ''} from ${dataSource}; ${model.held.sourcing} promises still being sourced (tracker only); ${changed} files changed, ${removed} stale pages removed, ${warnings.length} warnings.`);
 }
-main();
+main().catch(e => fatal('Build stopped: ' + (e && e.stack || e) + ' Nothing more was written.'));
